@@ -25,9 +25,10 @@ class Project(db.Model):
     deadline = db.Column(db.DateTime, nullable=False)
     creationtime = db.Column(db.TIMESTAMP, nullable=False)
     cancellationstatus = db.Column(db.Boolean, nullable=False, default=False)  # Default to False, as boolean.
+    goalreached = db.Column(db.Boolean, nullable=False, default=False)
 
 
-    def __init__(self, projectid, name, description, creatorid, fundinggoal, deadline, creationtime, cancellationstatus):
+    def __init__(self, projectid, name, description, creatorid, fundinggoal, deadline, creationtime, cancellationstatus, goalreached):
         self.projectid = projectid
         self.name = name
         self.description = description
@@ -36,10 +37,11 @@ class Project(db.Model):
         self.deadline = deadline
         self.creationtime = creationtime
         self.cancellationstatus = cancellationstatus
+        self.goalreached = goalreached
 
 
     def json(self):
-        return {"projectid": self.projectid, "name": self.name, "description": self.description, "creatorid": self.creatorid, "fundinggoal": self.fundinggoal, "deadline": self.deadline, "creationtime": self.creationtime, "cancellationstatus": self.cancellationstatus}
+        return {"projectid": self.projectid, "name": self.name, "description": self.description, "creatorid": self.creatorid, "fundinggoal": self.fundinggoal, "deadline": self.deadline, "creationtime": self.creationtime, "cancellationstatus": self.cancellationstatus, "goalreached": self.goalreached}
 
 @app.route("/project")
 def get_all():
