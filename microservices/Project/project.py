@@ -17,31 +17,31 @@ class Project(db.Model):
 
 
 
-    projectid = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    projectID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)  # You can adjust the length as needed
     description = db.Column(db.Text, nullable=True)   # Assuming description can be nullable
-    creatorid = db.Column(db.String(255), nullable=False)  # Adjust length as needed
-    fundinggoal = db.Column(db.Integer, nullable=False)
+    creatorID = db.Column(db.String(255), nullable=False)  # Adjust length as needed
+    fundingGoal = db.Column(db.Integer, nullable=False)
     deadline = db.Column(db.DateTime, nullable=False)
-    creationtime = db.Column(db.TIMESTAMP, nullable=False)
-    cancellationstatus = db.Column(db.Boolean, nullable=False, default=False)  # Default to False, as boolean.
-    goalreached = db.Column(db.Boolean, nullable=False, default=False)
+    creationTime = db.Column(db.TIMESTAMP, nullable=False)
+    cancellationStatus = db.Column(db.Boolean, nullable=False, default=False)  # Default to False, as boolean.
+    goalReached = db.Column(db.Boolean, nullable=False, default=False)
 
 
-    def __init__(self, projectid, name, description, creatorid, fundinggoal, deadline, creationtime, cancellationstatus, goalreached):
-        self.projectid = projectid
+    def __init__(self, projectID, name, description, creatorID, fundingGoal, deadline, creationTime, cancellationStatus, goalReached):
+        self.projectID = projectID
         self.name = name
         self.description = description
-        self.creatorid = creatorid
-        self.fundinggoal = fundinggoal
+        self.creatorID = creatorID
+        self.fundingGoal = fundingGoal
         self.deadline = deadline
-        self.creationtime = creationtime
-        self.cancellationstatus = cancellationstatus
-        self.goalreached = goalreached
+        self.creationTime = creationTime
+        self.cancellationStatus = cancellationStatus
+        self.goalReached = goalReached
 
 
     def json(self):
-        return {"projectid": self.projectid, "name": self.name, "description": self.description, "creatorid": self.creatorid, "fundinggoal": self.fundinggoal, "deadline": self.deadline, "creationtime": self.creationtime, "cancellationstatus": self.cancellationstatus, "goalreached": self.goalreached}
+        return {"projectID": self.projectID, "name": self.name, "description": self.description, "creatorID": self.creatorID, "fundingGoal": self.fundingGoal, "deadline": self.deadline, "creationTime": self.creationTime, "cancellationStatus": self.cancellationStatus, "goalReached": self.goalReached}
 
 @app.route("/project")
 def get_all():
@@ -65,10 +65,10 @@ def get_all():
     ), 404
 
 
-@app.route("/project/<string:projectid>")
-def find_by_projectid(projectid):
+@app.route("/project/<string:projectID>")
+def find_by_projectid(projectID):
     project = db.session.scalars(
-    	db.select(Project).filter_by(projectid=projectid).
+    	db.select(Project).filter_by(projectID=projectID).
     	limit(1)
 ).first()
 
@@ -88,10 +88,10 @@ def find_by_projectid(projectid):
     ), 404
 
 
-@app.route("/project/<string:projectid>", methods=['POST'])
-def create_project(projectid):
+@app.route("/project/<string:projectID>", methods=['POST'])
+def create_project(projectID):
     if (db.session.scalars(
-      db.select(Project).filter_by(projectid=projectid).
+      db.select(Project).filter_by(projectID=projectID).
       limit(1)
       ).first()
       ):
@@ -99,7 +99,7 @@ def create_project(projectid):
             {
                 "code": 400,
                 "data": {
-                    "projectid": projectid
+                    "projectID": projectID
                 },
                 "message": "Project already exists."
             }
@@ -107,7 +107,7 @@ def create_project(projectid):
 
 
     data = request.get_json()
-    project = Project(projectid, **data)
+    project = Project(projectID, **data)
 
 
     try:
@@ -118,7 +118,7 @@ def create_project(projectid):
             {
                 "code": 500,
                 "data": {
-                    "projectid": projectid
+                    "projectID": projectID
                 },
                 "message": "An error occurred creating the project."
             }

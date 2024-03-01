@@ -32,23 +32,23 @@ USE `project`;
 
 DROP TABLE IF EXISTS `project`;
 CREATE TABLE IF NOT EXISTS `project` (
-    `projectid` INT AUTO_INCREMENT,
+    `projectID` INT AUTO_INCREMENT,
     `name` VARCHAR(255) NOT NULL,
     `description` TEXT,
-    `creatorid` VARCHAR(255) NOT NULL,
-    `fundinggoal` INT NOT NULL,
+    `creatorID` VARCHAR(255) NOT NULL,
+    `fundingGoal` INT NOT NULL,
     `deadline` DATETIME NOT NULL,
-    `creationtime` TIMESTAMP NOT NULL,
-    `cancellationstatus` BOOLEAN DEFAULT FALSE,
-    `goalreached` BOOLEAN DEFAULT FALSE,
-  PRIMARY KEY (`projectid`)
+    `creationTime` TIMESTAMP NOT NULL,
+    `cancellationStatus` BOOLEAN DEFAULT FALSE,
+    `goalReached` BOOLEAN DEFAULT FALSE,
+  PRIMARY KEY (`projectID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `project`
 --
 
-INSERT INTO `project` (`projectid`, `name`, `description`, `creatorid`, `fundinggoal`, `deadline`, `creationtime`, `cancellationstatus`, `goalreached`) VALUES
+INSERT INTO `project` (`projectID`, `name`, `description`, `creatorID`, `fundingGoal`, `deadline`, `creationTime`, `cancellationStatus`, `goalReached`) VALUES
     (1231, 'Project A', 'Description for Project A', 'Creator1', 5000, '2024-03-31 12:00:00', '2024-01-31 11:00:00', FALSE, FALSE),
     (1232, 'Project B', 'Description for Project B', 'Creator2', 10000, '2024-04-15 18:30:00', '2024-01-31 10:00:00', TRUE, FALSE),
     (1233, 'Project C', 'Description for Project C', 'Creator3', 7500, '2024-05-20 09:45:00', '2024-01-31 9:00:00', FALSE, FALSE),
