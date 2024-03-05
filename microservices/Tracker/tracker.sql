@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `tracker` (
     `backerID` INT NOT NULL,
     `projectID` INT NOT NULL,
     `pledgeAmt` FLOAT NOT NULL,
-    PRIMARY KEY (`trackerID`),
+    PRIMARY KEY (`trackerID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- NEED TO ADD THIS IN THE FUTURE
