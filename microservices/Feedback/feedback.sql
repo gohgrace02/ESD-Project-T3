@@ -50,7 +50,7 @@ INSERT INTO `feedback` (`feedbackID`, `backerID`, `projectID`, `rating`, `commen
     (001, 1, 1231, 9, 'excellent', '2024-03-12 11:00:00', 'Approved'),
     (002, 2, 1232, 8, 'good', '2024-03-13 10:00:00', 'Pending'),
     (003, 3, 1233, 7, 'happy', '2024-03-14 11:00:00', 'Approved'),
-    (004, 4, 1234, 1, 'shit', '2024-03-15 11:00:00', 'Rejected'),
+    (004, 4, 1234, 1, 'shit', '2024-03-15 11:00:00', 'Rejected');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `project` (
     `fundingGoal` INT NOT NULL,
     `deadline` DATETIME NOT NULL,
     `creationTime` TIMESTAMP NOT NULL,
-    `cancellationStatus` BOOLEAN DEFAULT FALSE,
+    `Status` VARCHAR(255) NOT NULL,
     `goalReached` BOOLEAN DEFAULT FALSE,
   PRIMARY KEY (`projectID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -48,11 +48,11 @@ CREATE TABLE IF NOT EXISTS `project` (
 -- Dumping data for table `project`
 --
 
-INSERT INTO `project` (`projectID`, `name`, `description`, `creatorID`, `fundingGoal`, `deadline`, `creationTime`, `cancellationStatus`, `goalReached`) VALUES
-    (1231, 'Project A', 'Description for Project A', 'Creator1', 5000, '2024-03-31 12:00:00', '2024-01-31 11:00:00', FALSE, FALSE),
-    (1232, 'Project B', 'Description for Project B', 'Creator2', 10000, '2024-04-15 18:30:00', '2024-01-31 10:00:00', TRUE, FALSE),
-    (1233, 'Project C', 'Description for Project C', 'Creator3', 7500, '2024-05-20 09:45:00', '2024-01-31 9:00:00', FALSE, FALSE),
-    (1234, 'Project D', 'Description for Project D', 'Creator4', 12000, '2024-06-10 15:15:00', '2024-01-31 3:00:00', FALSE, FALSE);
+INSERT INTO `project` (`projectID`, `name`, `description`, `creatorID`, `fundingGoal`, `deadline`, `creationTime`, `Status`, `goalReached`) VALUES
+    (1231, 'Project A', 'Description for Project A', 'Creator1', 5000, '2024-03-31 12:00:00', '2024-01-31 11:00:00', 'Open', FALSE),
+    (1232, 'Project B', 'Description for Project B', 'Creator2', 10000, '2024-04-15 18:30:00', '2024-01-31 10:00:00', 'Open', FALSE),
+    (1233, 'Project C', 'Description for Project C', 'Creator3', 7500, '2024-05-20 09:45:00', '2024-01-31 9:00:00', 'Open', FALSE),
+    (1234, 'Project D', 'Description for Project D', 'Creator4', 12000, '2024-06-10 15:15:00', '2024-01-31 3:00:00', 'Open', FALSE);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
