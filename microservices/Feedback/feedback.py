@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Enum  #for status enum
 from os import environ
 
 app = Flask(__name__)
@@ -19,19 +18,17 @@ class Feedback(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=False)
     submittedAt = db.Column(db.TIMESTAMP)
-    status = db.Column(Enum('Pending', 'Approved', 'Rejected'), nullable=False)
 
-    def __init__(self, backerID, projectID, rating, comment, submittedAt, status):
+    def __init__(self, backerID, projectID, rating, comment, submittedAt):
         self.backerID = backerID
         self.projectID = projectID
         self.rating = rating
         self.comment = comment
         self.submittedAt = submittedAt
-        self.status = status
         
     def json(self):
         return {
-            'feedbackID': self.feedbackID, 'backerID': self.backerID, 'projectID': self.projectID, 'rating': self.rating, 'comment': self.comment, 'submittedAt': self.submittedAt, 'status': self.status
+            'feedbackID': self.feedbackID, 'backerID': self.backerID, 'projectID': self.projectID, 'rating': self.rating, 'comment': self.comment, 'submittedAt': self.submittedAt
         }
     
 @app.route("/project/<int:project_id>/feedback", methods=['POST'])
