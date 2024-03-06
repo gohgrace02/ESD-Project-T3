@@ -38,7 +38,6 @@ CREATE TABLE IF NOT EXISTS `feedback` (
     `rating` INT NOT NULL,
     `comment` TEXT NOT NULL,
     `submittedAt` TIMESTAMP NOT NULL,
-    `status` ENUM('Pending', 'Approved', 'Rejected') NOT NULL,
     PRIMARY KEY (`feedbackID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -46,11 +45,11 @@ CREATE TABLE IF NOT EXISTS `feedback` (
 -- Dumping data for table `feedback`
 --
 
-INSERT INTO `feedback` (`feedbackID`, `backerID`, `projectID`, `rating`, `comment`, `submittedAt`, `status`) VALUES
-    (001, 1, 1231, 9, 'excellent', '2024-03-12 11:00:00', 'Approved'),
-    (002, 2, 1232, 8, 'good', '2024-03-13 10:00:00', 'Pending'),
-    (003, 3, 1233, 7, 'happy', '2024-03-14 11:00:00', 'Approved'),
-    (004, 4, 1234, 1, 'shit', '2024-03-15 11:00:00', 'Rejected');
+INSERT INTO `feedback` (`feedbackID`, `backerID`, `projectID`, `rating`, `comment`, `submittedAt`) VALUES
+    (001, 1, 1231, 9, 'excellent', '2024-03-12 11:00:00'),
+    (002, 2, 1232, 8, 'good', '2024-03-13 10:00:00'),
+    (003, 3, 1233, 7, 'happy', '2024-03-14 11:00:00'),
+    (004, 4, 1234, 1, 'shit', '2024-03-15 11:00:00');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
