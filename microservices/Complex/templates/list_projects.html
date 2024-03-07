@@ -30,7 +30,8 @@
                             <div class="card-body">
                                 <h5 class="card-title">{{project.name}} [ID: {{project.projectID}}]</h5>
                                 <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iste, veritatis.</p>
-                                <a href="/back_project/{{project.projectID}}?json_data={{project|tojson|urlencode}}" class="btn btn-primary">Back project</a>
+                                <a href="/back_project/{{project.projectID}}" class="btn btn-primary">Back project</a>
+                                <!-- <a href="/back_project/{{project.projectID}}?data={{project.projectID}}" class="btn btn-primary">Back project</a> -->
                             </div>
                         </div>
                     </div>

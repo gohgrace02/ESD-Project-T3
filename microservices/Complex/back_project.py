@@ -25,9 +25,9 @@ def list_projects():
 
 @app.route("/back_project/<string:projectID>")
 def project_details(projectID):
-    json_data_str = request.args.get('json_data')
-    data = json.loads(json_data_str)
-    return render_template('back_project.html', data=data)
+    response = requests.get(project_URL + '/' + projectID).json()
+    project = response['data']
+    return render_template('back_project.html', project=project)
 
 # @app.route("/back_project/<string:projectID>")
 
