@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <meta charset='UTF-8' />
+        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+        <title>Document</title>
+        <!-- Bootstrap CSS -->
+        <link
+            href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css'
+            rel='stylesheet'
+            integrity='sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN'
+            crossorigin='anonymous'
+        />
+        <!-- Axios -->
+        <script src='https://unpkg.com/axios/dist/axios.min.js'></script>
+        <!-- Vue 3 -->
+        <script src='https://unpkg.com/vue@3/dist/vue.global.js'></script>
+    </head>
+    <body>
+        <div id='app'>
+            <div class="container-fluid">
+                <div class="header text-center my-3">
+                    <h1>Projects available for backing</h1>
+                </div>
+                <div class="content">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>S/N</th>
+                                <th>Project ID</th>
+                                <th>Project Name</th>
+                                <th>Project Creator</th>
+                                <th>Goal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for project in projects %}
+                            <tr>
+                                <td>{{loop.index0 + 1}}</td>
+                                <td>{{project.projectID}}</td>
+                                <td>{{project.name}}</td>
+                                <td>{{project.creatorID}}</td>
+                                <td>{{project.fundingGoal}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+            <!-- <ol>
+                {% for project in projects %}
+                    <li>{{ project.name }}</li>
+                {% endfor %}
+            </ol> -->
+        </div>
+        <script>
+            const app = Vue.createApp({
+                data() {
+                    return {};
+                },
+                computed: {},
+                methods: {},
+            });
+            const vm = app.mount('#app');
+        </script>
+        <!-- Bootstrap JS bundle to be placed before the closing </body> tag -->
+        <script
+            src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js'
+            integrity='sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL'
+            crossorigin='anonymous'
+        ></script>
+    </body>
+</html>
