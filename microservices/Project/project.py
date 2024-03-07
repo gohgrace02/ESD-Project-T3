@@ -3,9 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from os import environ
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 # idk why it doesnt work if I use the above --> need to use command prompt for the above to work 
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/project' --> hardcoding 
+# use: set dbURL=mysql+mysqlconnector://root@localhost:3306/project
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/project' #--> hardcoding 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
