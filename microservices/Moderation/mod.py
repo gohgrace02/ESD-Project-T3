@@ -4,6 +4,8 @@ from sqlalchemy import Enum
 from os import environ
 import re
 import datetime
+import requests
+
 
 app = Flask(__name__)
 
@@ -32,9 +34,23 @@ class Mod(db.Model):
         'moderationID': self.moderationID, 'comment': self.comment, 'actionTaken': self.actionTaken, 'reason': self.reason, 'moderatedAt': self.moderatedAt
     }
 
-def load_vulgarity_list():
-  # Probably need add more Vulgarities
-  return ["stupid", "bitch", "shit"]
+# def is_vulgar():
+#   # Probably need add more Vulgarities
+#   url = "http://api1-ap.webpurify.com/services/rest//?method=webpurify.live.check&api_key=c4eb16473bd9be59faee65a329fdad48&text=fuck&format=json"
+
+#   response = requests.get(url)
+
+#   # Access the response content (replace with actual data parsing)
+#   data = response.json()
+#   # print(data)
+#   if data["rsp"]["@attributes"]["stat"] == "fail":
+#     print(data["rsp"]["err"]["@attributes"]["msg"]) 
+#   elif data["rsp"]["found"] == 0:
+#     return False
+#   else:
+#     return True
+
+#   # return ["stupid", "bitch", "shit"]
 
 @app.route("/moderate", methods=["POST"])
 def moderate():
@@ -43,32 +59,48 @@ def moderate():
   if not comment:
     return jsonify({"error": "Missing feedback_info in request body"}), 400
 
-  # instead of using get_json() to get the data from the request received, we use the above method of request.json.get
+  # # instead of using get_json() to get the data from the request received, we use the above method of request.json.get
   # comment = request.get_json()
+  def is_vulgar(comment):
+    # Probably need add more Vulgarities
+    url = f"http://api1-ap.webpurify.com/services/rest//?method=webpurify.live.check&api_key=c4eb16473bd9be59faee65a329fdad48&text={comment}&format=json"
+
+    response = requests.get(url)
+    
+
+    # Access the response content (replace with actual data parsing)
+    data = response.json()
+    # print(data)
+    # if data["rsp"]["@attributes"]["stat"] == "fail":
+    #   print(data["rsp"]["err"]["@attributes"]["msg"])
+    if data["rsp"]["found"] == "0":
+      return False
+    else:
+      return True
 
   # Function checks if the provided comment contains vulgar language.
-  def is_vulgar(comment):
+  # def is_vulgar(comment):
   
-    comment = comment.lower()
-    comment = re.sub(r"[^\w\s]", "", comment)  # Removes punctuation
-    vulgarity_list = load_vulgarity_list()
+  #   comment = comment.lower()
+  #   comment = re.sub(r"[^\w\s]", "", comment)  # Removes punctuation
+  #   vulgarity_list = load_vulgarity_list()
   
-    for word in comment.split():
-      if word in vulgarity_list:
-        return True
+  #   for word in comment.split():
+  #     if word in vulgarity_list:
+  #       return True
   
-    return False
+  #   return False
 
-  is_vulgar = is_vulgar(comment)
+  check_vulgar = is_vulgar(comment)
 
-  # Send the feedback to Feedback Microservice based on moderation result
-  # (Replace this with your actual implementation for sending the feedback)
-  if not is_vulgar:
-    # Send to Feedback Microservice (success scenario)
-    print(f"Feedback is not vulgar: {comment}")
-  else:
-    # Send to Error Microservice (rejected scenario)
-    print(f"Feedback contains vulgarity: {comment}")
+  # # Send the feedback to Feedback Microservice based on moderation result
+  # # (Replace this with your actual implementation for sending the feedback)
+  # if not is_vulgar:
+  #   # Send to Feedback Microservice (success scenario)
+  #   print(f"Feedback is not vulgar: {comment}")
+  # else:
+  #   # Send to Error Microservice (rejected scenario)
+  #   print(f"Feedback contains vulgarity: {comment}")
 
   # DATA FOR DATABASE
   moderationID = 000 #example
@@ -85,7 +117,8 @@ def moderate():
   #               })
 
   # Return moderation status to Project Microservice
-  return jsonify({"moderation_status": "Rejected" if is_vulgar else "Approved"})
+
+  return jsonify({"moderation_status": "Rejected" if check_vulgar else "Approved"})
 
 if __name__ == "__main__":
   app.run(debug=True)

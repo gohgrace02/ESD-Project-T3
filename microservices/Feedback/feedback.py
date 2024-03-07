@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Enum  #for status enum
 from os import environ
 
 app = Flask(__name__)
@@ -19,27 +18,25 @@ class Feedback(db.Model):
     rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=False)
     submittedAt = db.Column(db.TIMESTAMP)
-    status = db.Column(Enum('Pending', 'Approved', 'Rejected'), nullable=False)
 
-    def __init__(self, backerID, projectID, rating, comment, submittedAt, status):
+    def __init__(self, backerID, projectID, rating, comment, submittedAt):
         self.backerID = backerID
         self.projectID = projectID
         self.rating = rating
         self.comment = comment
         self.submittedAt = submittedAt
-        self.status = status
         
     def json(self):
         return {
-            'feedbackID': self.feedbackID, 'backerID': self.backerID, 'projectID': self.projectID, 'rating': self.rating, 'comment': self.comment, 'submittedAt': self.submittedAt, 'status': self.status
+            'feedbackID': self.feedbackID, 'backerID': self.backerID, 'projectID': self.projectID, 'rating': self.rating, 'comment': self.comment, 'submittedAt': self.submittedAt
         }
     
-@app.route("/project/<int:project_id>/feedback", methods=['POST'])
-def create_feedback(projectId):
+@app.route("/project/<string:projectID>/feedback", methods=['POST'])
+def create_feedback(projectID):
     # need to check if feedback alr exists? (hvnt include code for this)
 
     data = request.get_json()
-    feedback = Feedback(projectId, **data) #KIV
+    feedback = Feedback(backerID=data.get('backerID'), projectID=projectID, rating=data.get('rating'), comment=data.get('comment'), submittedAt=data.get('submittedAt')) #KIV
 
     try:
         db.session.add(feedback)
@@ -49,7 +46,7 @@ def create_feedback(projectId):
             {
                 "code": 500,
                 "data": {
-                    "ProjectID": projectId
+                    "ProjectID": projectID
                 },
                 "message": "An error occurred creating the feedbacl."
             }

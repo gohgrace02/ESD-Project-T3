@@ -19,37 +19,36 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `feedback`
+-- Database: `user`
 --
-CREATE DATABASE IF NOT EXISTS `feedback` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `feedback`;
+CREATE DATABASE IF NOT EXISTS `user` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `user`;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `feedback`
+-- Table structure for table `user`
 --
 
-DROP TABLE IF EXISTS `feedback`;
-CREATE TABLE IF NOT EXISTS `feedback` (
-    `feedbackID` INT AUTO_INCREMENT NOT NULL,
-    `backerID` INT NOT NULL,
-    `projectID` INT NOT NULL,
-    `rating` INT NOT NULL,
-    `comment` TEXT NOT NULL,
-    `submittedAt` TIMESTAMP NOT NULL,
-    PRIMARY KEY (`feedbackID`)
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE IF NOT EXISTS `user` (
+    `userID` INT AUTO_INCREMENT NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `role` VARCHAR(255) NOT NULL,
+
+    PRIMARY KEY (`userID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `feedback`
+-- Dumping data for table `user`
 --
 
-INSERT INTO `feedback` (`feedbackID`, `backerID`, `projectID`, `rating`, `comment`, `submittedAt`) VALUES
-    (001, 1, 1231, 9, 'excellent', '2024-03-12 11:00:00'),
-    (002, 2, 1232, 8, 'good', '2024-03-13 10:00:00'),
-    (003, 3, 1233, 7, 'happy', '2024-03-14 11:00:00'),
-    (004, 4, 1234, 1, 'shit', '2024-03-15 11:00:00');
+INSERT INTO `user` (`userID`, `name`, `email`, `password`, `role`) VALUES
+    (1, 'bob', 'bob@gmail.com', 'hello', 'backer'),
+    (2, 'jack', 'jack@gmail.com', 'hello1', 'creator'),
+    (3, 'amy', 'amy@gmail.com', 'hello2', 'backer');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

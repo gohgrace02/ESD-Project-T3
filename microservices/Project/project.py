@@ -24,11 +24,11 @@ class Project(db.Model):
     fundingGoal = db.Column(db.Integer, nullable=False)
     deadline = db.Column(db.DateTime, nullable=False)
     creationTime = db.Column(db.TIMESTAMP, nullable=False)
-    cancellationStatus = db.Column(db.Boolean, nullable=False, default=False)  # Default to False, as boolean.
-    goalReached = db.Column(db.Boolean, nullable=False, default=False)
+    Status = db.Column(db.String(255), nullable=False)  
+    goalReached = db.Column(db.Boolean, nullable=False, default=False) # Default to False, as boolean.
 
 
-    def __init__(self, projectID, name, description, creatorID, fundingGoal, deadline, creationTime, cancellationStatus, goalReached):
+    def __init__(self, projectID, name, description, creatorID, fundingGoal, deadline, creationTime, Status, goalReached):
         self.projectID = projectID
         self.name = name
         self.description = description
@@ -36,12 +36,12 @@ class Project(db.Model):
         self.fundingGoal = fundingGoal
         self.deadline = deadline
         self.creationTime = creationTime
-        self.cancellationStatus = cancellationStatus
+        self.Status = Status
         self.goalReached = goalReached
 
 
     def json(self):
-        return {"projectID": self.projectID, "name": self.name, "description": self.description, "creatorID": self.creatorID, "fundingGoal": self.fundingGoal, "deadline": self.deadline, "creationTime": self.creationTime, "cancellationStatus": self.cancellationStatus, "goalReached": self.goalReached}
+        return {"projectID": self.projectID, "name": self.name, "description": self.description, "creatorID": self.creatorID, "fundingGoal": self.fundingGoal, "deadline": self.deadline, "creationTime": self.creationTime, "Status": self.Status, "goalReached": self.goalReached}
 
 @app.route("/project")
 def get_all():
