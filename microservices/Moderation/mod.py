@@ -52,8 +52,8 @@ class Mod(db.Model):
 
 #   # return ["stupid", "bitch", "shit"]
 
-@app.route("/moderate", methods=["POST"])
-def moderate():
+@app.route("/project/<string:project_id>/moderate", methods=["POST"])
+def moderate(project_id):
   # Checks if the feedback_info key exists in the request body
   comment = request.json.get("feedback_info")
   if not comment:
@@ -117,7 +117,13 @@ def moderate():
   #               })
 
   # Return moderation status to Project Microservice
-
+  moderation_status = {
+    "moderation_status": "Rejected" if check_vulgar else "Approved"
+  }
+  
+  my_url = f"http://localhost:5000/project/{project_id}/feedback"
+  response = requests.post(my_url, json=moderation_status)
+  
   return jsonify({"moderation_status": "Rejected" if check_vulgar else "Approved"})
 
 if __name__ == "__main__":
