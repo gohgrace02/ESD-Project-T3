@@ -32,22 +32,22 @@ USE `tracker`;
 
 DROP TABLE IF EXISTS `tracker`;
 CREATE TABLE IF NOT EXISTS `tracker` (
-    `trackerID` INT AUTO_INCREMENT NOT NULL,
-    `backerID` INT NOT NULL,
-    `projectID` INT NOT NULL,
-    `pledgeAmt` FLOAT NOT NULL,
-    PRIMARY KEY (`trackerID`)
+    `tracker_id` INT AUTO_INCREMENT NOT NULL,
+    `backer_id` INT NOT NULL,
+    `project_id` INT NOT NULL,
+    `pledge_amt` FLOAT NOT NULL,
+    PRIMARY KEY (`tracker_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- NEED TO ADD THIS IN THE FUTURE
--- FOREIGN KEY (`backerID`) REFERENCES `Backer`(`backerID`),
--- FOREIGN KEY (`projectID`) REFERENCES `Project`(`projectID`)
+-- FOREIGN KEY (`backer_id`) REFERENCES `Backer`(`backer_id`),
+-- FOREIGN KEY (`project_id`) REFERENCES `Project`(`project_id`)
 
 --
 -- Dumping data for table `tracker`
 --
 
-INSERT INTO `Tracker` (`backerID`, `projectID`, `pledgeAmt`) VALUES
+INSERT INTO `Tracker` (`backer_id`, `project_id`, `pledge_amt`) VALUES
     (1, 1, 100.00),
     (2, 1, 50.00),
     (3, 2, 75.00),
