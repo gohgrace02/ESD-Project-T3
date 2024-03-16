@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from requests import post
-# from invokes import invoke_http
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -28,13 +27,8 @@ def vetting_endpoint():
             return jsonify({"message": "Vetting successful. Project created."}), 200
         else:
             return jsonify(response.json()), response.status_code
-        # print('project_result:', project_result)
-        # project_result = invoke_http(PROJECT_MICROSERVICE_URL, method='POST', json=data)
-        # return jsonify({"project_result:": project_result}), 200
     else:
         return jsonify({"message": "Project is not acceptable."}), 400
 
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=5001, debug=True)
-if __name__ == "__main__":
-  app.run(debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5005, debug=True)

@@ -19,33 +19,31 @@ CORS(app)
 class Project(db.Model):
     __tablename__ = 'project'
 
-
-
-    projectID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    project_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)  # You can adjust the length as needed
     description = db.Column(db.Text, nullable=True)   # Assuming description can be nullable
-    creatorID = db.Column(db.String(255), nullable=False)  # Adjust length as needed
-    fundingGoal = db.Column(db.Integer, nullable=False)
+    creator_id = db.Column(db.String(255), nullable=False)  # Adjust length as needed
+    funding_goal = db.Column(db.Integer, nullable=False)
     deadline = db.Column(db.DateTime, nullable=False)
-    creationTime = db.Column(db.DateTime, nullable=False, default=datetime.now)
-    Status = db.Column(db.String(255), nullable=False)  
-    goalReached = db.Column(db.Boolean, nullable=False, default=False) # Default to False, as boolean.
+    creation_time = db.Column(db.DateTime, nullable=False, default=datetime.now)
+    status = db.Column(db.String(255), nullable=False)  
+    goal_reached = db.Column(db.Boolean, nullable=False, default=False) # Default to False, as boolean.
 
 
-    def __init__(self, projectID, name, description, creatorID, fundingGoal, deadline, creationTime, Status, goalReached):
-        self.projectID = projectID
+    def __init__(self, project_id, name, description, creator_id, funding_goal, deadline, creation_time, status, goal_reached):
+        self.project_id = project_id
         self.name = name
         self.description = description
-        self.creatorID = creatorID
-        self.fundingGoal = fundingGoal
+        self.creator_id = creator_id
+        self.funding_goal = funding_goal
         self.deadline = deadline
-        self.creationTime = creationTime
-        self.Status = Status
-        self.goalReached = goalReached
+        self.creation_time = creation_time
+        self.status = status
+        self.goal_reached = goal_reached
 
 
     def json(self):
-        return {"projectID": self.projectID, "name": self.name, "description": self.description, "creatorID": self.creatorID, "fundingGoal": self.fundingGoal, "deadline": self.deadline, "creationTime": self.creationTime, "Status": self.Status, "goalReached": self.goalReached}
+        return {"project_id": self.project_id, "name": self.name, "description": self.description, "creator_id": self.creator_id, "funding_goal": self.funding_goal, "deadline": self.deadline, "creation_time": self.creation_time, "status": self.status, "goal_reached": self.goal_reached}
 
 @app.route("/project")
 def get_all():
@@ -69,10 +67,10 @@ def get_all():
     ), 404
 
 
-@app.route("/project/<int:projectID>")
-def find_by_projectid(projectID):
+@app.route("/project/<int:project_id>")
+def find_by_projectid(project_id):
     project = db.session.scalars(
-    	db.select(Project).filter_by(projectID=projectID).
+    	db.select(Project).filter_by(project_id=project_id).
     	limit(1)
 ).first()
 
@@ -92,11 +90,11 @@ def find_by_projectid(projectID):
     ), 404
 
 
-# @app.route("/project/<int:projectID>", methods=['POST'])
+# @app.route("/project/<int:project_id>", methods=['POST'])
 @app.route("/project", methods=['POST'])
 def create_project():
     # if (db.session.scalars(
-    #   db.select(Project).filter_by(projectID=projectID).
+    #   db.select(Project).filter_by(project_id=project_id).
     #   limit(1)
     #   ).first()
     #   ):
@@ -104,7 +102,7 @@ def create_project():
     #         {
     #             "code": 400,
     #             "data": {
-    #                 "projectID": projectID
+    #                 "project_id": project_id
     #             },
     #             "message": "Project already exists."
     #         }
@@ -112,8 +110,8 @@ def create_project():
 
 
     data = request.get_json()
-    # project = Project(projectID, **data)
-    project = Project(projectID = data.get('projectID'), name = data.get('name'), description = data.get('description'), creatorID = data.get('creatorID'), fundingGoal = data.get('fundingGoal'), deadline = data.get('deadline'), creationTime = data.get('creationTime'), Status = data.get('Status'), goalReached = data.get('goalReached'))
+    # project = Project(project_id, **data)
+    project = Project(project_id = data.get('project_id'), name = data.get('name'), description = data.get('description'), creator_id = data.get('creator_id'), funding_goal = data.get('funding_goal'), deadline = data.get('deadline'), creation_time = data.get('creation_time'), status = data.get('status'), goal_reached = data.get('goal_reached'))
 
 
     try:
@@ -124,7 +122,7 @@ def create_project():
             {
                 "code": 500,
                 # "data": {
-                #     "projectID": projectID
+                #     "project_id": project_id
                 # },
                 "message": "An error occurred creating the project."
             }
@@ -138,13 +136,13 @@ def create_project():
         }
     ), 201
 
-@app.route("/project/<int:projectID>", methods=['PUT'])
-def update_project(projectID):
-    project = db.session.scalars(db.select(Project).filter_by(projectID=projectID).limit(1)).first()
+@app.route("/project/<int:project_id>", methods=['PUT'])
+def update_project(project_id):
+    project = db.session.scalars(db.select(Project).filter_by(project_id=project_id).limit(1)).first()
     if project:
         data = request.get_json()
-        if data['fundingGoal']:
-            project.fundingGoal = data['fundingGoal']
+        if data['funding_goal']:
+            project.funding_goal = data['funding_goal']
         db.session.commit()
         return jsonify(
             {
@@ -156,7 +154,7 @@ def update_project(projectID):
         {
             "code": 404,
             "data": {
-                "projectID": projectID
+                "project_id": project_id
             },
             "message": "Project not found."
         }
