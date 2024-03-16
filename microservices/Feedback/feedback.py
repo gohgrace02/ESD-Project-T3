@@ -37,7 +37,7 @@ def create_feedback(projectID):
     # need to check if feedback alr exists? (hvnt include code for this)
 
     data = request.get_json()
-    feedback = Feedback(backerID=data.get('backerID'), projectID=projectID, rating=data.get('rating'), comment=data.get('comment'), submittedAt=data.get('submittedAt')) #KIV
+    feedback = Feedback(backerID=data.get('backerID'), projectID=projectID, rating=data.get('rating'), comment=data.get('comment'), submittedAt=data.get('submittedAt')) 
 
     try:
         db.session.add(feedback)
@@ -49,7 +49,7 @@ def create_feedback(projectID):
                 "data": {
                     "ProjectID": projectID
                 },
-                "message": "An error occurred creating the feedbacl."
+                "message": "An error occurred creating the feedback."
             }
         ), 500
 
