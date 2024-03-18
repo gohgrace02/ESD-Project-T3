@@ -141,8 +141,8 @@ def update_project(project_id):
     project = db.session.scalars(db.select(Project).filter_by(project_id=project_id).limit(1)).first()
     if project:
         data = request.get_json()
-        if data['funding_goal']:
-            project.funding_goal = data['funding_goal']
+        if data['goal_reached']:
+            project.goal_reached = data['goal_reached']
         db.session.commit()
         return jsonify(
             {

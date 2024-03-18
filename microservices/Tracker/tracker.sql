@@ -48,11 +48,10 @@ CREATE TABLE IF NOT EXISTS `tracker` (
 --
 
 INSERT INTO `Tracker` (`backer_id`, `project_id`, `pledge_amt`) VALUES
-    (1, 1, 100.00),
-    (2, 1, 50.00),
-    (3, 2, 75.00),
-    (4, 3, 200.00),
-    (5, 4, 150.00);
+    (1, 1234, 100.00),
+    (2, 1231, 50.00),
+    (3, 1232, 75.00),
+    (4, 1234, 200.00);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

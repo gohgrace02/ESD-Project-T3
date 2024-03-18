@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from flask_cors import CORS
 
 import os, sys
@@ -49,7 +50,8 @@ class Tracker(db.Model):
         return {"tracker_id": self.tracker_id, "backer_id": self.backer_id, "project_id": self.project_id, "pledge_amt": self.pledge_amt}
 
 
-@app.route("/project/<int:project_id>/tracker", methods=['POST'])
+# Previous function used to update tracker database
+@app.route("/project/<int:project_id>/test", methods=['POST'])
 def create_tracker(project_id):
     # To extract backer_id from the user session
     # backer_id = session.get('backer_id')
@@ -83,22 +85,80 @@ def create_tracker(project_id):
     ), 201
 
 
-@app.route("/project/<int:project_id>/test", methods=['POST'])
+# test_tracker function:
+# 1. Update Tracker DB when backer backs a project 
+# 2. IF funding_goal is reached will sent an event to back_project microservice and update goal_reached from Project DB
+@app.route("/project/<int:project_id>/tracker", methods=['POST'])
 def test_tracker(project_id):
-    # send a GET request to Project microservice, get the fundingGoal check whether the fundingGoal is reached
+    # TO DO: extract backer_id from the user session
+    # backer_id = session.get('backer_id')
+    
+    # Extract pledge_amt from the request payload
+    data = request.get_json()
+    pledge_amt = data.get('pledge_amt')
 
-    project_fufilment(project_id)
+    # Create a new Tracker object, for now the backer_id is hardcoded
+    tracker = Tracker(6, project_id, pledge_amt)
 
-    # Send a PUT request to Project microservice to update the goalReached status
-    return "done"
+    try:
+        db.session.add(tracker)
+        db.session.commit()
+    except:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {
+                    "project_id": project_id
+                },
+                "message": "An error occurred creating the tracker."
+            }
+        ), 500
+
+    # Send a GET request to Project microservice to get the funding_goal
+    project_URL = "http://localhost:5000/project"
+    response = requests.get(project_URL + '/' + str(project_id)).json()
+    data = response['data']
+    funding_goal = response['data']['funding_goal']
+
+    print(data)
+    print(funding_goal)
+    print(check_funding_goal(project_id, funding_goal))
+
+    # Check whether the funding_goal is reached
+    if(check_funding_goal(project_id, funding_goal)):
+        print("funding goal is met! Project fufilment message will be sent to back_project and goal_reached will be updated")
+        # Send an event to backProject microservice
+        project_fufilment(project_id)
+
+        # Send a PUT request to Project microservice to update the goalReached status
+        new_data = {
+            "goal_reached": 1
+        }
+        response = requests.put(project_URL + '/' + str(project_id), json=new_data)
+        
+        if response.status_code == 200:
+            return jsonify({"message": "Project data updated successfully"}), 200
+        else:
+            return jsonify({"error": "Failed to update project data"}), response.status_code
+    
+    return "Funding Goal has not been reached"
 
 
-# After updating Tracker database, check whether the goal of the project is reached - (GET funding_goal from Project for specific project_id)
-# GET total amount from tracker for specific project_id (create this function in Tracker)
-# IF the Project fundingGoal is reached:
-# 1. Call the "project_fufilment" function
-#    THEN The "project_fufilment" should send an event to backProject microservice
-# 2. Send PUT request to project to update goalReached status (invoke method - wait for joycelyn's PUT Project function)
+# check_funding_goal returns "True" if funding_goal is met else returns "False"
+def check_funding_goal(project_id, funding_goal):
+    # Query the Tracker table to get the sum of pledge_amt for the given project_id
+    pledge_sum = db.session.query(func.sum(Tracker.pledge_amt)).filter(Tracker.project_id == project_id).scalar()
+
+    # Check if the funding goal is met
+    if pledge_sum is not None and pledge_sum >= funding_goal:
+        funding_goal_met = True
+    else:
+        funding_goal_met = False
+
+    return funding_goal_met
+
+
+# project_fufilment sends fulfilment message to back_project
 def project_fufilment(project_id):
     # Record project fulfilment event
     # print('\n\n-----Invoking back_project microservice-----')
