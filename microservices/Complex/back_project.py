@@ -57,6 +57,7 @@ def project_details(projectID):
 
     # error via amqp
 
+
 def receiveFulfilmentLog(channel):
     try:
         # set up a consumer and start to wait for coming messages
