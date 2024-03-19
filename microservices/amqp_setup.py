@@ -62,7 +62,7 @@ def create_queues(channel):
     print('amqp_setup:create queues')
     create_fulfilment_log_queue(channel)
 
-# function to create Activity_Log queue  
+# function to create Back_Project queue  
 def create_fulfilment_log_queue(channel):
     print('amqp_setup:create_fulfilment_log_queue')
     a_queue_name = 'Back_Project'
@@ -70,6 +70,25 @@ def create_fulfilment_log_queue(channel):
     channel.queue_bind(exchange=exchangename, queue=a_queue_name, routing_key='fulfilment.info')
         # bind the queue to the exchange via the key
         # 'routing_key=#' => any routing_key would be matched
+    
+# function to create Activity_Log queue  
+def create_activity_log_queue(channel):
+    print('amqp_setup:create_activity_log_queue')
+    a_queue_name = 'Activity_Log'
+    channel.queue_declare(queue=a_queue_name, durable=True) # 'durable' makes the queue survive broker restarts
+    channel.queue_bind(exchange=exchangename, queue=a_queue_name, routing_key='#') # need to change the routing_key to routing_key='order.*'
+        # bind the queue to the exchange via the key
+        # 'routing_key=#' => any routing_key would be matched
+    
+# function to create Error queue
+def create_error_queue(channel):
+    print('amqp_setup:create_error_queue')
+    e_queue_name = 'Error'
+    channel.queue_declare(queue=e_queue_name, durable=True) # 'durable' makes the queue survive broker restarts
+    #bind Error queue
+    channel.queue_bind(exchange=exchangename, queue=e_queue_name, routing_key='*.error')
+        # bind the queue to the exchange via the key
+        # any routing_key with two words and ending with '.error' will be matched
 
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')   

@@ -5,6 +5,22 @@ from flask_cors import CORS
 
 from datetime import datetime
 
+# import pika
+# import json
+# import amqp_connection
+
+# exchangename = "project" # exchange name
+# exchangetype = "topic" # use a 'direct' exchange to enable interaction
+
+# #create a connection and a channel to the broker to publish messages to activity_log, error queues
+# connection = amqp_connection.create_connection() 
+# channel = connection.channel()
+
+# #if the exchange is not yet created, exit the program
+# if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
+#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+#     sys.exit(0)  # Exit with a success status
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/project'
 # idk why it doesnt work if I use the above --> need to use command prompt for the above to work 
@@ -43,7 +59,15 @@ class Project(db.Model):
 
 
     def json(self):
-        return {"project_id": self.project_id, "name": self.name, "description": self.description, "creator_id": self.creator_id, "funding_goal": self.funding_goal, "deadline": self.deadline, "creation_time": self.creation_time, "status": self.status, "goal_reached": self.goal_reached}
+        return {"project_id": self.project_id, 
+                "name": self.name, 
+                "description": self.description, 
+                "creator_id": self.creator_id, 
+                "funding_goal": self.funding_goal, 
+                "deadline": self.deadline, 
+                "creation_time": self.creation_time, 
+                "status": self.status, 
+                "goal_reached": self.goal_reached}
 
 @app.route("/project")
 def get_all():
@@ -90,40 +114,22 @@ def find_by_projectid(project_id):
     ), 404
 
 
-# @app.route("/project/<int:project_id>", methods=['POST'])
 @app.route("/project", methods=['POST'])
 def create_project():
-    # if (db.session.scalars(
-    #   db.select(Project).filter_by(project_id=project_id).
-    #   limit(1)
-    #   ).first()
-    #   ):
-    #     return jsonify(
-    #         {
-    #             "code": 400,
-    #             "data": {
-    #                 "project_id": project_id
-    #             },
-    #             "message": "Project already exists."
-    #         }
-    #     ), 400
-
-
     data = request.get_json()
-    # project = Project(project_id, **data)
     project = Project(project_id = data.get('project_id'), name = data.get('name'), description = data.get('description'), creator_id = data.get('creator_id'), funding_goal = data.get('funding_goal'), deadline = data.get('deadline'), creation_time = data.get('creation_time'), status = data.get('status'), goal_reached = data.get('goal_reached'))
-
 
     try:
         db.session.add(project)
         db.session.commit()
     except:
+        # print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
+        # channel.basic_publish(exchange=exchangename, routing_key="project.error", 
+        #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+        # print("\nProject error published to RabbitMQ Exchange.\n")
         return jsonify(
             {
                 "code": 500,
-                # "data": {
-                #     "project_id": project_id
-                # },
                 "message": "An error occurred creating the project."
             }
         ), 500
