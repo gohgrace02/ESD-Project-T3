@@ -144,7 +144,7 @@ def moderate(project_id):
 
 
   # Replace with the actual base URL of your application where the feedback microservice is running
-  base_url = "http://127.0.0.1:5004"
+  base_url = "http://127.0.0.1:5007"
 
   # Project ID (replace with the actual value)
   project_id = "1234"
