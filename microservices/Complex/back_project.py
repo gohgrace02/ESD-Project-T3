@@ -14,7 +14,7 @@ CORS(app)
 a_queue_name = 'Back_Project' # queue to be subscribed by Activity_Log microservice
 
 project_URL = "http://localhost:5000/project"
-tracker_URL = "http://localhost:5001/project"
+tracker_URL = "http://localhost:5001/tracker"
 activity_log_URL = "http://localhost:5002/activity_log"
 error_URL = "http://localhost:5003/error"
 # stripe_URL = ""
@@ -64,8 +64,8 @@ def processFulfilmentLog(fulfilment):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5004, debug=True)
     connection = amqp_connection.create_connection() #get the connection to the broker
     print("back_project: Connection established successfully")
     channel = connection.channel()
     receiveFulfilmentLog(channel)  # Start consuming messages from the queue
+    app.run(host='0.0.0.0', port=5004, debug=True)
