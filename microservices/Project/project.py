@@ -5,28 +5,27 @@ from flask_cors import CORS
 
 from datetime import datetime
 
-# import pika
-# import json
-# import amqp_connection
+import sys
+import pika
+import json
+import amqp_connection
 
-# exchangename = "project" # exchange name
-# exchangetype = "topic" # use a 'direct' exchange to enable interaction
+exchangename = "project_topic" # exchange name
+exchangetype = "topic" # use a 'direct' exchange to enable interaction
 
 # #create a connection and a channel to the broker to publish messages to activity_log, error queues
-# connection = amqp_connection.create_connection() 
-# channel = connection.channel()
+connection = amqp_connection.create_connection() 
+channel = connection.channel()
 
 # #if the exchange is not yet created, exit the program
-# if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
-#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-#     sys.exit(0)  # Exit with a success status
+if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
+    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+    sys.exit(0)  # Exit with a success status
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/project'
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root:root@localhost:8889/project'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/project'
 # idk why it doesnt work if I use the above --> need to use command prompt for the above to work 
 # use: set dbURL=mysql+mysqlconnector://root@localhost:3306/project
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/project' #--> hardcoding 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
@@ -123,19 +122,27 @@ def create_project():
     try:
         db.session.add(project)
         db.session.commit()
-    except:
-        # print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
-        # channel.basic_publish(exchange=exchangename, routing_key="project.error", 
-        #     body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
-        # print("\nProject error published to RabbitMQ Exchange.\n")
+    except Exception as e:
+        error_message = {
+            "error_type": "create_project_error",
+            "error_message": str(e),
+            "data": data
+        }
+        print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
+        channel.basic_publish(exchange=exchangename, routing_key="project.error", 
+            body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2)) 
+        print("\nProject error published to RabbitMQ Exchange.\n")
         return jsonify(
             {
                 "code": 500,
                 "message": "An error occurred creating the project."
             }
         ), 500
-
-
+    
+    print('\n\n-----Publishing the (project info) message with routing_key=project.info-----')
+    channel.basic_publish(exchange=exchangename, routing_key="project.info", 
+        body=json.dumps(data), properties=pika.BasicProperties(delivery_mode = 2)) 
+    print("\nProject info published to RabbitMQ Exchange.\n")
     return jsonify(
         {
             "code": 201,
