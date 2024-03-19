@@ -50,7 +50,6 @@ def back_project(project_id):
 
     # error via amqp
 
-<<<<<<< Updated upstream
 
 def receiveFulfilmentLog(channel):
     try:
@@ -59,15 +58,6 @@ def receiveFulfilmentLog(channel):
         print('back_project: Consuming from queue:', a_queue_name)
         channel.start_consuming()  # an implicit loop waiting to receive messages;
              #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
-=======
-# def receiveFulfilmentLog(channel):
-#     try:
-#         # set up a consumer and start to wait for coming messages
-#         channel.basic_consume(queue=a_queue_name, on_message_callback=callback, auto_ack=True)
-#         print('back_project: Consuming from queue:', a_queue_name)
-#         channel.start_consuming()  # an implicit loop waiting to receive messages;
-#              #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
->>>>>>> Stashed changes
     
 #     except pika.exceptions.AMQPError as e:
 #         print(f"back_project: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created
