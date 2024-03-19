@@ -27,7 +27,7 @@ if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
     sys.exit(0)  # Exit with a success status
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/tracker'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -96,9 +96,10 @@ def create_tracker(project_id):
     # Extract pledge_amt from the request payload
     data = request.get_json()
     pledge_amt = data.get('pledge_amt')
+    backer_id = data.get('backer_id')
 
     # Create a new Tracker object, for now the backer_id is hardcoded
-    tracker = Tracker(6, project_id, pledge_amt)
+    tracker = Tracker(backer_id, project_id, pledge_amt)
 
     try:
         db.session.add(tracker)
