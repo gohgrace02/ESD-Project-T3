@@ -52,7 +52,7 @@ class Tracker(db.Model):
 
 # Previous function used to update tracker database
 @app.route("/project/<int:project_id>/test", methods=['POST'])
-def create_tracker(project_id):
+def test_tracker(project_id):
     # To extract backer_id from the user session
     # backer_id = session.get('backer_id')
     
@@ -85,11 +85,11 @@ def create_tracker(project_id):
     ), 201
 
 
-# test_tracker function:
+# create_tracker function:
 # 1. Update Tracker DB when backer backs a project 
 # 2. IF funding_goal is reached will sent an event to back_project microservice and update goal_reached from Project DB
 @app.route("/project/<int:project_id>/tracker", methods=['POST'])
-def test_tracker(project_id):
+def create_tracker(project_id):
     # TO DO: extract backer_id from the user session
     # backer_id = session.get('backer_id')
     
