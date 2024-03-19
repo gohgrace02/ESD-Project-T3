@@ -42,6 +42,7 @@ def create_feedback(projectID):
     try:
         db.session.add(feedback)
         db.session.commit()
+        print("feedback added")
     except:
         return jsonify(
             {
@@ -61,4 +62,4 @@ def create_feedback(projectID):
     ), 201
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5004, debug=True)
