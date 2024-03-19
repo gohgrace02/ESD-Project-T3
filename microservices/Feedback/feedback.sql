@@ -32,20 +32,20 @@ USE `feedback`;
 
 DROP TABLE IF EXISTS `feedback`;
 CREATE TABLE IF NOT EXISTS `feedback` (
-    `feedbackID` INT AUTO_INCREMENT NOT NULL,
-    `backerID` INT NOT NULL,
-    `projectID` INT NOT NULL,
+    `feedback_id` INT AUTO_INCREMENT NOT NULL,
+    `backer_id` INT NOT NULL,
+    `project_id` INT NOT NULL,
     `rating` INT NOT NULL,
     `comment` TEXT NOT NULL,
-    `submittedAt` TIMESTAMP NOT NULL,
-    PRIMARY KEY (`feedbackID`)
+    `submitted_at` TIMESTAMP NOT NULL,
+    PRIMARY KEY (`feedback_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `feedback`
 --
 
-INSERT INTO `feedback` (`feedbackID`, `backerID`, `projectID`, `rating`, `comment`, `submittedAt`) VALUES
+INSERT INTO `feedback` (`feedback_id`, `backer_id`, `project_id`, `rating`, `comment`, `submitted_at`) VALUES
     (001, 1, 1231, 9, 'excellent', '2024-03-12 11:00:00'),
     (002, 2, 1232, 8, 'good', '2024-03-13 10:00:00'),
     (003, 3, 1233, 7, 'happy', '2024-03-14 11:00:00'),

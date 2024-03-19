@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, redirect, url_for, render_template
+from flask import Flask, request, jsonify, redirect, url_for
 from flask_cors import CORS
 import amqp_connection
 import json
@@ -14,18 +14,36 @@ CORS(app)
 a_queue_name = 'Back_Project' # queue to be subscribed by Activity_Log microservice
 
 project_URL = "http://localhost:5000/project"
-tracker_URL = "http://localhost:5001/project"
+tracker_URL = "http://localhost:5001/tracker"
 activity_log_URL = "http://localhost:5002/activity_log"
 error_URL = "http://localhost:5003/error"
 # stripe_URL = ""
 
+@app.route("/back_project/<string:project_id>", methods=['POST'])
+def back_project(project_id):
+    # get the data sent over from frontend
+    # data includes project_id, backer_id ,pledge_amt, and card info for Stripe
+    data = request.get_json()
+    backer_id = data.get("backer_id")
+    pledge_amt = data.get("pledge_amt")
+    card_info = data.get("card_info")
+    
 
-# this is to display the UI which shows the available projects
-@app.route("/back_project")
-def list_projects():
-    response = requests.get(project_URL).json()
-    projects = response['data']['projects']
-    return render_template('list_projects.html', projects=projects)
+    # sends card info to Stripe
+    # receives success/failure status from Stripe
+    stripe_status = True
+
+
+    # sends project_id, backer_id, pledge_amt to tracker.py
+    if stripe_status:
+        tracker_data = {
+            "backer_id": backer_id,
+            "pledge_amt": pledge_amt
+        }
+        tracker_URL = "http://localhost:5001/project"
+        response = requests.post(tracker_URL + '/' + str(project_id) + '/tracker', json=tracker_data).json()
+        return response
+    # receives tracker status from tracker.py
 
 
 @app.route("/back_project/<string:projectID>")
@@ -33,9 +51,11 @@ def project_details(projectID):
     response = requests.get(project_URL + '/' + projectID).json()
     project = response['data']
     return render_template('back_project.html', project=project)
+    # sends pledge_amt and tracker status to frontend
 
-# @app.route("/back_project/<string:projectID>")
+    # activity_log via amqp
 
+    # error via amqp
 
 def receiveFulfilmentLog(channel):
     try:
@@ -64,8 +84,8 @@ def processFulfilmentLog(fulfilment):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5004, debug=True)
     connection = amqp_connection.create_connection() #get the connection to the broker
     print("back_project: Connection established successfully")
     channel = connection.channel()
     receiveFulfilmentLog(channel)  # Start consuming messages from the queue
+    app.run(host='0.0.0.0', port=5004, debug=True)

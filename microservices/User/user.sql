@@ -32,20 +32,20 @@ USE `user`;
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
-    `userID` INT AUTO_INCREMENT NOT NULL,
+    `user_id` INT AUTO_INCREMENT NOT NULL,
     `name` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
     `role` VARCHAR(255) NOT NULL,
 
-    PRIMARY KEY (`userID`)
+    PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`userID`, `name`, `email`, `password`, `role`) VALUES
+INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`) VALUES
     (1, 'bob', 'bob@gmail.com', 'hello', 'backer'),
     (2, 'jack', 'jack@gmail.com', 'hello1', 'creator'),
     (3, 'amy', 'amy@gmail.com', 'hello2', 'backer');
