@@ -61,16 +61,7 @@ def create_channel(connection):
 def create_queues(channel):
     print('amqp_setup:create queues')
     create_error_queue(channel)
-    create_activity_log_queue(channel)
 
-# function to create Activity_Log queue  
-def create_activity_log_queue(channel):
-    print('amqp_setup:create_activity_log_queue')
-    a_queue_name = 'Activity_Log'
-    channel.queue_declare(queue=a_queue_name, durable=True) # 'durable' makes the queue survive broker restarts
-    channel.queue_bind(exchange=exchangename, queue=a_queue_name, routing_key='#')
-        # bind the queue to the exchange via the key
-        # 'routing_key=#' => any routing_key would be matched
     
 # function to create Error queue
 def create_error_queue(channel):
