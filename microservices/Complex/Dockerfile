@@ -2,5 +2,5 @@ FROM python:3-slim
 WORKDIR /usr/src/app
 COPY requirements.txt ./
 RUN python -m pip install --no-cache-dir -r requirements.txt
-COPY ./vetting.py .
-CMD [ "python", "./vetting.py" ]
+COPY ./back_project.py .
+CMD [ "python", "./back_project.py" ]
