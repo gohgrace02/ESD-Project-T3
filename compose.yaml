@@ -27,9 +27,9 @@ services:
       - ./rabbitmq_definitions.json:/etc/rabbitmq/rabbitmq_definitions.json
       - rabbitmq_data:/var/lib/rabbitmq
 
-  #################################################
-  # Activity Log: The Activity Log microservice
-  #################################################
+  # #################################################
+  # # Activity Log: The Activity Log microservice
+  # #################################################
   activity_log:
     build:
       context: ./microservices/Activity_Log
@@ -44,9 +44,9 @@ services:
       a_queue_name: Activity_Log
       PYTHONUNBUFFERED: 1
 
-  ###################################
-  # Error: The Error microservice
-  ###################################
+  # ###################################
+  # # Error: The Error microservice
+  # ###################################
   error:
     build:
       context: ./microservices/Error
@@ -61,9 +61,9 @@ services:
       e_queue_name: Error
       PYTHONUNBUFFERED: 1
 
-  ###############################################
-  # Back Project: The back_project microservice
-  ###############################################
+  # ###############################################
+  # # Back Project: The back_project microservice
+  # ###############################################
   back_project:
     build:
       context: ./microservices/complex
@@ -99,10 +99,12 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5000:5000"
+    depends_on:
+      - rabbitmq
 
-  ##################################
-  # Tracker: The tracker microservice
-  ##################################
+  # ##################################
+  # # Tracker: The tracker microservice
+  # ##################################
   tracker:
     build:
       context: ./microservices/Tracker
@@ -120,63 +122,63 @@ services:
     ports:
       - "5001:5001"
 
-  ##################################
-  # Vetting: The vetting microservice
-  ##################################
-  vetting:
-    build:
-      context: ./microservices/Vetting
-      dockerfile: Dockerfile
-    image: gohgrace/vetting:esd
-    restart: always
-    environment:
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5005:5005"
+  # ##################################
+  # # Vetting: The vetting microservice
+  # ##################################
+  # vetting:
+  #   build:
+  #     context: ./microservices/Vetting
+  #     dockerfile: Dockerfile
+  #   image: gohgrace/vetting:esd
+  #   restart: always
+  #   environment:
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5005:5005"
 
-  ##################################
-  # Moderation: The moderation microservice
-  ##################################
-  moderation:
-    build:
-      context: ./microservices/Moderation
-      dockerfile: Dockerfile
-    image: gohgrace/moderation:esd
-    restart: always
-    environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/mod
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5006:5006"
+  # ##################################
+  # # Moderation: The moderation microservice
+  # ##################################
+  # moderation:
+  #   build:
+  #     context: ./microservices/Moderation
+  #     dockerfile: Dockerfile
+  #   image: gohgrace/moderation:esd
+  #   restart: always
+  #   environment:
+  #     dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/mod
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5006:5006"
 
-  ##################################
-  # Feedback: The Feedback microservice
-  ##################################
-  feedback:
-    build:
-      context: ./microservices/Feedback
-      dockerfile: Dockerfile
-    image: gohgrace/feedback:esd
-    restart: always
-    environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/feedback
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5007:5007"
+  # ##################################
+  # # Feedback: The Feedback microservice
+  # ##################################
+  # feedback:
+  #   build:
+  #     context: ./microservices/Feedback
+  #     dockerfile: Dockerfile
+  #   image: gohgrace/feedback:esd
+  #   restart: always
+  #   environment:
+  #     dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/feedback
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5007:5007"
 
-  ##################################
-  # Stripe: The stripe microservice
-  ##################################
-  stripe:
-    build:
-      context: ./microservices/Stripe
-      dockerfile: Dockerfile
-    image: gohgrace/stripe:esd
-    # restart: always
-    environment:
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5008:5008"
+  # ##################################
+  # # Stripe: The stripe microservice
+  # ##################################
+  # stripe:
+  #   build:
+  #     context: ./microservices/Stripe
+  #     dockerfile: Dockerfile
+  #   image: gohgrace/stripe:esd
+  #   # restart: always
+  #   environment:
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5008:5008"
 
   # #######################################
   # # Postgres: The database used by Kong

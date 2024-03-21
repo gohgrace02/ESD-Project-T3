@@ -1,7 +1,7 @@
 import time
 import pika
 
-hostname = "localhost" # default hostname
+hostname = "rabbitmq" # default hostname
 port = 5672            # default port
 
 # Instead of hardcoding the values, we can also get them from the environ as shown below
@@ -10,7 +10,7 @@ port = 5672            # default port
 
 
 # function to create a connection to the broker
-def create_connection(max_retries=12, retry_interval=5):
+def create_connection(max_retries=120, retry_interval=5):
     print('amqp_connection: Create_connection')
     
     retries = 0

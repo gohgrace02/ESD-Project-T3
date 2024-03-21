@@ -2,7 +2,7 @@ import time
 import pika
 from os import environ
 
-hostname = "localhost" # default hostname
+hostname = "rabbitmq" # default hostname
 port = 5672            # default port
 exchangename = "vetting_topic" # exchange name
 exchangetype = "topic" # - use a 'topic' exchange to enable interaction
