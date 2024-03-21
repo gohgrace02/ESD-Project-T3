@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
+from os import environ
 from flask_cors import CORS
 
 import os, sys
@@ -14,7 +15,8 @@ import amqp_connection
 app = Flask(__name__)
 CORS(app)
 
-back_project_URL = "http://localhost:5004/back_project"
+# back_project_URL = "http://localhost:5004/back_project"
+back_project_URL = "http://back_project:5004/back_project"
 exchangename = "tracker" # exchange name
 exchangetype = "direct" # use a 'direct' exchange to enable interaction
 
@@ -27,7 +29,7 @@ if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
     sys.exit(0)  # Exit with a success status
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -116,7 +118,8 @@ def create_tracker(project_id):
         ), 500
 
     # Send a GET request to Project microservice to get the funding_goal
-    project_URL = "http://localhost:5000/project"
+    # project_URL = "http://localhost:5000/project"
+    project_URL = "http://project:5000/project"
     response = requests.get(project_URL + '/' + str(project_id)).json()
     data = response['data']
     funding_goal = response['data']['funding_goal']

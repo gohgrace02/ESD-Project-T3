@@ -2,6 +2,7 @@ import time
 import pika
 from os import environ
 
+# hostname = "localhost" # default hostname
 hostname = "rabbitmq" # default hostname
 port = 5672            # default port
 exchangename = "project_topic" # exchange name

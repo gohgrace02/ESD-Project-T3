@@ -94,13 +94,15 @@ services:
       dockerfile: Dockerfile
     image: gohgrace/project:esd
     restart: always
+    depends_on:
+      - rabbitmq
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/project
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
       PYTHONUNBUFFERED: 1
     ports:
       - "5000:5000"
-    depends_on:
-      - rabbitmq
 
   # ##################################
   # # Tracker: The tracker microservice
@@ -122,49 +124,57 @@ services:
     ports:
       - "5001:5001"
 
-  # ##################################
-  # # Vetting: The vetting microservice
-  # ##################################
-  # vetting:
-  #   build:
-  #     context: ./microservices/Vetting
-  #     dockerfile: Dockerfile
-  #   image: gohgrace/vetting:esd
-  #   restart: always
-  #   environment:
-  #     PYTHONUNBUFFERED: 1
-  #   ports:
-  #     - "5005:5005"
+  ##################################
+  # Vetting: The vetting microservice
+  ##################################
+  vetting:
+    build:
+      context: ./microservices/Vetting
+      dockerfile: Dockerfile
+    image: gohgrace/vetting:esd
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5005:5005"
 
-  # ##################################
-  # # Moderation: The moderation microservice
-  # ##################################
-  # moderation:
-  #   build:
-  #     context: ./microservices/Moderation
-  #     dockerfile: Dockerfile
-  #   image: gohgrace/moderation:esd
-  #   restart: always
-  #   environment:
-  #     dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/mod
-  #     PYTHONUNBUFFERED: 1
-  #   ports:
-  #     - "5006:5006"
+  ##################################
+  # Moderation: The moderation microservice
+  ##################################
+  moderation:
+    build:
+      context: ./microservices/Moderation
+      dockerfile: Dockerfile
+    image: gohgrace/moderation:esd
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/mod
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5006:5006"
 
-  # ##################################
-  # # Feedback: The Feedback microservice
-  # ##################################
-  # feedback:
-  #   build:
-  #     context: ./microservices/Feedback
-  #     dockerfile: Dockerfile
-  #   image: gohgrace/feedback:esd
-  #   restart: always
-  #   environment:
-  #     dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/feedback
-  #     PYTHONUNBUFFERED: 1
-  #   ports:
-  #     - "5007:5007"
+  ##################################
+  # Feedback: The Feedback microservice
+  ##################################
+  feedback:
+    build:
+      context: ./microservices/Feedback
+      dockerfile: Dockerfile
+    image: gohgrace/feedback:esd
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/feedback
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5007:5007"
 
   # ##################################
   # # Stripe: The stripe microservice
