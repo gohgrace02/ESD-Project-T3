@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from os import environ
 from flask_cors import CORS
 
@@ -153,7 +154,7 @@ def create_tracker(project_id):
 def check_funding_goal(project_id, funding_goal):
     # Query the Tracker table to get the sum of pledge_amt for the given project_id
     pledge_sum = db.session.query(func.sum(Tracker.pledge_amt)).filter(Tracker.project_id == project_id).scalar()
-
+    
     # Check if the funding goal is met
     if pledge_sum is not None and pledge_sum >= funding_goal:
         funding_goal_met = True
