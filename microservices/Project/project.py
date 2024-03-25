@@ -28,7 +28,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconn
 # use: set dbURL=mysql+mysqlconnector://root@localhost:3306/project
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-
 db = SQLAlchemy(app)
 CORS(app)  
 
