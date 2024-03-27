@@ -13,7 +13,10 @@ import json
 import amqp_connection
 
 app = Flask(__name__)
-CORS(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/tracker'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
 # back_project_URL = "http://localhost:5004/back_project"
 back_project_URL = "http://back_project:5004/back_project"
@@ -29,10 +32,9 @@ if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
     sys.exit(0)  # Exit with a success status
 
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/tracker'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db = SQLAlchemy(app)
+
+CORS(app)
 
 class Tracker(db.Model):
     __tablename__ = 'tracker'
@@ -152,7 +154,7 @@ def create_tracker(project_id):
 def check_funding_goal(project_id, funding_goal):
     # Query the Tracker table to get the sum of pledge_amt for the given project_id
     pledge_sum = db.session.query(func.sum(Tracker.pledge_amt)).filter(Tracker.project_id == project_id).scalar()
-
+    
     # Check if the funding goal is met
     if pledge_sum is not None and pledge_sum >= funding_goal:
         funding_goal_met = True
