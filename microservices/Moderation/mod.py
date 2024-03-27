@@ -29,31 +29,31 @@ if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
     sys.exit(0)  # Exit with a success status
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/mod'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/mod'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/mod'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-class Mod(db.Model):
-  __tablename__ = 'moderation'
-  moderationID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-  comment = db.Column(db.Text, nullable=False)
-  actionTaken = db.Column(Enum('Approved', 'Rejected'), nullable=False)
-  reason = db.Column(db.Text, nullable=False)
-  moderatedAt = db.Column(db.TIMESTAMP)
+# class Mod(db.Model):
+#   __tablename__ = 'moderation'
+#   moderationID = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#   comment = db.Column(db.Text, nullable=False)
+#   actionTaken = db.Column(Enum('Approved', 'Rejected'), nullable=False)
+#   reason = db.Column(db.Text, nullable=False)
+#   moderatedAt = db.Column(db.TIMESTAMP)
 
-  def __init__(self, moderationID, comment, actionTaken, reason, moderatedAt):
-    self.moderationID = moderationID
-    self.comment = comment
-    self.actionTaken = actionTaken
-    self.reason = reason
-    self.moderatedAt = moderatedAt
+#   def __init__(self, moderationID, comment, actionTaken, reason, moderatedAt):
+#     self.moderationID = moderationID
+#     self.comment = comment
+#     self.actionTaken = actionTaken
+#     self.reason = reason
+#     self.moderatedAt = moderatedAt
       
-  def json(self):
-    return {
-        'moderationID': self.moderationID, 'comment': self.comment, 'actionTaken': self.actionTaken, 'reason': self.reason, 'moderatedAt': self.moderatedAt
-    }
+#   def json(self):
+#     return {
+#         'moderationID': self.moderationID, 'comment': self.comment, 'actionTaken': self.actionTaken, 'reason': self.reason, 'moderatedAt': self.moderatedAt
+#     }
 
 # def is_vulgar():
 #   # Probably need add more Vulgarities
@@ -76,20 +76,20 @@ class Mod(db.Model):
 @app.route("/project/<string:project_id>/moderate", methods=["POST"])
 def moderate(project_id):
   # Checks if the feedback_info, rating and backerID key exists in the request body
-  comment = request.json.get("feedback_info")
+  feedback_info = request.json.get("feedback_info")
   rating = request.json.get("rating")
-  backerID = request.json.get("backerID")
+  backer_id = request.json.get("backer_id")
 
-  if not comment:
+  if not feedback_info:
     return jsonify({"error": "Missing feedback_info in request body"}), 400
   if not rating:
     return jsonify({"error": "Missing rating in request body"}), 400
-  if not backerID:
-    return jsonify({"error": "Missing backerID in request body"}), 400
+  if not backer_id:
+    return jsonify({"error": "Missing backer_id in request body"}), 400
 
-  def is_vulgar(comment):
+  def is_vulgar(feedback_info):
     # Probably need add more Vulgarities
-    url = f"http://api1-ap.webpurify.com/services/rest//?method=webpurify.live.check&api_key=c4eb16473bd9be59faee65a329fdad48&text={comment}&format=json"
+    url = f"http://api1-ap.webpurify.com/services/rest//?method=webpurify.live.check&api_key=07e7c189b92ff357331ffe3183a48578&text={feedback_info}&format=json"
 
     response = requests.get(url)
     
@@ -105,7 +105,7 @@ def moderate(project_id):
       return True
 
   # Function returns true if vulgarity spotted and false if no vulgarities spotted
-  check_vulgar = is_vulgar(comment)
+  check_vulgar = is_vulgar(feedback_info)
 
   # # Send the feedback to Feedback Microservice based on moderation result
   # # (Replace this with your actual implementation for sending the feedback)
@@ -116,12 +116,6 @@ def moderate(project_id):
   #   # Send to Error Microservice (rejected scenario)
   #   print(f"Feedback contains vulgarity: {comment}")
 
-  # DATA FOR DATABASE
-  moderationID = 000 #example
-  actionTaken = "Rejected" if is_vulgar else "Approved"
-  reason = "NIL" if not is_vulgar else "Vulgarity Spotted"
-  moderatedAt = datetime.datetime.now()
-
   # Checking if ^ is proeprly constructed
   # return jsonify({"moderationID": moderationID,
   #                 "comment": comment,
@@ -131,8 +125,8 @@ def moderate(project_id):
   #               })
 
 
-  
-  my_url = f"http://127.0.0.1:5000/project/{project_id}/feedback"
+  my_url = f"http://feedback:5007/project/{project_id}/feedback"
+  # my_url = f"http://127.0.0.1:5000/project/{project_id}/feedback"
   # response = requests.post(my_url, json=moderation_status)
 
   # try:
@@ -145,17 +139,18 @@ def moderate(project_id):
 
 
   # Replace with the actual base URL of your application where the feedback microservice is running
-  base_url = "http://127.0.0.1:5007"
+  # base_url = "http://127.0.0.1:5007"
+  base_url = "http://feedback:5007"
 
   # Project ID (replace with the actual value)
-  project_id = "1234"
+  # project_id = "1234"
 
   # Data to be sent (replace with actual content from your moderation process)
   moderation_data = {
-      "backerID": backerID,
+      "backer_id": backer_id,
       "rating": rating,
-      "comment": comment,
-      "submittedAt": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+      "feedback_info": feedback_info,
+      "submitted_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
   }
 
   # Construct the complete URL
@@ -177,7 +172,7 @@ def moderate(project_id):
 
     # invoke_http(error_URL, method="POST", json=order_result)
     channel.basic_publish(exchange=exchangename, routing_key="mod.error", 
-        body=comment, properties=pika.BasicProperties(delivery_mode = 2)) 
+        body=feedback_info, properties=pika.BasicProperties(delivery_mode = 2)) 
     # make message persistent within the matching queues until it is received by some receiver 
     # (the matching queues have to exist and be durable and bound to the exchange)
 

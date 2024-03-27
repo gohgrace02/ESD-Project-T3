@@ -1,6 +1,7 @@
 import time
 import pika
 
+# hostname = "localhost" # default hostname
 hostname = "rabbitmq" # default hostname
 port = 5672            # default port
 
