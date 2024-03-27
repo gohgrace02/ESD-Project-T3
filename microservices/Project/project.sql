@@ -48,7 +48,6 @@ CREATE TABLE IF NOT EXISTS `project` (
     `creation_time` TIMESTAMP NOT NULL,
     `status` VARCHAR(255) NOT NULL,
     `goal_reached` BOOLEAN DEFAULT FALSE,
-    `stripe_product_id` VARCHAR(255),
   PRIMARY KEY (`project_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
