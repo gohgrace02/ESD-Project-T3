@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `feedback` (
     `backer_id` INT NOT NULL,
     `project_id` INT NOT NULL,
     `rating` INT NOT NULL,
-    `comment` TEXT NOT NULL,
+    `feedback_info` TEXT NOT NULL,
     `submitted_at` TIMESTAMP NOT NULL,
     PRIMARY KEY (`feedback_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS `feedback` (
 -- Dumping data for table `feedback`
 --
 
-INSERT INTO `feedback` (`feedback_id`, `backer_id`, `project_id`, `rating`, `comment`, `submitted_at`) VALUES
+INSERT INTO `feedback` (`feedback_id`, `backer_id`, `project_id`, `rating`, `feedback_info`, `submitted_at`) VALUES
     (001, 1, 1231, 9, 'excellent', '2024-03-12 11:00:00'),
     (002, 2, 1232, 8, 'good', '2024-03-13 10:00:00'),
     (003, 3, 1233, 7, 'happy', '2024-03-14 11:00:00'),
