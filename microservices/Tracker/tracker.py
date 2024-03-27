@@ -54,6 +54,27 @@ class Tracker(db.Model):
         return {"tracker_id": self.tracker_id, "backer_id": self.backer_id, "project_id": self.project_id, "pledge_amt": self.pledge_amt}
 
 
+@app.route("/project/<int:project_id>/tracker")
+def get_all(project_id):
+    # Filter tracker data based on the specified project_id
+    trackerList = Tracker.query.filter_by(project_id=project_id).all()
+
+    if trackerList:
+        # Convert tracker objects to JSON format
+        tracker_json = [tracker.json() for tracker in trackerList]
+        return jsonify({
+            "code": 200,
+            "data": {
+                "trackerList": tracker_json
+            }
+        }), 200
+    else:
+        return jsonify({
+            "code": 404,
+            "message": "There are no trackers for the specified project ID."
+        }), 404
+
+
 # Previous function used to update tracker database
 @app.route("/project/<int:project_id>/test", methods=['POST'])
 def test_tracker(project_id):
