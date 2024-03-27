@@ -37,14 +37,14 @@ def back_project(project_id):
         }
         tracker_URL = "http://localhost:5001/project"
         response = requests.post(tracker_URL + '/' + project_id + '/tracker', json=tracker_data)
+        # receives tracker status from tracker.py
         if response.status_code == 200:
+            # sends pledge_amt and tracker status to frontend
             return response.json()
         else:
             return jsonify({"error": "Failed to update project data"}), response.status_code
 
-    # receives tracker status from tracker.py
 
-    # sends pledge_amt and tracker status to frontend
 
     # activity_log via amqp
 
@@ -57,7 +57,7 @@ def back_project(project_id):
 #         channel.basic_consume(queue=a_queue_name, on_message_callback=callback, auto_ack=True)
 #         print('back_project: Consuming from queue:', a_queue_name)
 #         channel.start_consuming()  # an implicit loop waiting to receive messages;
-             # #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
+#              #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
     
 #     except pika.exceptions.AMQPError as e:
 #         print(f"back_project: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created

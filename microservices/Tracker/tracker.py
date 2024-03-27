@@ -13,13 +13,13 @@ import json
 import amqp_connection
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/tracker'
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
-# back_project_URL = "http://localhost:5004/back_project"
-back_project_URL = "http://back_project:5004/back_project"
+back_project_URL = "http://localhost:5004/back_project"
+# back_project_URL = "http://back_project:5004/back_project"
 exchangename = "tracker" # exchange name
 exchangetype = "direct" # use a 'direct' exchange to enable interaction
 
@@ -108,6 +108,13 @@ def create_tracker(project_id):
     try:
         db.session.add(tracker)
         db.session.commit()
+        # return json of tracker
+        # return jsonify(
+        #     {
+        #         "code": 201,
+        #         "data": tracker.json()
+        #     }
+        # ), 201
     except:
         return jsonify(
             {
@@ -143,9 +150,17 @@ def create_tracker(project_id):
         response = requests.put(project_URL + '/' + str(project_id), json=new_data)
         
         if response.status_code == 200:
-            return jsonify({"message": "Project data updated successfully"}), 200
+            return jsonify(
+                {
+                    "message": "Project data updated successfully"
+                }
+            ), 200
         else:
-            return jsonify({"error": "Failed to update project data"}), response.status_code
+            return jsonify(
+                {
+                    "error": "Failed to update project data"
+                }
+            ), response.status_code
     
     return "Funding Goal has not been reached"
 
