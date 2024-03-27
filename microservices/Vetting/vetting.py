@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from requests import post
 from flask_cors import CORS
+from textblob import TextBlob
 
 import sys
 import pika
@@ -27,7 +28,16 @@ PROJECT_MICROSERVICE_URL = "http://project:5000/project"
 
 def vet_project(project_data):
     # Add your vetting criteria here
-    if 'name' in project_data and project_data['name'] == "ProjectNoNo": #checking works
+    if 'name' not in project_data: #checking works
+        return False
+    
+    # Perform sentiment analysis on the project description
+    description = project_data.get('description', '')
+    blob = TextBlob(description)
+    sentiment_score = blob.sentiment.polarity
+
+    # Reject projects with negative sentiment
+    if sentiment_score < 0:
         return False
 
     return True
