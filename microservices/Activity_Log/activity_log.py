@@ -2,36 +2,47 @@
 # The above shebang (#!) operator tells Unix-like environments
 # to run this file as a python3 script
 
-import sys
-import os
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+#!/usr/bin/env python3
+import amqp_connection
+import json
+import pika
+from os import environ
 
-app = Flask(__name__)
-CORS(app)
 
-@app.route("/activity_log", methods=['POST'])
-def receiveLog():
-    # Check if the request contains valid JSON
-    log = None
-    if request.is_json:
-        log = request.get_json()
-        processLog(log)
-        # reply to the HTTP request
-        return jsonify({"code": 200, "data": 'OK. Activity log printed.'}), 200 # return message; can be customized
-    else:
-        log = request.get_data()
-        print("Received an invalid log:")
-        print(log)
-        print()
-        return jsonify({"code": 400, "message": "Activity log input should be in JSON."}), 400 # Bad Request
+a_queue_name = environ.get('a_queue_name') or 'Activity_Log' # queue to be subscribed by Activity_Log microservice
+
+
+def receiveLog(channel):
+    try:
+        # set up a consumer and start to wait for coming messages
+        channel.basic_consume(queue=a_queue_name, on_message_callback=callback, auto_ack=True)
+        print('activity_log: Consuming from queue:', a_queue_name)
+        channel.start_consuming()  # an implicit loop waiting to receive messages;
+             #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
+    
+    except pika.exceptions.AMQPError as e:
+        print(f"activity_log: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created
+
+    except KeyboardInterrupt:
+        print("activity_log: Program interrupted by user.") 
+
+
+def callback(channel, method, properties, body): # required signature for the callback; no return
+    print("\nactivity_log: Received an activity log by " + __file__)
+    processLog(json.loads(body))
+    print()
 
 def processLog(order):
-    print("Recording a log:")
+    print("activity_log: Recording an order log:")
     print(order)
-    print() # print a new line feed as a separator
-
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')
-    print("This is flask for " + os.path.basename(__file__) + ": recording logs ...")
-    app.run(host='0.0.0.0', port=5002, debug=True)
+    print("activity_log: Getting Connection")
+    connection = amqp_connection.create_connection() #get the connection to the broker
+    print("activity_log: Connection established successfully")
+    channel = connection.channel()
+    receiveLog(channel)
+
+# if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')
+#     print("This is flask for " + os.path.basename(__file__) + ": recording logs ...")
+#     app.run(host='0.0.0.0', port=5002, debug=True)
