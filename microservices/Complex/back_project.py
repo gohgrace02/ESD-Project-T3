@@ -51,35 +51,35 @@ def back_project(project_id):
     # error via amqp
 
 
-# def receiveFulfilmentLog(channel):
-#     try:
-#         # set up a consumer and start to wait for coming messages
-#         channel.basic_consume(queue=a_queue_name, on_message_callback=callback, auto_ack=True)
-#         print('back_project: Consuming from queue:', a_queue_name)
-#         channel.start_consuming()  # an implicit loop waiting to receive messages;
-             # #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
+def receiveFulfilmentLog(channel):
+    try:
+        # set up a consumer and start to wait for coming messages
+        channel.basic_consume(queue=a_queue_name, on_message_callback=callback, auto_ack=True)
+        print('back_project: Consuming from queue:', a_queue_name)
+        channel.start_consuming()  # an implicit loop waiting to receive messages;
+             #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
     
-#     except pika.exceptions.AMQPError as e:
-#         print(f"back_project: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created
+    except pika.exceptions.AMQPError as e:
+        print(f"back_project: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created
 
-#     except KeyboardInterrupt:
-#         print("back_project: Program interrupted by user.") 
-
-
-# def callback(channel, method, properties, body): # required signature for the callback; no return
-#     print("\nback_project: Received a fulfilment log by " + __file__)
-#     processFulfilmentLog(json.loads(body))
-#     print()
+    except KeyboardInterrupt:
+        print("back_project: Program interrupted by user.") 
 
 
-# def processFulfilmentLog(fulfilment):
-#     print("back_project: Recording a fulfilment log:")
-#     print(fulfilment)
+def callback(channel, method, properties, body): # required signature for the callback; no return
+    print("\nback_project: Received a fulfilment log by " + __file__)
+    processFulfilmentLog(json.loads(body))
+    print()
+
+
+def processFulfilmentLog(fulfilment):
+    print("back_project: Recording a fulfilment log:")
+    print(fulfilment)
 
 
 if __name__ == '__main__':
-    # connection = amqp_connection.create_connection() #get the connection to the broker
-    # print("back_project: Connection established successfully")
-    # channel = connection.channel()
-    # receiveFulfilmentLog(channel)  # Start consuming messages from the queue
+    connection = amqp_connection.create_connection() #get the connection to the broker
+    print("back_project: Connection established successfully")
+    channel = connection.channel()
+    receiveFulfilmentLog(channel)  # Start consuming messages from the queue
     app.run(host='0.0.0.0', port=5004, debug=True)

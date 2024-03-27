@@ -4,8 +4,8 @@ from os import environ
 
 app = Flask(__name__)
 
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/feedback'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/feedback'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -17,19 +17,19 @@ class Feedback(db.Model):
     backer_id = db.Column(db.Integer)
     project_id = db.Column(db.Integer)
     rating = db.Column(db.Integer, nullable=False)
-    comment = db.Column(db.Text, nullable=False)
+    feedback_info = db.Column(db.Text, nullable=False)
     submitted_at = db.Column(db.TIMESTAMP)
 
-    def __init__(self, backer_id, project_id, rating, comment, submitted_at):
+    def __init__(self, backer_id, project_id, rating, feedback_info, submitted_at):
         self.backer_id = backer_id
         self.project_id = project_id
         self.rating = rating
-        self.comment = comment
+        self.feedback_info = feedback_info
         self.submitted_at = submitted_at
         
     def json(self):
         return {
-            'feedback_id': self.feedback_id, 'backer_id': self.backer_id, 'project_id': self.project_id, 'rating': self.rating, 'comment': self.comment, 'submitted_at': self.submitted_at
+            'feedback_id': self.feedback_id, 'backer_id': self.backer_id, 'project_id': self.project_id, 'rating': self.rating, 'feedback_info': self.feedback_info, 'submitted_at': self.submitted_at
         }
     
 @app.route("/project/<string:project_id>/feedback", methods=['POST'])
@@ -37,7 +37,8 @@ def create_feedback(project_id):
     # need to check if feedback alr exists? (hvnt include code for this)
 
     data = request.get_json()
-    feedback = Feedback(backer_id=data.get('backer_id'), project_id=project_id, rating=data.get('rating'), comment=data.get('comment'), submitted_at=data.get('submitted_at')) 
+    feedback = Feedback(backer_id=data.get('backer_id'), project_id=project_id, rating=data.get('rating'), feedback_info=data.get('feedback_info'), submitted_at=data.get('submitted_at')) 
+    print(data)
 
     try:
         db.session.add(feedback)
