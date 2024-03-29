@@ -36,7 +36,7 @@ const router = createRouter({
       component: CreateProjectView
     },
     {
-      path: '/success/:checkout_session_id',
+      path: '/success',
       name: 'checkoutsuccess',
       component: CheckoutSuccessView
     },

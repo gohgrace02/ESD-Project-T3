@@ -108,7 +108,7 @@
             <p class="card-text">{{ option.description }}</p>
             <a v-if="creator_id" @click="removeOption(option.price_id)" href="#" class="btn btn-danger">Remove
               option</a>
-            <a v-else href="#" @click="checkoutPledge(option.price_id)" class="btn btn-success">Pledge ${{
+            <a v-else href="#" @click="checkoutPledge(option.price_id, option.pledge_amt)" class="btn btn-success">Pledge ${{
               option.pledge_amt }}</a>
           </div>
         </div>
@@ -214,10 +214,12 @@ export default {
     },
 
 
-    checkoutPledge(price_id) {
+    checkoutPledge(price_id, pledge_amt) {
       // first post to back_project.py to create checkout session
       const url = "http://localhost:5004/create_checkout_session/" + this.backer_id
       const json = {
+        "project_id": this.project_id,
+        "pledge_amt": pledge_amt,
         "price_id": price_id,
         "quantity": 1,
         "cancel_url": "http://localhost:5173/project/" + this.project.project_id

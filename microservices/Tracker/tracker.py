@@ -13,8 +13,8 @@ import json
 import amqp_connection
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
@@ -44,14 +44,22 @@ class Tracker(db.Model):
     backer_id = db.Column(db.Integer)
     project_id = db.Column(db.Integer)
     pledge_amt = db.Column(db.Float)
+    pledge_amt = db.Column(db.Float)
+    checkout_session_id = db.Column(db.String(255))
 
-    def __init__(self, backer_id, project_id, pledge_amt):
+    def __init__(self, backer_id, project_id, pledge_amt, checkout_session_id):
         self.backer_id = backer_id
         self.project_id = project_id
         self.pledge_amt = pledge_amt
+        self.checkout_session_id = checkout_session_id
 
     def json(self):
-        return {"tracker_id": self.tracker_id, "backer_id": self.backer_id, "project_id": self.project_id, "pledge_amt": self.pledge_amt}
+        return {"tracker_id": self.tracker_id, 
+                "backer_id": self.backer_id, 
+                "project_id": self.project_id, 
+                "pledge_amt": self.pledge_amt,
+                "checkout_session_id": self.checkout_session_id
+        }
 
 
 @app.route("/project/<int:project_id>/tracker")
@@ -122,9 +130,10 @@ def create_tracker(project_id):
     data = request.get_json()
     pledge_amt = data.get('pledge_amt')
     backer_id = data.get('backer_id')
+    checkout_session_id = data.get('checkout_session_id')
 
     # Create a new Tracker object, for now the backer_id is hardcoded
-    tracker = Tracker(backer_id, project_id, pledge_amt)
+    tracker = Tracker(backer_id, project_id, pledge_amt, checkout_session_id)
 
     try:
         db.session.add(tracker)

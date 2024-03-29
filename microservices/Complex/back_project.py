@@ -32,13 +32,17 @@ def back_project(project_id):
 @app.route("/create_checkout_session/<backer_id>", methods=['POST'])
 def create_checkout_session(backer_id):
     data = request.get_json()
+    project_id = data.get('project_id')
+    pledge_amt = data.get('pledge_amt')
     price_id = data.get('price_id')
     quantity = data.get('quantity')
     cancel_url = data.get('cancel_url')
+    success_url = "http://localhost:5173/success/?checkout_session_id={CHECKOUT_SESSION_ID}&return_url=" + cancel_url + "&project_id=" + project_id + "&pledge_amt=" + str(pledge_amt)
     params = {
-        "success_url": "http://localhost:5173/success/{CHECKOUT_SESSION_ID}",
+        "success_url": success_url,
         "cancel_url": cancel_url,
         "mode": "payment",
+        "payment_intent_data[capture_method]": "manual",
         "currency": "sgd",
         "customer": "cus_PooH6AYiaXWQLE", 
         "line_items[0][price]": price_id,

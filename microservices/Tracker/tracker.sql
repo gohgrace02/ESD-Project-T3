@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS `tracker` (
     `backer_id` INT NOT NULL,
     `project_id` INT NOT NULL,
     `pledge_amt` FLOAT NOT NULL,
+    `checkout_session_id` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`tracker_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -47,11 +48,11 @@ CREATE TABLE IF NOT EXISTS `tracker` (
 -- Dumping data for table `tracker`
 --
 
-INSERT INTO `Tracker` (`backer_id`, `project_id`, `pledge_amt`) VALUES
-    (1, 1234, 100.00),
-    (2, 1231, 50.00),
-    (3, 1232, 75.00),
-    (4, 1234, 200.00);
+INSERT INTO `Tracker` (`backer_id`, `project_id`, `pledge_amt`, `checkout_session_id`) VALUES
+    (1, 1236, 20.00, 'cs_test_a1kLvXU99UFSDowEycPRbLvdJ0qneeLEET9IkHZIBsJsn5GCJ0nAx01ME4'),
+    (2, 1236, 20.00, 'cs_test_a1PzxlysR6vs8M3dKXJ9upFe1bSVBPGLC4NuT4XjLx2hVXa60xKQAluRSm'),
+    (3, 1236, 20.00, 'cs_test_a1a6E5pfLvJ72XovXR7qfSDzs6X9SmyGEZnohL18JJbKomNQ0SRvR0cavW'),
+    (4, 1236, 20.00, 'cs_test_a1tL1zJzjCG7WNbrsSvhlXcZODZrfPdePasUbGWWi5cnpvC9WEMWL3HcuE');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -10,16 +10,45 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     data() {
         return {
-
+            return_url: this.$route.query.return_url,
+            checkout_session_id: this.$route.query.checkout_session_id,
+            project_id: this.$route.query.project_id,
+            pledge_amt: this.$route.query.pledge_amt,
         }
     },
     methods: {
         handleSuccess() {
-
+            // make a post req to tracker, which attaches the checkout_session_id
+            const url = "http://localhost:5001/project/" + this.project_id + "/tracker"
+            const json = {
+                "pledge_amt": this.pledge_amt,
+                "backer_id": 7,
+                "checkout_session_id": this.checkout_session_id
+            }
+            axios.post(url, json)
+                .then(response => {
+                    console.log(response.data)
+                })
+                .catch(error => {
+                    console.log(error.message)
+                })
+                .finally(() => {
+                    window.location.href = this.return_url
+                })
+            // then redirect the user back to the return_url
         },
+    },
+    // computed: {
+    //     return_url() {
+    //         return this.$route.query.return_url
+    //     }
+    // },
+    mounted() {
+        // console.log(this.$route.query.project_id)
     }
 }
 
