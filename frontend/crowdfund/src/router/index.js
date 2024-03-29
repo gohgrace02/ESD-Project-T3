@@ -5,12 +5,13 @@ import ProjectView from '../views/ProjectView.vue'
 import BackProjectView from '../views/BackProjectView.vue'
 import CreatorHomeView from '@/views/CreatorHomeView.vue'
 import CreateProjectView from '@/views/CreateProjectView.vue'
+import CheckoutSuccessView from '@/views/CheckoutSuccessView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/backer',
       name: 'backerhome',
       component: BackerHomeView
     },
@@ -33,6 +34,11 @@ const router = createRouter({
       path: '/creator/create',
       name: 'create',
       component: CreateProjectView
+    },
+    {
+      path: '/success/:checkout_session_id',
+      name: 'checkoutsuccess',
+      component: CheckoutSuccessView
     },
   ]
 })

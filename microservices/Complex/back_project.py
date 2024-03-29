@@ -28,23 +28,21 @@ def back_project(project_id):
     # return create_session(backer_id)
 
 # users will make a POST req to this when they click on the 'pledge' button
-# creates line item based on pledge amount input
-@app.route("/create_line_item/<backer_id>", methods=['POST'])
-def create_line_item(backer_id):
-    data = request.form['pledge_amt']
-    
-
 # this creates a checkout session and redirects the user to the stripe checkout url
 @app.route("/create_checkout_session/<backer_id>", methods=['POST'])
 def create_checkout_session(backer_id):
+    data = request.get_json()
+    price_id = data.get('price_id')
+    quantity = data.get('quantity')
+    cancel_url = data.get('cancel_url')
     params = {
-        # "success_url": "http://localhost:5004/success/?session_id={CHECKOUT_SESSION_ID}",
-        "success_url": "http://localhost:5004/success/{CHECKOUT_SESSION_ID}",
+        "success_url": "http://localhost:5173/success/{CHECKOUT_SESSION_ID}",
+        "cancel_url": cancel_url,
         "mode": "payment",
         "currency": "sgd",
-        "customer": backer_id,
-        "line_items[0][price]": "price_1OzXtuBWraf69XnWOJIEupXh",
-        "line_items[0][quantity]": "1",
+        "customer": "cus_PooH6AYiaXWQLE", 
+        "line_items[0][price]": price_id,
+        "line_items[0][quantity]": quantity,
     }
     response = requests.post('https://api.stripe.com/v1/checkout/sessions', params=params, headers=headers).json()
     # return redirect(response['url'])

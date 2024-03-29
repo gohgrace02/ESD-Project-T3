@@ -3,10 +3,18 @@
 </script>
 
 <template>
+  <nav style="--bs-breadcrumb-divider: '>';">
+    <ol class="breadcrumb">
+      <li v-if="creator_id" class="breadcrumb-item"><a href="/creator">Home</a></li>
+      <li v-else class="breadcrumb-item"><a href="/backer">Home</a></li>
+      <li class="breadcrumb-item active">{{ project.name }}</li>
+    </ol>
+  </nav>
   <div class="container-fluid">
     <!-- project id, name and description -->
     <div class="row">
-      <h1>{{project.project_id}}: {{project.name}}</h1>
+      <p class="text-secondary mb-0">[ID: {{ project.project_id}}]</p>
+      <h1>{{project.name}}</h1>
       <div class="row">
         <p>{{ project.description}}</p>
       </div>
@@ -82,8 +90,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <!-- things submitted: `title`, `description`, `creator_id`, `project_id`, `pledge_amt` -->
                 <!-- submitted to pledge_options.py, and refreshes the page -->
-                <a @click="addPledgeOption()"
-                  class="btn btn-primary">Submit</a>
+                <a @click="addPledgeOption()" class="btn btn-primary">Submit</a>
               </div>
             </form>
           </div>
@@ -101,7 +108,8 @@
             <p class="card-text">{{ option.description }}</p>
             <a v-if="creator_id" @click="removeOption(option.price_id)" href="#" class="btn btn-danger">Remove
               option</a>
-            <a v-else href="#" class="btn btn-success">Pledge ${{ option.pledge_amt }}</a>
+            <a v-else href="#" @click="checkoutPledge(option.price_id)" class="btn btn-success">Pledge ${{
+              option.pledge_amt }}</a>
           </div>
         </div>
       </div>
@@ -123,9 +131,11 @@ export default {
     return {
       project_id: this.$route.params.project_id,
       project: {},
+
       product_id: '',
       options: [],
-      creator_id: 'Creator1',
+      creator_id: '',
+      backer_id: '7',
 
       title: '',
       description: '',
@@ -144,6 +154,9 @@ export default {
           console.log(error.message)
         })
     },
+
+
+
     getOptions() {
       const url = "http://localhost:5009/options/" + this.project_id
       axios.get(url)
@@ -155,12 +168,9 @@ export default {
           console.log(error.message)
         })
     },
-    // toDollars(cents) {
-    //   return cents / 100
-    // },
-    // toCents(dollars) {
-    //   return dollars * 100
-    // },
+
+
+
     addPledgeOption() {
       // data submitted to pledge_options.py
       // `title`, `description`, `creator_id`, `project_id`, `pledge_amt`
@@ -185,6 +195,9 @@ export default {
           this.$router.go(0)
         })
     },
+
+
+
     removeOption(price_id) {
       const url = "http://localhost:5009/options/" + price_id
       axios.post(url)
@@ -198,14 +211,31 @@ export default {
         .finally(() => {
           this.$router.go(0)
         })
+    },
+
+
+    checkoutPledge(price_id) {
+      // first post to back_project.py to create checkout session
+      const url = "http://localhost:5004/create_checkout_session/" + this.backer_id
+      const json = {
+        "price_id": price_id,
+        "quantity": 1,
+        "cancel_url": "http://localhost:5173/project/" + this.project.project_id
+      }
+      axios.post(url, json)
+        .then(response => {
+          const data = response.data
+          const checkout_url = data.url
+          // redirect to checkout_url for backer to key in card details
+          window.location.href = checkout_url
+        })
+        .catch(error => {
+          console.log(error.message)
+        })
+      
+      
     }
   },
-  // computed: {
-  //   addPledgeOptionURL() {
-  //     var url = "http://localhost:5009/options/" + this.project_id + "/add"
-  //     return url
-  //   },
-  // },
   mounted() {
     this.getDetails()
     this.getOptions()

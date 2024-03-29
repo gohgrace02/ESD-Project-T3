@@ -4,22 +4,22 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>
+  <!-- <header>
     <nav>
-      <!-- <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/about">About</RouterLink> -->
       <h1 class="fw-bold">Crowdfund.com</h1>
     </nav>
-  </header>
-
+  </header> -->
+  
   <RouterView />
+  <!-- <RouterLink to="/">Home</RouterLink>
+  <RouterLink to="/about">About</RouterLink> -->
 </template>
 
 <style scoped>
 header {
   line-height: 1.5;
   max-height: 100vh;
-  padding: 1.5rem;
+  padding: 1rem 0rem 3rem 0rem;
 }
 
 .logo {

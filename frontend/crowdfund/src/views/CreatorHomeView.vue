@@ -7,8 +7,8 @@
     <!-- create project button -->
     <div class="row">
       <div v-if="length != 0" class="row">
-        <label for="projects_table" class="form-label fw-bold">Projects:</label>
-        <table class="table table-hover" id="projects_table">
+        <h5 for="projects_table" class="form-label fw-bold">My projects:</h5>
+        <table class="table table-hover text-end" id="projects_table">
           <thead>
             <tr>
               <th scope="col">ID</th>
@@ -46,12 +46,14 @@ export default {
   data() {
     return {
       projects: [],
-      length: 0
+      length: 0,
+      creator_id: ''
     }
   },
   methods: {
     getProjects() {
-      axios.get("http://localhost:5000/project/Creator1")
+      const url = "http://localhost:5000/project/" + creator_id
+      axios.get(url)
       .then(response => {
         this.projects = response.data.data
         this.length = this.projects.projects.length

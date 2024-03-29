@@ -5,17 +5,17 @@
 <template>
   <div class="container-fluid">
     <!-- search -->
-    <div class="row">
+    <div class="row mb-4 p-3 bg-light rounded-5">
       <div class="mb-3">
-        <label for="search" class="form-label">Search:</label>
-        <input type="text" class="form-control" id="search" placeholder="Search by project name or ID">
+        <label for="search" class="form-label fw-bold">Search:</label>
+        <input type="text" v-model="search" class="form-control" id="search" placeholder="Start typing to search...">
       </div>
     </div>
 
     <!-- display results -->
     <div class="row">
-      <label for="projects_table" class="form-label fw-bold">Projects:</label>
-      <table class="table table-hover" id="projects_table">
+      <h5 for="projects_table" class="form-label fw-bold">Projects available:</h5>
+      <table class="table table-hover text-end" id="projects_table">
         <thead>
           <tr>
             <th scope="col">ID</th>
@@ -26,12 +26,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="project in projects">
+          <tr v-for="project in filteredList">
+            <!-- <tr v-for="project in projects"> -->
             <th scope="row">{{ project.project_id }}</th>
             <td>{{ project.name }}</td>
             <td>{{ project.creator_id }}</td>
             <td>{{ project.funding_goal }}</td>
-            <td><button @click="goToProject(project.project_id)" class="btn btn-success" type="button">View project</button></td>
+            <td><button @click="goToProject(project.project_id)" class="btn btn-success" type="button">View
+                project</button></td>
           </tr>
         </tbody>
       </table>
@@ -45,7 +47,8 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      projects: []
+      projects: [],
+      search: '',
     }
   },
   methods: {
@@ -63,8 +66,21 @@ export default {
       this.$router.push({ name: 'project', params: { project_id: project_id } })
     }
   },
+  // created() {
+  //   this.getProjects()
+  // },
   mounted() {
     this.getProjects()
-  }
+  },
+  computed: {
+    filteredList() {
+      return this.projects.filter(project => {
+        const searchTerm = this.search.toLowerCase()
+        return project.name.toLowerCase().includes(searchTerm) || 
+        project.project_id.toString().includes(searchTerm) ||
+        project.creator_id.toLowerCase().includes(searchTerm)
+      })
+    }
+  },
 }
 </script>
