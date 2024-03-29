@@ -5,7 +5,7 @@
 <template>
   <div class="container-fluid">
     <form action="http://localhost:5000/project" method="post">
-      <!-- Card details form -->
+      <!-- Project details form -->
       <div class="row justify-content-center my-3">
         <div class="col-md-6 col-sm-8 bg-light rounded-3 p-3">
           <h1>Create a project</h1>

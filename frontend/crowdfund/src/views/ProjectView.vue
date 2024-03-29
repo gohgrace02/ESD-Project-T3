@@ -42,18 +42,61 @@
         <label for="pledge_options" class="fw-bold" style="vertical-align: middle;">Pledge options</label>
       </div>
       <div v-if="creator_id" class="col text-end">
-        <button class="btn btn-primary">+ Add pledge option</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPledgeOptionModal">+ Add pledge
+          option</button>
       </div>
+      <!-- modal -->
+      <div class="modal fade" id="addPledgeOptionModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="title">Add pledge option</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- pledge option form -->
+            <!-- <form :action="`${add_pledge_option_url}`" method="post"> -->
+            <form>
+              <div class="modal-body">
+                <div class="row justify-content-center my-3">
+                  <div class="col mx-3">
+                    <div class="mb-3">
+                      <label for="title" class="form-label">Title:</label>
+                      <input required type="text" class="form-control" id="title" placeholder="e.g. Gold tier">
+                    </div>
+                    <div class="mb-3">
+                      <label for="pledge_amt" class="form-label">Pledge amount ($): (input a whole number)</label>
+                      <input required type="number" class="form-control" id="pledge_amt" placeholder="">
+                    </div>
+                    <div class="mb-3">
+                      <label for="description" class="form-label">Description:</label>
+                      <textarea required class="form-control" id="description" style="min-height: 120px;"
+                        placeholder="What's in it for the backer?" />
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <!-- things submitted: `title`, `description`, `creator_id`, `project_id`, `pledge_amt` -->
+                <!-- submitted to pledge_options.py, and refreshes the page -->
+                <button @click="addPledgeOption" type="submit" class="btn btn-primary">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
 
     </div>
     <div class="row" id="pledge_options">
       <!-- card for each pledge option -->
-      <div v-for="option in options" class="col-sm-6 col-md-4 mb-3">
+      <div v-for="option in options.options" class="col-sm-6 col-md-4 mb-3">
         <div class="card">
           <div class="card-body text-center">
-            <h5 class="card-title">Option title</h5>
-            <p class="card-text">Option description</p>
-            <a href="#" class="btn btn-success">Pledge $xx.xx</a>
+            <h5 class="card-title">{{ option.title }}</h5>
+            <p class="card-text">{{ option.description }}</p>
+            <a href="#" class="btn btn-success">Pledge ${{ toDollars(option.pledge_amt) }}</a>
           </div>
         </div>
       </div>
@@ -75,8 +118,13 @@ export default {
     return {
       project_id: this.$route.params.project_id,
       project: {},
-      options: [1],
-      creator_id: 'Creator1'
+      product_id: '',
+      options: [],
+      creator_id: 'Creator1',
+
+      title: '',
+      description: '',
+      pledge_amt: 0,
     }
   },
   methods: {
@@ -85,14 +133,60 @@ export default {
       axios.get(url)
         .then(response => {
           this.project = response.data.data
+          this.product_id = this.project.product_id
         })
         .catch(error => {
           console.log(error.message)
         })
     },
+    getOptions() {
+      var url = "http://localhost:5009/options/" + this.project_id
+      axios.get(url)
+        .then(response => {
+          this.options = response.data.data
+          // console.log(this.options)
+        })
+        .catch(error => {
+          console.log(error.message)
+        })
+    },
+    toDollars(cents) {
+      return cents / 100
+    },
+    toCents(dollars) {
+      return dollars * 100
+    },
+    addPledgeOption() {
+      console.log("Add pledge option")
+      // data submitted to pledge_options.py
+      // `title`, `description`, `creator_id`, `project_id`, `pledge_amt`
+      const json = jsonify({
+        "title": this.title,
+        "description": this.description,
+        "creator_id": this.creator_id,
+        "project_id": this.project_id,
+        "product_id": this.product_id,
+        "pledge_amt": this.pledge_amt
+      })
+      var url = "http://localhost:5009/options/" + this.$route.params.project_id + "/add"
+      axios.post(url, json)
+        .then(response => {
+          console.log(response.data)
+        })
+        .catch(error => {
+          console.log(error.message)
+      })
+    },
   },
+  // computed: {
+  //   addPledgeOptionURL() {
+  //     var url = "http://localhost:5009/options/" + this.project_id + "/add"
+  //     return url
+  //   },
+  // },
   mounted() {
     this.getDetails()
+    this.getOptions()
   }
 }
 </script>

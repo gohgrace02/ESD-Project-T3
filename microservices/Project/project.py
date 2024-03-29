@@ -3,10 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from os import environ
 from flask_cors import CORS
 
-
 from datetime import datetime
 
 
+import requests
 import sys
 import pika
 import json
@@ -33,6 +33,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconn
 # idk why it doesnt work if I use the above --> need to use command prompt for the above to work 
 # use: set dbURL=mysql+mysqlconnector://root@localhost:3306/project
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+headers = { "Authorization": "Bearer sk_test_51O4n0jBWraf69XnWY4aVlVKRqQUCAFfd39aPqRYrDH1tVCUDkUv73npLZXUJcMEopBma6kK2JdyZEdh8aRCij6Lk00clrvlXD8" }
 
 
 db = SQLAlchemy(app)
@@ -44,6 +45,7 @@ class Project(db.Model):
 
 
     project_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    product_id = db.Column(db.String(255), nullable=False)
     name = db.Column(db.String(255), nullable=False)  # You can adjust the length as needed
     description = db.Column(db.Text, nullable=True)   # Assuming description can be nullable
     creator_id = db.Column(db.String(255), nullable=False)  # Adjust length as needed
@@ -56,8 +58,9 @@ class Project(db.Model):
 
 
 
-    def __init__(self, project_id, name, description, creator_id, funding_goal, deadline, creation_time, status, goal_reached):
+    def __init__(self, project_id, product_id, name, description, creator_id, funding_goal, deadline, creation_time, status, goal_reached):
         self.project_id = project_id
+        self.product_id = product_id
         self.name = name
         self.description = description
         self.creator_id = creator_id
@@ -72,6 +75,7 @@ class Project(db.Model):
 
     def json(self):
         return {"project_id": self.project_id,
+                "product_id": self.product_id,
                 "name": self.name,
                 "description": self.description,
                 "creator_id": self.creator_id,
@@ -160,8 +164,45 @@ def find_by_creatorid(creator_id):
 @app.route("/project", methods=['POST'])
 def create_project():
     data = request.get_json()
-    project = Project(project_id = data.get('project_id'), name = data.get('name'), description = data.get('description'), creator_id = data.get('creator_id'), funding_goal = data.get('funding_goal'), deadline = data.get('deadline'), creation_time = data.get('creation_time'), status = data.get('status'), goal_reached = data.get('goal_reached'))
+    # get name of project to create Product object in Stripe
+    name = data.get('name')
+    stripe_url = "https://api.stripe.com/v1/products"
+    params = {
+        "name": name
+    }
+    try:
+        response = requests.post(stripe_url, params=params, headers=headers).json()
+        # gets the product id from successful POST request
+        product_id = response.get('id')
+        
+    except Exception as e:
+        error_message = {
+            "error_type": "create_project_error",
+            "error_message": str(e),
+            "data": data
+        }
+        print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
+        channel.basic_publish(exchange=exchangename, routing_key="project.error",
+            body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
+        print("\nProject error published to RabbitMQ Exchange.\n")
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred creating the project."
+            }
+        ), 500
 
+    # prepare data to commit to database
+    project = Project(project_id = data.get('project_id'), 
+                      product_id=product_id,
+                      name = data.get('name'), 
+                      description = data.get('description'), 
+                      creator_id = data.get('creator_id'), 
+                      funding_goal = data.get('funding_goal'), 
+                      deadline = data.get('deadline'), 
+                      creation_time = data.get('creation_time'), 
+                      status = data.get('status'), 
+                      goal_reached = data.get('goal_reached'))
 
     try:
         db.session.add(project)
