@@ -8,7 +8,7 @@ import { RouterLink, RouterView } from 'vue-router'
     <nav>
       <!-- <RouterLink to="/">Home</RouterLink>
       <RouterLink to="/about">About</RouterLink> -->
-      <h1 jumbotron>Crowdfund</h1>
+      <h1 class="fw-bold">Crowdfund.com</h1>
     </nav>
   </header>
 
@@ -19,6 +19,7 @@ import { RouterLink, RouterView } from 'vue-router'
 header {
   line-height: 1.5;
   max-height: 100vh;
+  padding: 1.5rem;
 }
 
 .logo {
@@ -30,7 +31,7 @@ nav {
   width: 100%;
   font-size: 12px;
   text-align: center;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
 }
 
 nav a.router-link-exact-active {

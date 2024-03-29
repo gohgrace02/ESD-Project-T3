@@ -86,9 +86,6 @@ class Project(db.Model):
 def get_all():
     projectlist = db.session.scalars(db.select(Project)).all()
 
-
-
-
     if len(projectlist):
         return jsonify(
             {
@@ -129,6 +126,31 @@ def find_by_projectid(project_id):
         {
             "code": 404,
             "message": "Project not found."
+        }
+    ), 404
+
+# find projects by creator_id
+@app.route("/project/<creator_id>")
+def find_by_creatorid(creator_id):
+    # projectlist = db.session.scalars(db.select(Project)).all()
+
+    projectlist = db.session.scalars(
+        db.select(Project).filter_by(creator_id=creator_id)
+    )
+
+    if projectlist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "projects": [project.json() for project in projectlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "No projects."
         }
     ), 404
 

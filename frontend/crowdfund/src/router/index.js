@@ -1,16 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import HomeView from '../views/HomeView.vue'
-import HomeView from '../views/HomeView.vue'
+import BackerHomeView from '../views/BackerHomeView.vue'
 import ProjectView from '../views/ProjectView.vue'
 import BackProjectView from '../views/BackProjectView.vue'
+import CreatorHomeView from '@/views/CreatorHomeView.vue'
+import CreateProjectView from '@/views/CreateProjectView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView
+      name: 'backerhome',
+      component: BackerHomeView
     },
     {
       path: '/project/:project_id',
@@ -21,6 +23,16 @@ const router = createRouter({
       path: '/project/:project_id/back',
       name: 'back',
       component: BackProjectView
+    },
+    {
+      path: '/creator',
+      name: 'creatorhome',
+      component: CreatorHomeView
+    },
+    {
+      path: '/creator/create',
+      name: 'create',
+      component: CreateProjectView
     },
   ]
 })

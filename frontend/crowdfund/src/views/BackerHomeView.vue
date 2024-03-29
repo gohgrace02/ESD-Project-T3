@@ -14,7 +14,7 @@
 
     <!-- display results -->
     <div class="row">
-      <label for="projects_table" class="form-label">Projects:</label>
+      <label for="projects_table" class="form-label fw-bold">Projects:</label>
       <table class="table table-hover" id="projects_table">
         <thead>
           <tr>
