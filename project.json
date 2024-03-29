@@ -1,0 +1,11 @@
+[
+  {
+    "targets": [
+      "project:5000"
+    ],
+    "labels": {
+      "env": "dev",
+      "job": "docker"
+    }
+  }
+]

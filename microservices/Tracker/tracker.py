@@ -173,7 +173,7 @@ def create_tracker(project_id):
         if response.status_code == 200:
             return jsonify(
                 {
-                    "message": "Project data updated successfully"
+                    "message": "Tracker is created and Project data is updated successfully"
                 }
             ), 200
         else:
