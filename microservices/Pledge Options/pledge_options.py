@@ -101,7 +101,6 @@ def add_pledge_option(project_id):
     # return f"pledge option added to project {project_id}"
     data = request.get_json()
     # get all the data needed to create new price obj on stripe
-    # product_id=data.get('product_id')
     product_id=data.get('product_id')
     pledge_amt=data.get('pledge_amt')
     
@@ -170,65 +169,50 @@ def add_pledge_option(project_id):
         )
 
 
-
-    # project = Project(project_id = data.get('project_id'), name = data.get('name'), description = data.get('description'), creator_id = data.get('creator_id'), funding_goal = data.get('funding_goal'), deadline = data.get('deadline'), creation_time = data.get('creation_time'), status = data.get('status'), goal_reached = data.get('goal_reached'))
-
-
-    # try:
-    #     db.session.add(project)
-    #     db.session.commit()
-    # except Exception as e:
-    #     error_message = {
-    #         "error_type": "create_project_error",
-    #         "error_message": str(e),
-    #         "data": data
-    #     }
-    #     print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
-    #     channel.basic_publish(exchange=exchangename, routing_key="project.error",
-    #         body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
-    #     print("\nProject error published to RabbitMQ Exchange.\n")
-    #     return jsonify(
-    #         {
-    #             "code": 500,
-    #             "message": "An error occurred creating the project."
-    #         }
-    #     ), 500
-   
-    # print('\n\n-----Publishing the (project info) message with routing_key=project.info-----')
-    # channel.basic_publish(exchange=exchangename, routing_key="project.info",
-    #     body=json.dumps(data), properties=pika.BasicProperties(delivery_mode = 2))
-    # print("\nProject info published to RabbitMQ Exchange.\n")
+@app.route("/options/<price_id>", methods=['POST'])
+def remove_option(price_id):
+    # disable price on Stripe
+    stripe_url = "https://api.stripe.com/v1/prices/" + price_id
+    params = {
+        "active": "false"
+    }
+    try:
+        response = requests.post(stripe_url, params=params, headers=headers).json
+    except Exception as e:
+        error_message = {
+            "error_type": "create_price_obj_error",
+            "error_message": str(e),
+            "data": data
+        }
+        # print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
+        # channel.basic_publish(exchange=exchangename, routing_key="project.error",
+        #     body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
+        # print("\nProject error published to RabbitMQ Exchange.\n")
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred when updating the Price object in Stripe."
+            }
+        ), 500
+    
+    # delete option from database
+    option = db.session.scalars(db.select(Pledge).filter_by(price_id=price_id).limit(1)).first()
+    if option:
+        db.session.delete(option)
+        db.session.commit()
+        return jsonify({
+            "code": 200,
+            "message": "Option has been deleted"
+        })
     return jsonify(
         {
-            "code": 201,
-            "data": project.json()
+            "code": 404,
+            "data": {
+                "price_id": price_id
+            },
+            "message": "Option not found."
         }
-    ), 201
-
-
-# @app.route("/project/<int:project_id>", methods=['PUT'])
-# def update_project(project_id):
-#     project = db.session.scalars(db.select(Project).filter_by(project_id=project_id).limit(1)).first()
-#     if project:
-#         data = request.get_json()
-#         if data['goal_reached']:
-#             project.goal_reached = data['goal_reached']
-#         db.session.commit()
-#         return jsonify(
-#             {
-#                 "code": 200,
-#                 "data": project.json()
-#             }
-#         )
-#     return jsonify(
-#         {
-#             "code": 404,
-#             "data": {
-#                 "project_id": project_id
-#             },
-#             "message": "Project not found."
-#         }
-#     ), 404
+    ), 404
 
 
 

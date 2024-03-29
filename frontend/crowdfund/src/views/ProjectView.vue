@@ -61,16 +61,18 @@
                   <div class="col mx-3">
                     <div class="mb-3">
                       <label for="title" class="form-label">Title:</label>
-                      <input required type="text" class="form-control" id="title" placeholder="e.g. Gold tier">
+                      <input required v-model="title" type="text" class="form-control" id="title"
+                        placeholder="e.g. Gold tier">
                     </div>
                     <div class="mb-3">
                       <label for="pledge_amt" class="form-label">Pledge amount ($): (input a whole number)</label>
-                      <input required type="number" class="form-control" id="pledge_amt" placeholder="">
+                      <input required v-model="pledge_amt" type="number" class="form-control" id="pledge_amt"
+                        placeholder="">
                     </div>
                     <div class="mb-3">
                       <label for="description" class="form-label">Description:</label>
-                      <textarea required class="form-control" id="description" style="min-height: 120px;"
-                        placeholder="What's in it for the backer?" />
+                      <textarea required v-model="description" class="form-control" id="description"
+                        style="min-height: 120px;" placeholder="What's in it for the backer?" />
                     </div>
 
                   </div>
@@ -80,7 +82,8 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <!-- things submitted: `title`, `description`, `creator_id`, `project_id`, `pledge_amt` -->
                 <!-- submitted to pledge_options.py, and refreshes the page -->
-                <button @click="addPledgeOption" type="submit" class="btn btn-primary">Submit</button>
+                <a @click="addPledgeOption()"
+                  class="btn btn-primary">Submit</a>
               </div>
             </form>
           </div>
@@ -96,7 +99,9 @@
           <div class="card-body text-center">
             <h5 class="card-title">{{ option.title }}</h5>
             <p class="card-text">{{ option.description }}</p>
-            <a href="#" class="btn btn-success">Pledge ${{ toDollars(option.pledge_amt) }}</a>
+            <a v-if="creator_id" @click="removeOption(option.price_id)" href="#" class="btn btn-danger">Remove
+              option</a>
+            <a v-else href="#" class="btn btn-success">Pledge ${{ option.pledge_amt }}</a>
           </div>
         </div>
       </div>
@@ -129,7 +134,7 @@ export default {
   },
   methods: {
     getDetails() {
-      var url = "http://localhost:5000/project/" + this.project_id
+      const url = "http://localhost:5000/project/" + this.project_id
       axios.get(url)
         .then(response => {
           this.project = response.data.data
@@ -140,7 +145,7 @@ export default {
         })
     },
     getOptions() {
-      var url = "http://localhost:5009/options/" + this.project_id
+      const url = "http://localhost:5009/options/" + this.project_id
       axios.get(url)
         .then(response => {
           this.options = response.data.data
@@ -150,33 +155,50 @@ export default {
           console.log(error.message)
         })
     },
-    toDollars(cents) {
-      return cents / 100
-    },
-    toCents(dollars) {
-      return dollars * 100
-    },
+    // toDollars(cents) {
+    //   return cents / 100
+    // },
+    // toCents(dollars) {
+    //   return dollars * 100
+    // },
     addPledgeOption() {
-      console.log("Add pledge option")
       // data submitted to pledge_options.py
       // `title`, `description`, `creator_id`, `project_id`, `pledge_amt`
-      const json = jsonify({
+      const json = {
         "title": this.title,
         "description": this.description,
         "creator_id": this.creator_id,
         "project_id": this.project_id,
         "product_id": this.product_id,
         "pledge_amt": this.pledge_amt
-      })
-      var url = "http://localhost:5009/options/" + this.$route.params.project_id + "/add"
+      }
+      const url = "http://localhost:5009/options/" + this.$route.params.project_id + "/add"
       axios.post(url, json)
         .then(response => {
-          console.log(response.data)
+          // data = response.data.data
+          // console.log(data)
         })
         .catch(error => {
           console.log(error.message)
       })
+        .finally(() => {
+          this.$router.go(0)
+        })
     },
+    removeOption(price_id) {
+      const url = "http://localhost:5009/options/" + price_id
+      axios.post(url)
+        .then(response => {
+          // const data = response.data.data
+          // console.log(data)
+        })
+        .catch(error => {
+          console.log(error.message)
+        })
+        .finally(() => {
+          this.$router.go(0)
+        })
+    }
   },
   // computed: {
   //   addPledgeOptionURL() {
