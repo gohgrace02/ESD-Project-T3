@@ -52,7 +52,7 @@
         <div class="card">
           <div class="card-body text-center">
             <h5 class="card-title">Option title</h5>
-            <p class="card-text">Option benefits</p>
+            <p class="card-text">Option description</p>
             <a href="#" class="btn btn-success">Pledge $xx.xx</a>
           </div>
         </div>
