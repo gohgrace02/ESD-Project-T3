@@ -17,9 +17,11 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
+headers = { "Authorization": "Bearer sk_test_51O4n0jBWraf69XnWY4aVlVKRqQUCAFfd39aPqRYrDH1tVCUDkUv73npLZXUJcMEopBma6kK2JdyZEdh8aRCij6Lk00clrvlXD8" }
+
 
 # back_project_URL = "http://localhost:5004/back_project"
-back_project_URL = "http://back_project:5004/back_project"
+# back_project_URL = "http://back_project:5004/back_project"
 exchangename = "tracker" # exchange name
 exchangetype = "direct" # use a 'direct' exchange to enable interaction
 
@@ -155,44 +157,47 @@ def create_tracker(project_id):
                 "message": "An error occurred creating the tracker."
             }
         ), 500
+    return project_fufilment(project_id)
 
-    # Send a GET request to Project microservice to get the funding_goal
+
+    # # Send a GET request to Project microservice to get the funding_goal
     # project_URL = "http://localhost:5000/project"
-    project_URL = "http://project:5000/project"
-    response = requests.get(project_URL + '/' + str(project_id)).json()
-    data = response['data']
-    funding_goal = response['data']['funding_goal']
+    # # project_URL = "http://project:5000/project"
+    # response = requests.get(project_URL + '/' + str(project_id)).json()
+    # data = response['data']
+    # funding_goal = response['data']['funding_goal']
 
-    print(data)
-    print(funding_goal)
-    print(check_funding_goal(project_id, funding_goal))
+    # print(data)
+    # print(funding_goal)
+    # print(check_funding_goal(project_id, funding_goal))
 
-    # Check whether the funding_goal is reached
-    if(check_funding_goal(project_id, funding_goal)):
-        print("funding goal is met! Project fufilment message will be sent to back_project and goal_reached will be updated")
-        # Send an event to backProject microservice
-        project_fufilment(project_id)
+    # # Check whether the funding_goal is reached
+    # if(check_funding_goal(project_id, funding_goal)):
+    #     print("funding goal is met! Project fufilment message will be sent to back_project and goal_reached will be updated")
+    #     # Send an event to backProject microservice
+    #     payment_capture_status = project_fufilment(project_id, payment_intent_id)
 
-        # Send a PUT request to Project microservice to update the goalReached status
-        new_data = {
-            "goal_reached": 1
-        }
-        response = requests.put(project_URL + '/' + str(project_id), json=new_data)
+    #     # Send a PUT request to Project microservice to update the goalReached status
+    #     new_data = {
+    #         "goal_reached": 1
+    #     }
+    #     response = requests.put(project_URL + '/' + str(project_id), json=new_data)
         
-        if response.status_code == 200:
-            return jsonify(
-                {
-                    "message": "Tracker is created and Project data is updated successfully"
-                }
-            ), 200
-        else:
-            return jsonify(
-                {
-                    "error": "Failed to update project data"
-                }
-            ), response.status_code
+    #     if response.status_code == 200:
+    #         return jsonify(
+    #             {
+    #                 "payment_capture_status": payment_capture_status['status'],
+    #                 "tracker_status": "Tracker created and Project data updated successfully"
+    #             }
+    #         ), 200
+    #     else:
+    #         return jsonify(
+    #             {
+    #                 "error": "Failed to update project data"
+    #             }
+    #         ), response.status_code
     
-    return "Funding Goal has not been reached"
+    # return "Funding Goal has not been reached"
 
 
 # check_funding_goal returns "True" if funding_goal is met else returns "False"
@@ -216,19 +221,35 @@ def project_fufilment(project_id):
     print('\n\n-----Publishing the (project fulfilment event) message with routing_key = fulfilment.info-----')  
 
     # need to include the project ID that has been fulfiled      
-    message = {
+    json = {
         "project_id": project_id,
         "message": "Project has been fulfilled"
     }
+    url = "http://localhost:5004/capture_all/" + project_id
+    try:
+        response = requests.post(url, json=json).json()
+        return jsonify({
+            "code": 201,
+            "status": response['status']
+        })
+    except:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {
+                    "project_id": project_id,
+                    "message": "An error occurred while capturing payments for this project on Stripe."
+                },
+            }
+        ), 500
+    # message_json = json.dumps(message)
 
-    message_json = json.dumps(message)
-
-    channel.basic_publish(exchange=exchangename, routing_key="fulfilment.info", 
-        body=message_json, properties=pika.BasicProperties(delivery_mode = 2))
+    # channel.basic_publish(exchange=exchangename, routing_key="fulfilment.info", 
+    #     body=message_json, properties=pika.BasicProperties(delivery_mode = 2))
     
-    print("\nFulfilment published to RabbitMQ Exchange.\n")
-    # - reply from the invocation is not used;
-    # continue even if this invocation fails
+    # print("\nFulfilment published to RabbitMQ Exchange.\n")
+    # # - reply from the invocation is not used;
+    # # continue even if this invocation fails
 
 
 if __name__ == '__main__':

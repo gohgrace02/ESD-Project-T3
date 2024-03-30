@@ -86,10 +86,74 @@ def get_payment_intent_id(checkout_session_id):
         
 
 
+# @app.route("/capture/<payment_intent_id>", methods=['POST'])
 
-# @app.route("/capture/<payment_intent_id>", methods=['POST', 'GET'])
-# def capture_payment(payment_intent_id):
-#     return payment_intent_id
+
+
+@app.route("/capture_all/<int:project_id>", methods=['POST', 'GET'])
+# this collates all payment_intent_ids related to this given project_id and 
+# captures all related payments
+def capture_all(project_id):
+    # get trackers by project_id
+    url = "http://localhost:5001/project/" + str(project_id) + "/tracker"
+    response = requests.get(url).json()
+    tracker_list = response['data']['trackerList']
+    # iterates through the list and calls capture_payment on each tracker
+    for tracker in tracker_list:
+        payment_intent_id = tracker['payment_intent_id']
+        try:
+            capture_payment(payment_intent_id)
+        except Exception as e:
+            error_message = {
+                "error_type": "capture_all_error",
+                "error_message": str(e),
+                "data": data
+            }
+            # print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
+            # channel.basic_publish(exchange=exchangename, routing_key="project.error",
+            #     body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
+            # print("\nProject error published to RabbitMQ Exchange.\n")
+            return jsonify(
+                {
+                    "code": 500,
+                    "message": "An error occurred during capture_all() on back_project.py."
+                }
+            ), 500
+    return jsonify({
+        "code": 201,
+        "status": "success"
+    })
+
+
+
+# this captures payment for only one payment_intent_id
+def capture_payment(payment_intent_id):
+    # data = request.get_json()
+    # message = data.get('message')
+    # # when goal has been reached right after a new tracker row is added
+    # if message == "Project has been fulfilled":
+    url = "https://api.stripe.com/v1/payment_intents/" + payment_intent_id + "/capture"
+    try:
+        response = requests.post(url, headers=headers).json()
+        return response
+    except Exception as e:
+        error_message = {
+            "error_type": "payment_capture_error",
+            "error_message": str(e),
+            "data": data
+        }
+        # print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
+        # channel.basic_publish(exchange=exchangename, routing_key="project.error",
+        #     body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
+        # print("\nProject error published to RabbitMQ Exchange.\n")
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred during payment capture on Stripe."
+            }
+        ), 500
+
+
 
 if __name__ == '__main__':
     # connection = amqp_connection.create_connection() #get the connection to the broker
