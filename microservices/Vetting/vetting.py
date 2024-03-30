@@ -57,7 +57,9 @@ def vetting_endpoint():
         response = post(PROJECT_MICROSERVICE_URL, json=data)
 
         if response.status_code == 201:
-            return jsonify({"message": "Vetting successful. Project created."}), 200
+            return jsonify({
+                "code": 201,
+                "message": "Vetting successful. Project sent for creation."}), 201
         else:
             print('\n\n-----Publishing the (vetting error) message with routing_key=vetting.error-----')
             channel.basic_publish(exchange=exchangename, routing_key="vetting.error", 
@@ -69,33 +71,9 @@ def vetting_endpoint():
         channel.basic_publish(exchange=exchangename, routing_key="vetting.error", 
             body=json.dumps(data), properties=pika.BasicProperties(delivery_mode = 2)) 
         print("\nVetting error published to RabbitMQ Exchange.\n")
-        return jsonify({"message": "Project is not acceptable."}), 400
-    
-    # previous code
-        # data = request.get_json()
-    # if vet_project(data):
-    #     print("Data received:", data)
-    #     print('\n\n-----Publishing the (vetting info) message with routing_key=vetting.info-----')
-    #     channel.basic_publish(exchange=exchangename, routing_key="vetting.info", 
-    #         body=json.dumps(data), properties=pika.BasicProperties(delivery_mode = 2)) 
-    #     print("\nVetting info published to RabbitMQ Exchange.\n")
-    #     # If vetting is approved, post the project to the project microservice
-    #     response = post(PROJECT_MICROSERVICE_URL, json=data)
-
-    #     if response.status_code == 201:
-    #         return jsonify({"message": "Vetting successful. Project created."}), 200
-    #     else:
-    #         return jsonify(response.json()), response.status_code
-    # else:
-    #     error_message = {
-    #         "error_type": "vetting_error",
-    #         "data": data
-    #     }
-    #     print('\n\n-----Publishing the (vetting error) message with routing_key=vetting.error-----')
-    #     channel.basic_publish(exchange=exchangename, routing_key="vetting.error", 
-    #         body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2)) 
-    #     print("\nVetting error published to RabbitMQ Exchange.\n")
-    #     return jsonify({"message": "Project is not acceptable."}), 400
+        return jsonify({
+            "code": 400,
+            "message": "Project is not acceptable."}), 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5005, debug=True)
