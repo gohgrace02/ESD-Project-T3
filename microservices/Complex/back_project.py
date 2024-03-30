@@ -90,38 +90,35 @@ def get_payment_intent_id(checkout_session_id):
 
 
 
-@app.route("/capture_all/<int:project_id>", methods=['POST', 'GET'])
+@app.route("/capture_all/<int:project_id>", methods=['POST', 'GET', 'PUT'])
 # this collates all payment_intent_ids related to this given project_id and 
 # captures all related payments
+# called by POST request
 def capture_all(project_id):
     # get trackers by project_id
     url = "http://localhost:5001/project/" + str(project_id) + "/tracker"
     response = requests.get(url).json()
     tracker_list = response['data']['trackerList']
+
     # iterates through the list and calls capture_payment on each tracker
     for tracker in tracker_list:
-        payment_intent_id = tracker['payment_intent_id']
-        try:
-            capture_payment(payment_intent_id)
-        except Exception as e:
-            error_message = {
-                "error_type": "capture_all_error",
-                "error_message": str(e),
-                "data": data
-            }
-            # print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
-            # channel.basic_publish(exchange=exchangename, routing_key="project.error",
-            #     body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
-            # print("\nProject error published to RabbitMQ Exchange.\n")
-            return jsonify(
-                {
-                    "code": 500,
-                    "message": "An error occurred during capture_all() on back_project.py."
-                }
-            ), 500
+        if not tracker['captured']:
+            payment_intent_id = tracker['payment_intent_id']
+            try:
+                capture_payment(payment_intent_id)
+                tracker_id = tracker['tracker_id']
+
+                response = requests.put("http://localhost:5001/tracker/" + str(tracker_id)).json()
+
+                if response['code'] != 200:
+                    # Handle tracker update error
+                    return jsonify({"error": "Failed to update tracker data."}), 500
+            except Exception as e:
+                # Handle capture payment error
+                return jsonify({"error": "An error occurred during payment capture."}), 500
     return jsonify({
         "code": 201,
-        "status": "success"
+        "status": "All payments captured and trackers updated successfully."
     })
 
 

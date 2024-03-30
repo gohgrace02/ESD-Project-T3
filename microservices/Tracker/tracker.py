@@ -48,19 +48,22 @@ class Tracker(db.Model):
     pledge_amt = db.Column(db.Float)
     pledge_amt = db.Column(db.Float)
     payment_intent_id = db.Column(db.String(255))
+    captured = db.Column(db.Boolean, nullable=False, default=False)
 
-    def __init__(self, backer_id, project_id, pledge_amt, payment_intent_id):
+    def __init__(self, backer_id, project_id, pledge_amt, payment_intent_id, captured):
         self.backer_id = backer_id
         self.project_id = project_id
         self.pledge_amt = pledge_amt
         self.payment_intent_id = payment_intent_id
+        self.captured = captured
 
     def json(self):
         return {"tracker_id": self.tracker_id, 
                 "backer_id": self.backer_id, 
                 "project_id": self.project_id, 
                 "pledge_amt": self.pledge_amt,
-                "payment_intent_id": self.payment_intent_id
+                "payment_intent_id": self.payment_intent_id,
+                "captured": self.captured
         }
 
 
@@ -133,9 +136,10 @@ def create_tracker(project_id):
     pledge_amt = data.get('pledge_amt')
     backer_id = data.get('backer_id')
     payment_intent_id = data.get('payment_intent_id')
+    captured = False
 
     # Create a new Tracker object, for now the backer_id is hardcoded
-    tracker = Tracker(backer_id, project_id, pledge_amt, payment_intent_id)
+    tracker = Tracker(backer_id, project_id, pledge_amt, payment_intent_id, captured)
 
     try:
         db.session.add(tracker)
@@ -157,7 +161,9 @@ def create_tracker(project_id):
                 "message": "An error occurred creating the tracker."
             }
         ), 500
-    return project_fufilment(project_id)
+    
+    project_fufilment(project_id)
+    return "goal reached"
 
 
     # # Send a GET request to Project microservice to get the funding_goal
@@ -225,7 +231,7 @@ def project_fufilment(project_id):
         "project_id": project_id,
         "message": "Project has been fulfilled"
     }
-    url = "http://localhost:5004/capture_all/" + project_id
+    url = "http://localhost:5004/capture_all/" + str(project_id)
     try:
         response = requests.post(url, json=json).json()
         return jsonify({
@@ -250,6 +256,39 @@ def project_fufilment(project_id):
     # print("\nFulfilment published to RabbitMQ Exchange.\n")
     # # - reply from the invocation is not used;
     # # continue even if this invocation fails
+
+
+# update tracker "captured" value
+@app.route("/tracker/<int:tracker_id>", methods=['PUT'])
+def update_tracker(tracker_id):
+    tracker = db.session.scalars(db.select(Tracker).filter_by(tracker_id=tracker_id)).first()
+    if tracker:
+        if not tracker.captured:
+            tracker.captured = True
+            try:
+                db.session.commit()
+                return jsonify(
+                    {
+                        "code": 200,
+                        "data": tracker.json()
+                    }
+                )
+            except Exception as e:
+                return jsonify(
+                    {
+                        "code": 404,
+                        "data": {
+                            "tracker_id": tracker_id
+                        },
+                        "message": "Tracker not found."
+                    }
+                ), 404
+        else:
+            return jsonify({"message": "Tracker already captured.", "code": 200}), 200
+    else:
+        # Tracker not found
+        return jsonify({"message": "Tracker not found.", "code": 404}), 404
+
 
 
 if __name__ == '__main__':
