@@ -45,20 +45,20 @@ class Tracker(db.Model):
     project_id = db.Column(db.Integer)
     pledge_amt = db.Column(db.Float)
     pledge_amt = db.Column(db.Float)
-    checkout_session_id = db.Column(db.String(255))
+    payment_intent_id = db.Column(db.String(255))
 
-    def __init__(self, backer_id, project_id, pledge_amt, checkout_session_id):
+    def __init__(self, backer_id, project_id, pledge_amt, payment_intent_id):
         self.backer_id = backer_id
         self.project_id = project_id
         self.pledge_amt = pledge_amt
-        self.checkout_session_id = checkout_session_id
+        self.payment_intent_id = payment_intent_id
 
     def json(self):
         return {"tracker_id": self.tracker_id, 
                 "backer_id": self.backer_id, 
                 "project_id": self.project_id, 
                 "pledge_amt": self.pledge_amt,
-                "checkout_session_id": self.checkout_session_id
+                "payment_intent_id": self.payment_intent_id
         }
 
 
@@ -130,10 +130,10 @@ def create_tracker(project_id):
     data = request.get_json()
     pledge_amt = data.get('pledge_amt')
     backer_id = data.get('backer_id')
-    checkout_session_id = data.get('checkout_session_id')
+    payment_intent_id = data.get('payment_intent_id')
 
     # Create a new Tracker object, for now the backer_id is hardcoded
-    tracker = Tracker(backer_id, project_id, pledge_amt, checkout_session_id)
+    tracker = Tracker(backer_id, project_id, pledge_amt, payment_intent_id)
 
     try:
         db.session.add(tracker)

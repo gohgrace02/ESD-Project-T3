@@ -18,28 +18,40 @@ export default {
             checkout_session_id: this.$route.query.checkout_session_id,
             project_id: this.$route.query.project_id,
             pledge_amt: this.$route.query.pledge_amt,
+            payment_intent_id: '',
         }
     },
     methods: {
         handleSuccess() {
-            // make a post req to tracker, which attaches the checkout_session_id
-            const url = "http://localhost:5001/project/" + this.project_id + "/tracker"
-            const json = {
-                "pledge_amt": this.pledge_amt,
-                "backer_id": 7,
-                "checkout_session_id": this.checkout_session_id
-            }
-            axios.post(url, json)
+            // makes a post req to back_project.py to get payment_intent_id
+            const to_back_project_url = "http://localhost:5004/get_payment_intent_id/" + this.checkout_session_id
+            axios.get(to_back_project_url)
                 .then(response => {
-                    console.log(response.data)
+                    this.payment_intent_id = response.data
+                    const to_tracker_url = "http://localhost:5001/project/" + this.project_id + "/tracker"
+                    const json = {
+                        "pledge_amt": this.pledge_amt,
+                        "backer_id": 7,
+                        "payment_intent_id": this.payment_intent_id
+                    }
+                    axios.post(to_tracker_url, json)
+                        .then(response => {
+                            console.log(response.data)
+                        })
+                        .catch(error => {
+                            console.log(error.message)
+                        })
+                        .finally(() => {
+                            // then redirect the user back to the return_url
+                            window.location.href = this.return_url
+                        })
+
                 })
                 .catch(error => {
                     console.log(error.message)
                 })
-                .finally(() => {
-                    window.location.href = this.return_url
-                })
-            // then redirect the user back to the return_url
+            // make a post req to tracker, which attaches the payment_intent_id to tracker data
+            
         },
     },
     // computed: {

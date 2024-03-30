@@ -58,9 +58,38 @@ def create_checkout_session(backer_id):
 # then retrieves the setupintent id from that
 # then the setupintent object
 # then the payment method id from that
-@app.route("/success/<session_id>", methods=['POST', 'GET'])
-def get_payment_method_id(session_id):
-    return session_id
+
+
+
+@app.route("/get_payment_intent_id/<checkout_session_id>", methods=['GET'])
+def get_payment_intent_id(checkout_session_id):
+    stripe_url = "https://api.stripe.com/v1/checkout/sessions/" + checkout_session_id
+    try:
+        response = requests.get(stripe_url,headers=headers).json()
+        return response['payment_intent']
+    except Exception as e:
+        error_message = {
+            "error_type": "payment_intent_id_retrieval_error",
+            "error_message": str(e),
+            "data": data
+        }
+        # print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
+        # channel.basic_publish(exchange=exchangename, routing_key="project.error",
+        #     body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
+        # print("\nProject error published to RabbitMQ Exchange.\n")
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred retrieving the PaymentIntent ID from Stripe."
+            }
+        ), 500
+        
+
+
+
+# @app.route("/capture/<payment_intent_id>", methods=['POST', 'GET'])
+# def capture_payment(payment_intent_id):
+#     return payment_intent_id
 
 if __name__ == '__main__':
     # connection = amqp_connection.create_connection() #get the connection to the broker
