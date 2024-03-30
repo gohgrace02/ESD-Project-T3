@@ -6,10 +6,16 @@ import BackProjectView from '../views/BackProjectView.vue'
 import CreatorHomeView from '@/views/CreatorHomeView.vue'
 import CreateProjectView from '@/views/CreateProjectView.vue'
 import CheckoutSuccessView from '@/views/CheckoutSuccessView.vue'
+import LoginView from '@/views/LoginView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView
+    },
     {
       path: '/backer',
       name: 'backerhome',

@@ -2,9 +2,12 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
 from flask_cors import CORS
+import os
 
 
 from datetime import datetime
+from dotenv import load_dotenv
+load_dotenv()
 
 import requests
 import sys
@@ -33,7 +36,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconn
 # idk why it doesnt work if I use the above --> need to use command prompt for the above to work 
 # use: set dbURL=mysql+mysqlconnector://root@localhost:3306/project
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-headers = { "Authorization": "Bearer sk_test_51O4n0jBWraf69XnWY4aVlVKRqQUCAFfd39aPqRYrDH1tVCUDkUv73npLZXUJcMEopBma6kK2JdyZEdh8aRCij6Lk00clrvlXD8" }
+headers = { "Authorization": "Bearer " + os.getenv("STRIPE_PUB_KEY") }
 
 
 db = SQLAlchemy(app)
