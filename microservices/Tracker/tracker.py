@@ -13,8 +13,8 @@ import json
 import amqp_connection
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 headers = { "Authorization": "Bearer sk_test_51O4n0jBWraf69XnWY4aVlVKRqQUCAFfd39aPqRYrDH1tVCUDkUv73npLZXUJcMEopBma6kK2JdyZEdh8aRCij6Lk00clrvlXD8" }
@@ -136,7 +136,8 @@ def create_tracker(project_id):
     backer_id = data.get('backer_id')
     payment_intent_id = data.get('payment_intent_id')
     # check goal_reached status of project
-    url = "http://localhost:5000/project/" + str(project_id)
+    url = "http://project:5000/project/" + str(project_id)
+    # url = "http://localhost:5000/project/" + str(project_id)
     goal_reached = requests.get(url).json()['data']['goal_reached']
 
     # 'captured' value is set to False if goal not reached
@@ -169,11 +170,9 @@ def create_tracker(project_id):
             }
         ), 500
     
-
-
     # Send a GET request to Project microservice to get the funding_goal
-    project_URL = "http://localhost:5000/project"
-    # project_URL = "http://project:5000/project"
+    # project_URL = "http://localhost:5000/project"
+    project_URL = "http://project:5000/project"
     response = requests.get(project_URL + '/' + str(project_id)).json()
     data = response['data']
     funding_goal = response['data']['funding_goal']
@@ -186,7 +185,8 @@ def create_tracker(project_id):
     if(check_funding_goal(project_id, funding_goal)):
         print("funding goal is met! Project fufilment message will be sent to back_project and goal_reached will be updated")
         # Send an event to backProject microservice
-        payment_capture_status = project_fufilment(project_id, payment_intent_id)
+        # payment_capture_status = project_fufilment(project_id, payment_intent_id)
+        payment_capture_status = project_fufilment(project_id)
 
         # Send a PUT request to Project microservice to update the goalReached status
         new_data = {
@@ -232,13 +232,23 @@ def project_fufilment(project_id):
     print('\n\n-----Publishing the (project fulfilment event) message with routing_key = fulfilment.info-----')  
 
     # need to include the project ID that has been fulfiled      
-    json = {
+    message = {
         "project_id": project_id,
         "message": "Project has been fulfilled"
     }
-    url = "http://localhost:5004/capture_all/" + str(project_id)
+    message_json = json.dumps(message)
+
+    channel.basic_publish(exchange=exchangename, routing_key="fulfilment.info", 
+        body=message_json, properties=pika.BasicProperties(delivery_mode = 2))
+    
+    print("\nFulfilment published to RabbitMQ Exchange.\n")
+    # - reply from the invocation is not used;
+    # continue even if this invocation fails
+
+    # url = "http://localhost:5004/capture_all/" + str(project_id)
+    url = "http://back_project:5004/capture_all/" + str(project_id)
     try:
-        response = requests.post(url, json=json).json()
+        response = requests.post(url, json=message).json()
         return jsonify({
             "code": 201,
             "status": response['status']
@@ -253,14 +263,6 @@ def project_fufilment(project_id):
                 },
             }
         ), 500
-    # message_json = json.dumps(message)
-
-    # channel.basic_publish(exchange=exchangename, routing_key="fulfilment.info", 
-    #     body=message_json, properties=pika.BasicProperties(delivery_mode = 2))
-    
-    # print("\nFulfilment published to RabbitMQ Exchange.\n")
-    # # - reply from the invocation is not used;
-    # # continue even if this invocation fails
 
 
 # update tracker "captured" value
@@ -293,7 +295,6 @@ def update_tracker(tracker_id):
     else:
         # Tracker not found
         return jsonify({"message": "Tracker not found.", "code": 404}), 404
-
 
 
 if __name__ == '__main__':

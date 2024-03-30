@@ -13,7 +13,7 @@ import json
 import amqp_connection
 
 
-exchangename = "pledge_options_topic" # exchange name
+exchangename = "pledge_options_topic" # exchange name, didnt include this in the definitions json file yet
 exchangetype = "topic" # use a 'direct' exchange to enable interaction
 
 
