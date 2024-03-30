@@ -15,6 +15,9 @@ CORS(app)
 
 a_queue_name = 'Back_Project' # queue to be subscribed by Activity_Log microservice
 headers = { "Authorization": "Bearer " + os.getenv("STRIPE_PUB_KEY") }
+headers = { "Authorization": "Bearer sk_test_51O4n0jBWraf69XnWY4aVlVKRqQUCAFfd39aPqRYrDH1tVCUDkUv73npLZXUJcMEopBma6kK2JdyZEdh8aRCij6Lk00clrvlXD8" }
+exchangename = "back_project_topic" # exchange name
+exchangetype= "topic" # use a 'topic' exchange to enable interaction
 
 # @app.route("/back_project/<int:project_id>", methods=['POST'])
 # def back_project(project_id):
@@ -42,7 +45,8 @@ def create_checkout_session(backer_id):
     success_url = "http://localhost:5173/success/?checkout_session_id={CHECKOUT_SESSION_ID}&return_url=" + cancel_url + "&project_id=" + str(project_id) + "&pledge_amt=" + str(pledge_amt)
 
     # perform a check on project's goal_reached status (true or false)
-    url = "http://localhost:5000/project/" + str(project_id)
+    # url = "http://localhost:5000/project/" + str(project_id)
+    url = "http://project:5000/project/" + str(project_id)
     goal_reached = requests.get(url).json()['data']['goal_reached']
 
     # # creates delayed payment checkout session if goal not reached
@@ -91,10 +95,10 @@ def get_payment_intent_id(checkout_session_id):
             "error_message": str(e),
             "data": data
         }
-        # print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
-        # channel.basic_publish(exchange=exchangename, routing_key="project.error",
-        #     body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
-        # print("\nProject error published to RabbitMQ Exchange.\n")
+        print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
+        channel.basic_publish(exchange=exchangename, routing_key="project.error",
+            body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
+        print("\nProject error published to RabbitMQ Exchange.\n")
         return jsonify(
             {
                 "code": 500,
@@ -114,7 +118,8 @@ def get_payment_intent_id(checkout_session_id):
 # called by POST request
 def capture_all(project_id):
     # get trackers by project_id
-    url = "http://localhost:5001/project/" + str(project_id) + "/tracker"
+    # url = "http://localhost:5001/project/" + str(project_id) + "/tracker"
+    url = "http://tracker:5001/project/" + str(project_id) + "/tracker"
     response = requests.get(url).json()
     tracker_list = response['data']['trackerList']
 
@@ -126,7 +131,8 @@ def capture_all(project_id):
                 capture_payment(payment_intent_id)
                 tracker_id = tracker['tracker_id']
 
-                response = requests.put("http://localhost:5001/tracker/" + str(tracker_id)).json()
+                # response = requests.put("http://localhost:5001/tracker/" + str(tracker_id)).json()
+                response = requests.put("http://tracker:5001/tracker/" + str(tracker_id)).json()
 
                 if response['code'] != 200:
                     # Handle tracker update error
@@ -157,10 +163,10 @@ def capture_payment(payment_intent_id):
             "error_message": str(e),
             "data": data
         }
-        # print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
-        # channel.basic_publish(exchange=exchangename, routing_key="project.error",
-        #     body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
-        # print("\nProject error published to RabbitMQ Exchange.\n")
+        print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
+        channel.basic_publish(exchange=exchangename, routing_key="project.error",
+            body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
+        print("\nProject error published to RabbitMQ Exchange.\n")
         return jsonify(
             {
                 "code": 500,
@@ -170,9 +176,35 @@ def capture_payment(payment_intent_id):
 
 
 
+def receiveFulfilmentLog(channel):
+    try:
+        # set up a consumer and start to wait for coming messages
+        channel.basic_consume(queue=a_queue_name, on_message_callback=callback, auto_ack=True)
+        print('back_project: Consuming from queue:', a_queue_name)
+        channel.start_consuming()  # an implicit loop waiting to receive messages;
+             #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
+    
+    except pika.exceptions.AMQPError as e:
+        print(f"back_project: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created
+
+    except KeyboardInterrupt:
+        print("back_project: Program interrupted by user.") 
+
+
+def callback(channel, method, properties, body): # required signature for the callback; no return
+    print("\nback_project: Received an backing creation log by " + __file__)
+    processTrackerLog(json.loads(body))
+    print()
+
+def processTrackerLog(order):
+    print("back_project: Recording an backing creation log:")
+    print(order)
+
+
+
 if __name__ == '__main__':
-    # connection = amqp_connection.create_connection() #get the connection to the broker
-    # print("back_project: Connection established successfully")
-    # channel = connection.channel()
-    # receiveFulfilmentLog(channel)  # Start consuming messages from the queue
+    connection = amqp_connection.create_connection() #get the connection to the broker
+    print("back_project: Connection established successfully")
+    channel = connection.channel()
+    receiveFulfilmentLog(channel)  # Start consuming messages from the queue
     app.run(host='0.0.0.0', port=5004, debug=True)

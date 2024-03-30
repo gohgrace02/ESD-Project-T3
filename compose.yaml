@@ -195,19 +195,22 @@ services:
     networks:
       - kong-net
 
-  # ##################################
-  # # Stripe: The stripe microservice
-  # ##################################
-  # stripe:
-  #   build:
-  #     context: ./microservices/Stripe
-  #     dockerfile: Dockerfile
-  #   image: gohgrace/stripe:esd
-  #   # restart: always
-  #   environment:
-  #     PYTHONUNBUFFERED: 1
-  #   ports:
-  #     - "5008:5008"
+  ##################################
+  # Pledge Options: The Pledge Options microservice
+  ##################################
+  pledge_options:
+    build:
+      context: ./microservices/Pledge_Options
+      dockerfile: Dockerfile
+    image: gohgrace/pledge_options:esd
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/pledge_options
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5009:5009"
+    networks:
+      - kong-net
 
   #######################################
   # Postgres: The database used by Kong

@@ -13,7 +13,6 @@ import json
 import amqp_connection
 
 
-
 app = Flask(__name__)
 CORS(app)
 
@@ -35,43 +34,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-# class Mod(db.Model):
-#   __tablename__ = 'moderation'
-#   moderationID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#   comment = db.Column(db.Text, nullable=False)
-#   actionTaken = db.Column(Enum('Approved', 'Rejected'), nullable=False)
-#   reason = db.Column(db.Text, nullable=False)
-#   moderatedAt = db.Column(db.TIMESTAMP)
-
-#   def __init__(self, moderationID, comment, actionTaken, reason, moderatedAt):
-#     self.moderationID = moderationID
-#     self.comment = comment
-#     self.actionTaken = actionTaken
-#     self.reason = reason
-#     self.moderatedAt = moderatedAt
-      
-#   def json(self):
-#     return {
-#         'moderationID': self.moderationID, 'comment': self.comment, 'actionTaken': self.actionTaken, 'reason': self.reason, 'moderatedAt': self.moderatedAt
-#     }
-
-# def is_vulgar():
-#   # Probably need add more Vulgarities
-#   url = "http://api1-ap.webpurify.com/services/rest//?method=webpurify.live.check&api_key=c4eb16473bd9be59faee65a329fdad48&text=fuck&format=json"
-
-#   response = requests.get(url)
-
-#   # Access the response content (replace with actual data parsing)
-#   data = response.json()
-#   # print(data)
-#   if data["rsp"]["@attributes"]["stat"] == "fail":
-#     print(data["rsp"]["err"]["@attributes"]["msg"]) 
-#   elif data["rsp"]["found"] == 0:
-#     return False
-#   else:
-#     return True
-
-#   # return ["stupid", "bitch", "shit"]
 
 @app.route("/project/<string:project_id>/moderate", methods=["POST"])
 def moderate(project_id):
@@ -87,13 +49,13 @@ def moderate(project_id):
   if not backer_id:
     return jsonify({"error": "Missing backer_id in request body"}), 400
 
+
   def is_vulgar(feedback_info):
     # Probably need add more Vulgarities
     url = f"http://api1-ap.webpurify.com/services/rest//?method=webpurify.live.check&api_key=07e7c189b92ff357331ffe3183a48578&text={feedback_info}&format=json"
 
     response = requests.get(url)
     
-
     # Access the response content (replace with actual data parsing)
     data = response.json()
     # print(data)
@@ -107,43 +69,9 @@ def moderate(project_id):
   # Function returns true if vulgarity spotted and false if no vulgarities spotted
   check_vulgar = is_vulgar(feedback_info)
 
-  # # Send the feedback to Feedback Microservice based on moderation result
-  # # (Replace this with your actual implementation for sending the feedback)
-  # if not is_vulgar:
-  #   # Send to Feedback Microservice (success scenario)
-  #   print(f"Feedback is not vulgar: {comment}")
-  # else:
-  #   # Send to Error Microservice (rejected scenario)
-  #   print(f"Feedback contains vulgarity: {comment}")
-
-  # Checking if ^ is proeprly constructed
-  # return jsonify({"moderationID": moderationID,
-  #                 "comment": comment,
-  #                 "actionTaken":  actionTaken,
-  #                 "reason": reason, 
-  #                 "moderatedAt": moderatedAt
-  #               })
-
-
-  my_url = f"http://feedback:5007/project/{project_id}/feedback"
-  # my_url = f"http://127.0.0.1:5000/project/{project_id}/feedback"
-  # response = requests.post(my_url, json=moderation_status)
-
-  # try:
-  #   response = requests.post(my_url, json=moderation_status)
-  #   response.raise_for_status()  # Raise an exception for non-2xx status codes
-  #   print("Moderation result sent successfully.")
-
-  # except requests.exceptions.RequestException as e:
-  #   print(f"Error sending data to feedback microservice: {e}")
-
-
   # Replace with the actual base URL of your application where the feedback microservice is running
   # base_url = "http://127.0.0.1:5007"
   base_url = "http://feedback:5007"
-
-  # Project ID (replace with the actual value)
-  # project_id = "1234"
 
   # Data to be sent (replace with actual content from your moderation process)
   moderation_data = {
@@ -180,8 +108,8 @@ def moderate(project_id):
     # continue even if this invocation fails        
     print("Please do not include profanities!")
 
-
   return jsonify({"moderation_status": "Rejected, feedback not posted" if check_vulgar else "Approved"})
+
 
 if __name__ == "__main__":
   app.run(debug=True, port=5006, host="0.0.0.0")

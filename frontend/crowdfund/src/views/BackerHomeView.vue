@@ -53,7 +53,8 @@ export default {
   },
   methods: {
     getProjects() {
-      const url = "http://localhost:5000/project"
+      // const url = "http://localhost:5000/project"
+      const url = "http://project:5000/project"
       axios.get(url)
       .then(response => {
         this.projects = response.data.data.projects
