@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS `tracker` (
     `project_id` INT NOT NULL,
     `pledge_amt` FLOAT NOT NULL,
     `payment_intent_id` VARCHAR(255) NOT NULL,
-    `captured` BOOLEAN DEFAULT FALSE,
+    `captured` BOOLEAN,
     PRIMARY KEY (`tracker_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

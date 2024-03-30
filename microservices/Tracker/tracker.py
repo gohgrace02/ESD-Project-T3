@@ -129,14 +129,21 @@ def test_tracker(project_id):
 @app.route("/project/<int:project_id>/tracker", methods=['POST'])
 def create_tracker(project_id):
     # TO DO: extract backer_id from the user session
-    # backer_id = session.get('backer_id')
     
     # Extract pledge_amt from the request payload
     data = request.get_json()
     pledge_amt = data.get('pledge_amt')
     backer_id = data.get('backer_id')
     payment_intent_id = data.get('payment_intent_id')
-    captured = False
+    # check goal_reached status of project
+    url = "http://localhost:5000/project/" + str(project_id)
+    goal_reached = requests.get(url).json()['data']['goal_reached']
+
+    # 'captured' value is set to False if goal not reached
+    if not goal_reached:
+        captured = False
+    else:
+        captured = True
 
     # Create a new Tracker object, for now the backer_id is hardcoded
     tracker = Tracker(backer_id, project_id, pledge_amt, payment_intent_id, captured)
@@ -162,48 +169,46 @@ def create_tracker(project_id):
             }
         ), 500
     
-    project_fufilment(project_id)
-    return "goal reached"
 
 
-    # # Send a GET request to Project microservice to get the funding_goal
-    # project_URL = "http://localhost:5000/project"
-    # # project_URL = "http://project:5000/project"
-    # response = requests.get(project_URL + '/' + str(project_id)).json()
-    # data = response['data']
-    # funding_goal = response['data']['funding_goal']
+    # Send a GET request to Project microservice to get the funding_goal
+    project_URL = "http://localhost:5000/project"
+    # project_URL = "http://project:5000/project"
+    response = requests.get(project_URL + '/' + str(project_id)).json()
+    data = response['data']
+    funding_goal = response['data']['funding_goal']
 
-    # print(data)
-    # print(funding_goal)
-    # print(check_funding_goal(project_id, funding_goal))
+    print(data)
+    print(funding_goal)
+    print(check_funding_goal(project_id, funding_goal))
 
-    # # Check whether the funding_goal is reached
-    # if(check_funding_goal(project_id, funding_goal)):
-    #     print("funding goal is met! Project fufilment message will be sent to back_project and goal_reached will be updated")
-    #     # Send an event to backProject microservice
-    #     payment_capture_status = project_fufilment(project_id, payment_intent_id)
+    # Check whether the funding_goal is reached
+    if(check_funding_goal(project_id, funding_goal)):
+        print("funding goal is met! Project fufilment message will be sent to back_project and goal_reached will be updated")
+        # Send an event to backProject microservice
+        payment_capture_status = project_fufilment(project_id, payment_intent_id)
 
-    #     # Send a PUT request to Project microservice to update the goalReached status
-    #     new_data = {
-    #         "goal_reached": 1
-    #     }
-    #     response = requests.put(project_URL + '/' + str(project_id), json=new_data)
+        # Send a PUT request to Project microservice to update the goalReached status
+        new_data = {
+            "goal_reached": 1
+        }
+        response = requests.put(project_URL + '/' + str(project_id), json=new_data)
         
-    #     if response.status_code == 200:
-    #         return jsonify(
-    #             {
-    #                 "payment_capture_status": payment_capture_status['status'],
-    #                 "tracker_status": "Tracker created and Project data updated successfully"
-    #             }
-    #         ), 200
-    #     else:
-    #         return jsonify(
-    #             {
-    #                 "error": "Failed to update project data"
-    #             }
-    #         ), response.status_code
+        if response.status_code == 200:
+            return jsonify(
+                {
+                    "payment_capture_status": payment_capture_status['status'],
+                    "tracker_status": "Tracker created and Project data updated successfully"
+                }
+            ), 200
+        else:
+            return jsonify(
+                {
+                    "error": "Failed to update project data"
+                }
+            ), response.status_code
     
-    # return "Funding Goal has not been reached"
+    return "Funding Goal has not been reached"
 
 
 # check_funding_goal returns "True" if funding_goal is met else returns "False"

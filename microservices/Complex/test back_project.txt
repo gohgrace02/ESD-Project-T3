@@ -1,0 +1,42 @@
+===============================
+ENDPOINTS:
+
+1. (/create_checkout_session/<backer_id>)
+- methods: post, get
+- function: when users click on the Pledge button on the project page,
+it creates a checkout session on Stripe and fetches the checkout url
+and returns it to the Vue page for redirection
+- sample input:
+{
+    "project_id": 1238,
+    "pledge_amt": 500,
+    "price_id": "price_1OzXtuBWraf69XnWOJIEupXh",
+    "quantity": 1,
+    "cancel_url": "http://cancel.com",
+    "success_url": "http://success.com"
+}
+and the backer_id in the header (you can use 7 for testing)
+
+2. (/get_payment_intent_id/<checkout_session_id>)
+- methods: get
+- function: after the user keys in his card details, he is redirected to
+the success Vue page. clicking the button on that page calls this method
+to retrieve the payment_intent_id from the successful checkout session.
+the payment_intent_id is needed for payment capture in the future
+- sample input:
+the checkout_session_id in the header. you can use this for testing:
+"cs_test_a1Uk1wvE2l0WjbZf2wNuOEbBxUzXuUUwnXEdyfXMXQiiNcirQ19cZ2GOrY"
+although it may expire. to generate new checkout_session_id, just click
+on the pledge button on project 1236 or project 1238
+
+3. (/capture_all/<int:project_id>)
+- methods: post, get, put
+- function: this has two functions:
+    1. the first is capture_payment(), which
+    captures the payment of only one pledge/tracker entry.
+    2. (called via POST request) the second is capture_all(), which iterates 
+    through all the tracker entries related to the specified project_id, and 
+    calls capture_payment() on each tracker entry
+capture_all() is called upon project fulfillment/goal reached
+- sample input: project_id in the header
+
