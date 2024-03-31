@@ -4,7 +4,6 @@
 
 <template>
   <div class="container-fluid">
-    <h1>{{ message }}</h1>
     <!-- search -->
     <div class="row mb-4 p-3 bg-light rounded-5">
       <div class="mb-3">
@@ -44,13 +43,14 @@
 
 <script>
 import axios from 'axios'
+
 // import { RouterLink, userRouter } from 'vue-router';
 export default {
+
   data() {
     return {
       projects: [],
       search: '',
-      message: '',
     }
   },
   methods: {
@@ -59,8 +59,7 @@ export default {
       // const url = "http://project:5000/project"
       axios.get(url)
       .then(response => {
-        this.message = response.data
-        // this.projects = response.data.data.projects
+        this.projects = response.data.data.projects
       })
       .catch(error => {
         console.log(error.message)

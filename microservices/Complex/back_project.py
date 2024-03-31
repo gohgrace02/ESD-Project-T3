@@ -33,8 +33,8 @@ exchangetype= "topic" # use a 'topic' exchange to enable interaction
 
 # users will make a POST req to this when they click on the 'pledge' button
 # this creates a checkout session and redirects the user to the stripe checkout url
-@app.route("/create_checkout_session/<backer_id>", methods=['POST', 'GET'])
-def create_checkout_session(backer_id):
+@app.route("/create_checkout_session/<int:user_id>", methods=['POST', 'GET'])
+def create_checkout_session(user_id):
     data = request.get_json()
     project_id = data.get('project_id')
     pledge_amt = data.get('pledge_amt')
@@ -162,10 +162,10 @@ def capture_payment(payment_intent_id):
             "error_message": str(e),
             "data": data
         }
-        print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
-        channel.basic_publish(exchange=exchangename, routing_key="project.error",
-            body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
-        print("\nProject error published to RabbitMQ Exchange.\n")
+        # print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
+        # channel.basic_publish(exchange=exchangename, routing_key="project.error",
+        #     body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
+        # print("\nProject error published to RabbitMQ Exchange.\n")
         return jsonify(
             {
                 "code": 500,
@@ -175,35 +175,35 @@ def capture_payment(payment_intent_id):
 
 
 
-def receiveFulfilmentLog(channel):
-    try:
-        # set up a consumer and start to wait for coming messages
-        channel.basic_consume(queue=a_queue_name, on_message_callback=callback, auto_ack=True)
-        print('back_project: Consuming from queue:', a_queue_name)
-        channel.start_consuming()  # an implicit loop waiting to receive messages;
-             #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
+# def receiveFulfilmentLog(channel):
+#     try:
+#         # set up a consumer and start to wait for coming messages
+#         channel.basic_consume(queue=a_queue_name, on_message_callback=callback, auto_ack=True)
+#         print('back_project: Consuming from queue:', a_queue_name)
+#         channel.start_consuming()  # an implicit loop waiting to receive messages;
+#              #it doesn't exit by default. Use Ctrl+C in the command window to terminate it.
     
-    except pika.exceptions.AMQPError as e:
-        print(f"back_project: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created
+#     except pika.exceptions.AMQPError as e:
+#         print(f"back_project: Failed to connect: {e}") # might encounter error if the exchange or the queue is not created
 
-    except KeyboardInterrupt:
-        print("back_project: Program interrupted by user.") 
+#     except KeyboardInterrupt:
+#         print("back_project: Program interrupted by user.") 
 
 
-def callback(channel, method, properties, body): # required signature for the callback; no return
-    print("\nback_project: Received an backing creation log by " + __file__)
-    processTrackerLog(json.loads(body))
-    print()
+# def callback(channel, method, properties, body): # required signature for the callback; no return
+#     print("\nback_project: Received an backing creation log by " + __file__)
+#     processTrackerLog(json.loads(body))
+#     print()
 
-def processTrackerLog(order):
-    print("back_project: Recording an backing creation log:")
-    print(order)
+# def processTrackerLog(order):
+#     print("back_project: Recording an backing creation log:")
+#     print(order)
 
 
 
 if __name__ == '__main__':
-    connection = amqp_connection.create_connection() #get the connection to the broker
-    print("back_project: Connection established successfully")
-    channel = connection.channel()
-    receiveFulfilmentLog(channel)  # Start consuming messages from the queue
+    # connection = amqp_connection.create_connection() #get the connection to the broker
+    # print("back_project: Connection established successfully")
+    # channel = connection.channel()
+    # receiveFulfilmentLog(channel)  # Start consuming messages from the queue
     app.run(host='0.0.0.0', port=5004, debug=True)

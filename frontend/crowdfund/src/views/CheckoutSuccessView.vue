@@ -11,6 +11,7 @@
 
 <script>
 import axios from 'axios'
+
 export default {
     data() {
         return {
@@ -33,7 +34,7 @@ export default {
                     // const to_tracker_url = "http://tracker:5001/project/" + this.project_id + "/tracker"
                     const json = {
                         "pledge_amt": this.pledge_amt,
-                        "backer_id": 7,
+                        "user_id": JSON.parse(sessionStorage.getItem('user')).user_id,
                         "payment_intent_id": this.payment_intent_id
                     }
                     axios.post(to_tracker_url, json)

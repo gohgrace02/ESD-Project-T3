@@ -49,18 +49,18 @@ class Pledge(db.Model):
     option_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(255), nullable=False)  # You can adjust the length as needed
     description = db.Column(db.Text, nullable=True)   # Assuming description can be nullable
-    creator_id = db.Column(db.String(255), nullable=False)  # Adjust length as needed
+    user_id = db.Column(db.Integer, nullable=False)  
     project_id = db.Column(db.Integer, nullable=False)
     pledge_amt = db.Column(db.Integer, nullable=False)
     price_id = db.Column(db.String(255), nullable=False)
 
 
 
-    def __init__(self, option_id, title, description, creator_id, project_id, pledge_amt, price_id):
+    def __init__(self, option_id, title, description, user_id, project_id, pledge_amt, price_id):
         self.option_id = option_id
         self.title = title
         self.description = description
-        self.creator_id = creator_id
+        self.user_id = user_id
         self.project_id = project_id
         self.pledge_amt = pledge_amt
         self.price_id = price_id
@@ -71,7 +71,7 @@ class Pledge(db.Model):
         return {"option_id": self.option_id,
                 "title": self.title,
                 "description": self.description,
-                "creator_id": self.creator_id,
+                "user_id": self.user_id,
                 "project_id": self.project_id,
                 "pledge_amt": self.pledge_amt,
                 "price_id": self.price_id,
@@ -134,7 +134,7 @@ def add_pledge_option(project_id):
         ), 500
 
     option = Pledge(
-        creator_id=data.get('creator_id'),
+        user_id=data.get('user_id'),
         option_id=data.get('option_id'),
         title=data.get('title'),
         description=data.get('description'),

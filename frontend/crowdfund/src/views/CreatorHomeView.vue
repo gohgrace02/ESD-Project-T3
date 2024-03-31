@@ -1,14 +1,15 @@
-<script setup>
-
-</script>
-
 <template>
   <div class="container-fluid">
     <!-- create project button -->
     <div class="row">
       <div v-if="length != 0" class="row">
-        <h5 for="projects_table" class="form-label fw-bold">My projects:</h5>
-        <table class="table table-hover text-end" id="projects_table">
+        <div class="col-10">
+          <h5 for="projects_table" class="form-label fw-bold">My projects:</h5>
+        </div>
+        <div class="col-2 text-end">
+          <Logout/>
+        </div>
+        <table class="mt-4 table table-hover text-end" id="projects_table">
           <thead>
             <tr>
               <th scope="col">ID</th>
@@ -22,7 +23,7 @@
             <tr v-for="project in projects.projects">
               <th scope="row">{{ project.project_id }}</th>
               <td>{{ project.name }}</td>
-              <td>{{ project.creator_id }}</td>
+              <td>{{ project.user_id }}</td>
               <td>{{ project.funding_goal }}</td>
               <td><button @click="goToProject(project.project_id)" class="btn btn-success" type="button">View
                   project</button></td>
@@ -41,19 +42,24 @@
 
 <script>
 import axios from 'axios'
+import Logout from '@/components/Logout.vue'
+
 // import router from '@/router';
 export default {
+  components: {
+    Logout
+  },
   data() {
     return {
       projects: [],
       length: 0,
-      creator_id: ''
+      user_id: JSON.parse(sessionStorage.getItem('user')).user_id,
     }
   },
   methods: {
     getProjects() {
-      const url = "http://localhost:5000/project/" + creator_id
-      // const url = "http://project:5000/project/" + creator_id
+      const url = "http://localhost:5000/project/user_id=" + this.user_id
+      // const url = "http://project:5000/project/user_id=" + this.user_id
       axios.get(url)
       .then(response => {
         this.projects = response.data.data
@@ -70,7 +76,7 @@ export default {
       })
     },
     goToProject(project_id) {
-      this.$router.push({ name: 'project', params: { project_id: project_id } })
+      this.$router.push({ name: 'project', params: {project_id: project_id} })
     },
   },
   mounted() {

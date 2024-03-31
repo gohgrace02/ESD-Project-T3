@@ -6,6 +6,7 @@ import CreatorHomeView from '@/views/CreatorHomeView.vue'
 import CreateProjectView from '@/views/CreateProjectView.vue'
 import CheckoutSuccessView from '@/views/CheckoutSuccessView.vue'
 import LoginView from '@/views/LoginView.vue'
+import SignupView from '@/views/SignupView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,19 +17,24 @@ const router = createRouter({
       component: LoginView
     },
     {
+      path: '/signup',
+      name: 'signup',
+      component: SignupView
+    },
+    {
       path: '/backer',
       name: 'backerhome',
       component: BackerHomeView
+    },
+     {
+      path: '/creator',
+      name: 'creatorhome',
+      component: CreatorHomeView
     },
     {
       path: '/project/:project_id',
       name: 'project',
       component: ProjectView
-    },
-    {
-      path: '/creator',
-      name: 'creatorhome',
-      component: CreatorHomeView
     },
     {
       path: '/creator/create',

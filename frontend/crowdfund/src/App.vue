@@ -1,6 +1,5 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-// import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
@@ -9,7 +8,6 @@ import { RouterLink, RouterView } from 'vue-router'
       <h1 class="fw-bold">Crowdfund.com</h1>
     </nav>
   </header> -->
-  
   <RouterView />
   <!-- <RouterLink to="/">Home</RouterLink>
   <RouterLink to="/about">About</RouterLink> -->

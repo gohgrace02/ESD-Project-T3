@@ -15,8 +15,8 @@ import json
 import amqp_connection
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 headers = { "Authorization": "Bearer " + os.getenv("STRIPE_PUB_KEY") }
@@ -28,13 +28,13 @@ exchangename = "tracker" # exchange name
 exchangetype = "direct" # use a 'direct' exchange to enable interaction
 
 #create a connection and a channel to the broker to publish messages to activity_log, error queues
-connection = amqp_connection.create_connection() 
-channel = connection.channel()
+# connection = amqp_connection.create_connection() 
+# channel = connection.channel()
 
-#if the exchange is not yet created, exit the program
-if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
-    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-    sys.exit(0)  # Exit with a success status
+# #if the exchange is not yet created, exit the program
+# if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
+#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+#     sys.exit(0)  # Exit with a success status
 
 db = SQLAlchemy(app)
 
@@ -45,15 +45,15 @@ class Tracker(db.Model):
     tracker_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     # backer_id = db.Column(db.Integer, db.ForeignKey('backer.backer_id'))
     # project_id = db.Column(db.Integer, db.ForeignKey('project.project_id'))
-    backer_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
     project_id = db.Column(db.Integer)
     pledge_amt = db.Column(db.Float)
     pledge_amt = db.Column(db.Float)
     payment_intent_id = db.Column(db.String(255))
     captured = db.Column(db.Boolean, nullable=False, default=False)
 
-    def __init__(self, backer_id, project_id, pledge_amt, payment_intent_id, captured):
-        self.backer_id = backer_id
+    def __init__(self, user_id, project_id, pledge_amt, payment_intent_id, captured):
+        self.user_id = user_id
         self.project_id = project_id
         self.pledge_amt = pledge_amt
         self.payment_intent_id = payment_intent_id
@@ -61,7 +61,7 @@ class Tracker(db.Model):
 
     def json(self):
         return {"tracker_id": self.tracker_id, 
-                "backer_id": self.backer_id, 
+                "user_id": self.user_id, 
                 "project_id": self.project_id, 
                 "pledge_amt": self.pledge_amt,
                 "payment_intent_id": self.payment_intent_id,
@@ -130,12 +130,12 @@ def test_tracker(project_id):
 # 2. IF funding_goal is reached will sent an event to back_project microservice and update goal_reached from Project DB
 @app.route("/project/<int:project_id>/tracker", methods=['POST'])
 def create_tracker(project_id):
-    # TO DO: extract backer_id from the user session
+    # TO DO: extract backer's user_id from the user session
     
     # Extract pledge_amt from the request payload
     data = request.get_json()
     pledge_amt = data.get('pledge_amt')
-    backer_id = data.get('backer_id')
+    user_id = data.get('user_id')
     payment_intent_id = data.get('payment_intent_id')
     # check goal_reached status of project
     url = "http://project:5000/project/" + str(project_id)
@@ -148,8 +148,8 @@ def create_tracker(project_id):
     else:
         captured = True
 
-    # Create a new Tracker object, for now the backer_id is hardcoded
-    tracker = Tracker(backer_id, project_id, pledge_amt, payment_intent_id, captured)
+    # Create a new Tracker object
+    tracker = Tracker(user_id, project_id, pledge_amt, payment_intent_id, captured)
 
     try:
         db.session.add(tracker)

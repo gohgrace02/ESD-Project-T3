@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `project` (
     `product_id` VARCHAR(255) NOT NULL,
     `name` VARCHAR(255) NOT NULL,
     `description` TEXT,
-    `creator_id` VARCHAR(255) NOT NULL,
+    `user_id` INT NOT NULL,
     `funding_goal` INT NOT NULL,
     `deadline` DATETIME NOT NULL,
     `creation_time` TIMESTAMP NOT NULL,
@@ -58,11 +58,11 @@ CREATE TABLE IF NOT EXISTS `project` (
 --
 
 
-INSERT INTO `project` (`project_id`,`product_id`, `name`, `description`, `creator_id`, `funding_goal`, `deadline`, `creation_time`, `status`, `goal_reached`) VALUES
-    (1231, 'prod_PpCDC2PwIfSJEJ', 'Project A', 'Description for Project A', 'Creator1', 5000, '2024-03-31 12:00:00', '2024-01-31 11:00:00', 'Open', FALSE),
-    (1232, 'prod_PpIgZpNc1uWRbq', 'Project B', 'Description for Project B', 'Creator2', 10000, '2024-04-15 18:30:00', '2024-01-31 10:00:00', 'Open', FALSE),
-    (1233, 'prod_PpIgB4T9XwaMMY', 'Project C', 'Description for Project C', 'Creator3', 7500, '2024-05-20 09:45:00', '2024-01-31 9:00:00', 'Open', FALSE),
-    (1234, 'prod_PpIg4PmC0uun8j', 'Project D', 'Description for Project D', 'Creator4', 12000, '2024-06-10 15:15:00', '2024-01-31 3:00:00', 'Open', FALSE);
+INSERT INTO `project` (`project_id`,`product_id`, `name`, `description`, `user_id`, `funding_goal`, `deadline`, `creation_time`, `status`, `goal_reached`) VALUES
+    (1231, 'prod_PpCDC2PwIfSJEJ', 'Project A', 'Description for Project A', '2', 5000, '2024-03-31 12:00:00', '2024-01-31 11:00:00', 'Open', FALSE),
+    (1232, 'prod_PpIgZpNc1uWRbq', 'Project B', 'Description for Project B', '2', 10000, '2024-04-15 18:30:00', '2024-01-31 10:00:00', 'Open', FALSE),
+    (1233, 'prod_PpIgB4T9XwaMMY', 'Project C', 'Description for Project C', '2', 7500, '2024-05-20 09:45:00', '2024-01-31 9:00:00', 'Open', FALSE),
+    (1234, 'prod_PpIg4PmC0uun8j', 'Project D', 'Description for Project D', '4', 12000, '2024-06-10 15:15:00', '2024-01-31 3:00:00', 'Open', FALSE);
 COMMIT;
 
 

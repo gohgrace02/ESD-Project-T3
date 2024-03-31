@@ -7,11 +7,11 @@
 -- Server version: 5.7.19
 -- PHP Version: 7.1.9
 
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -19,42 +19,37 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `pledge_options`
+-- Database: `user`
 --
-CREATE DATABASE IF NOT EXISTS `pledge_options` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `pledge_options`;
-
+CREATE DATABASE IF NOT EXISTS `user` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `user`;
 
 -- --------------------------------------------------------
 
-
 --
--- Table structure for table `pledge_options`
+-- Table structure for table `user`
 --
 
+DROP TABLE IF EXISTS `user`;
+CREATE TABLE IF NOT EXISTS `user` (
+    `user_id` INT AUTO_INCREMENT NOT NULL,
+    `name` VARCHAR(255) NOT NULL,
+    `email` VARCHAR(255) NOT NULL,
+    `password` VARCHAR(255) NOT NULL,
+    `role` VARCHAR(255) NOT NULL,
 
-DROP TABLE IF EXISTS `pledge_options`;
-CREATE TABLE IF NOT EXISTS `pledge_options` (
-    `option_id` INT AUTO_INCREMENT,
-    `title` VARCHAR(255) NOT NULL,
-    `description` TEXT,
-    `user_id` INT NOT NULL,
-    `project_id` INT NOT NULL,
-    `pledge_amt` INT NOT NULL,
-    `price_id` VARCHAR(255) NOT NULL,
-  PRIMARY KEY (`option_id`)
+    PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 --
--- Dumping data for table `pledge_options`
+-- Dumping data for table `user`
 --
 
-
-INSERT INTO `pledge_options` (`option_id`, `title`, `description`, `user_id`, `project_id`, `pledge_amt`, `price_id`) VALUES
-    (1, 'Gold Tier', 'Lorem ipsum dolor sit amet consectetur adipisicing elit.', 2, 1231, '1000', 'price_1OzXtuBWraf69XnWOJIEupXh');
+INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`) VALUES
+    (1, 'bob', 'bob@gmail.com', 'hello', 'backer'),
+    (2, 'jack', 'jack@gmail.com', 'hello1', 'creator'),
+    (3, 'amy', 'amy@gmail.com', 'hello2', 'backer');
 COMMIT;
-
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

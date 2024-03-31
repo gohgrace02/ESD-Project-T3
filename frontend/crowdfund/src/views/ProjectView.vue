@@ -1,15 +1,15 @@
-<script setup>
-
-</script>
-
 <template>
-  <nav style="--bs-breadcrumb-divider: '>';">
-    <ol class="breadcrumb">
-      <li v-if="creator_id" class="breadcrumb-item"><a href="/creator">Home</a></li>
-      <li v-else class="breadcrumb-item"><a href="/backer">Home</a></li>
-      <li class="breadcrumb-item active">{{ project.name }}</li>
-    </ol>
-  </nav>
+  <div class="d-flex justify-content-between align-items-center">
+    <nav style="--bs-breadcrumb-divider: '>';">
+      <ol class="breadcrumb m-0">
+        <li class="breadcrumb-item"><a href="/creator">Home</a></li>
+        <li class="breadcrumb-item active">Create a project</li>
+      </ol>
+    </nav>
+    <div>
+      <Logout />
+    </div>
+  </div>
   <div class="container-fluid">
     <!-- project id, name and description -->
     <div class="row">
@@ -22,7 +22,7 @@
 
     <!-- project details -->
     <div class="row">
-      <!-- project_id, name, description, creator_id, funding_goal, deadline, creation_time, status, goal_reached -->
+      <!-- project_id, name, description, user_id, funding_goal, deadline, creation_time, status, goal_reached -->
       <label for="details" class="fw-bold">More details</label>
       <table class="table table-hover" id="details">
         <thead>
@@ -35,7 +35,8 @@
         </thead>
         <tbody>
           <tr>
-            <th scope="row">{{ project.creator_id }}</th>
+            <!-- change to creator name -->
+            <th scope="row">{{ project.user_id }}</th>
             <td>{{ project.funding_goal }}</td>
             <td>{{ project.goal_reached }}</td>
             <td>{{ project.deadline }}</td>
@@ -49,7 +50,7 @@
       <div class="col">
         <label for="pledge_options" class="fw-bold" style="vertical-align: middle;">Pledge options</label>
       </div>
-      <div v-if="creator_id" class="col text-end">
+      <div v-if="is_creator" class="col text-end">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPledgeOptionModal">+ Add pledge
           option</button>
       </div>
@@ -88,7 +89,7 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <!-- things submitted: `title`, `description`, `creator_id`, `project_id`, `pledge_amt` -->
+                <!-- things submitted: `title`, `description`, `user_id`, `project_id`, `pledge_amt` -->
                 <!-- submitted to pledge_options.py, and refreshes the page -->
                 <a @click="addPledgeOption()" class="btn btn-primary">Submit</a>
               </div>
@@ -106,9 +107,10 @@
           <div class="card-body text-center">
             <h5 class="card-title">{{ option.title }}</h5>
             <p class="card-text">{{ option.description }}</p>
-            <a v-if="creator_id" @click="removeOption(option.price_id)" href="#" class="btn btn-danger">Remove
+            <a v-if="is_creator" @click="removeOption(option.price_id)" href="#" class="btn btn-danger">Remove
               option</a>
-            <a v-else href="#" @click="checkoutPledge(option.price_id, option.pledge_amt)" class="btn btn-success">Pledge ${{
+            <a v-else href="#" @click="checkoutPledge(option.price_id, option.pledge_amt)"
+              class="btn btn-success">Pledge ${{
               option.pledge_amt }}</a>
           </div>
         </div>
@@ -126,7 +128,12 @@
 
 <script>
 import axios from 'axios'
+import Logout from '@/components/Logout.vue'
+
 export default {
+  components: {
+    Logout
+  },
   data() {
     return {
       project_id: this.$route.params.project_id,
@@ -134,8 +141,8 @@ export default {
 
       product_id: '',
       options: [],
-      creator_id: '',
-      backer_id: '7',
+      user_id: JSON.parse(sessionStorage.getItem('user')).user_id,
+      is_creator: JSON.parse(sessionStorage.getItem('user')).is_creator,
 
       title: '',
       description: '',
@@ -175,11 +182,11 @@ export default {
 
     addPledgeOption() {
       // data submitted to pledge_options.py
-      // `title`, `description`, `creator_id`, `project_id`, `pledge_amt`
+      // `title`, `description`, `user_id`, `project_id`, `pledge_amt`
       const json = {
         "title": this.title,
         "description": this.description,
-        "creator_id": this.creator_id,
+        "user_id": this.user_id,
         "project_id": this.project_id,
         "product_id": this.product_id,
         "pledge_amt": this.pledge_amt
@@ -220,8 +227,8 @@ export default {
 
     checkoutPledge(price_id, pledge_amt) {
       // first post to back_project.py to create checkout session
-      const url = "http://localhost:5004/create_checkout_session/" + this.backer_id
-      // const url = "http://back_project:5004/create_checkout_session/" + this.backer_id
+      const url = "http://localhost:5004/create_checkout_session/" + this.user_id
+      // const url = "http://back_project:5004/create_checkout_session/" + this.user_id
       const json = {
         "project_id": this.project_id,
         "pledge_amt": pledge_amt,
@@ -241,11 +248,24 @@ export default {
         })
       
       
+    },
+
+
+    isCreator() {
+      axios.get("http://localhost:5010/user/" + this.user_id)
+        .then(response => {
+          console.log(response.data)
+        })
+        .catch(error => {
+          console.log(error.message)
+        })
     }
   },
   mounted() {
     this.getDetails()
     this.getOptions()
-  }
+    this.isCreator()
+
+  },
 }
 </script>

@@ -1,42 +1,48 @@
-<script setup>
-
-</script>
-
 <template>
-  <nav style="--bs-breadcrumb-divider: '>';">
-    <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/creator">Home</a></li>
-      <li class="breadcrumb-item active">Create a project</li>
-    </ol>
-  </nav>
+  <div class="d-flex justify-content-between align-items-center">
+    <nav style="--bs-breadcrumb-divider: '>';">
+      <ol class="breadcrumb m-0">
+        <li class="breadcrumb-item"><a href="/creator">Home</a></li>
+        <li class="breadcrumb-item active">Create a project</li>
+      </ol>
+    </nav>
+    <div>
+      <Logout />
+    </div>
+  </div>
+
   <div class="container-fluid">
-    <form>
+    <form @submit.prevent="createProject()">
       <!-- Project details form -->
       <div class="row justify-content-center my-3">
         <div class="col-md-6 col-sm-8 bg-light rounded-3 p-3">
           <h1>Create a project</h1>
           <div class="mb-3">
             <label for="project_name" class="form-label">Project name:</label>
-            <input v-model="name" type="text" class="form-control" id="project_name">
+            <input required v-model="name" type="text" class="form-control" id="project_name">
           </div>
           <div class="mb-3">
             <label for="funding_goal" class="form-label">Funding goal ($): (input a whole number)</label>
-            <input v-model="funding_goal" type="text" class="form-control" id="funding_goal" placeholder="">
+            <input required v-model="funding_goal" type="text" class="form-control" id="funding_goal" placeholder="">
           </div>
           <div class=" row mb-3">
             <div class="col">
               <label for="deadline" class="form-label">Deadline</label>
-              <input v-model="deadline" type="date" class="form-control" id="deadline" placeholder="">
+              <input required v-model="deadline" type="date" class="form-control" id="deadline" placeholder="">
             </div>
           </div>
           <div class="mb-3">
             <label for="description" class="form-label">Description:</label>
-            <textarea v-model="description" class="form-control" id="description" placeholder="" style="min-height: 120px;" />
+            <textarea required v-model="description" class="form-control" id="description" placeholder=""
+              style="min-height: 120px;" />
           </div>
           <!-- things submitted project_name, funding_goal, deadline, description
           creator_id -->
           <!-- submitted to project.py, should redirect to project page -->
-          <button @click="createProject()" type="button" class="btn btn-primary">Submit</button>
+          <div class="mb-3 d-flex justify-content-between">
+            <button @click="this.$router.go(-1)" class="btn btn-secondary">Cancel</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
 
         </div>
       </div>
@@ -46,12 +52,17 @@
 
 <script>
 import axios from 'axios'
+import Logout from '@/components/Logout.vue'
+
 export default {
+  components: {
+    Logout
+  },
   data() {
     return {
       name: '',
       description: '',
-      creator_id: 'Creator1',
+      user_id: JSON.parse(sessionStorage.getItem('user')).user_id,
       funding_goal: 0,
       deadline: '',
     }
@@ -74,7 +85,7 @@ export default {
       const json = {
         "name": this.name,
         "description": this.description,
-        "creator_id": this.creator_id,
+        "user_id": this.user_id,
         "funding_goal": this.funding_goal,
         "deadline": this.deadline,
         "status": "Open",

@@ -20,15 +20,15 @@ exchangename = "project_topic" # exchange name
 exchangetype = "topic" # use a 'direct' exchange to enable interaction
 
 
-# #create a connection and a channel to the broker to publish messages to activity_log, error queues
-connection = amqp_connection.create_connection()
-channel = connection.channel()
+# # #create a connection and a channel to the broker to publish messages to activity_log, error queues
+# connection = amqp_connection.create_connection()
+# channel = connection.channel()
 
 
-# #if the exchange is not yet created, exit the program
-if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
-    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-    sys.exit(0)  # Exit with a success status
+# # #if the exchange is not yet created, exit the program
+# if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
+#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+#     sys.exit(0)  # Exit with a success status
 
 
 app = Flask(__name__)
@@ -51,7 +51,7 @@ class Project(db.Model):
     product_id = db.Column(db.String(255), nullable=False)
     name = db.Column(db.String(255), nullable=False)  # You can adjust the length as needed
     description = db.Column(db.Text, nullable=True)   # Assuming description can be nullable
-    creator_id = db.Column(db.String(255), nullable=False)  # Adjust length as needed
+    user_id = db.Column(db.Integer, nullable=False) 
     funding_goal = db.Column(db.Integer, nullable=False)
     deadline = db.Column(db.DateTime, nullable=False)
     creation_time = db.Column(db.DateTime, nullable=False, default=datetime.now)
@@ -61,12 +61,12 @@ class Project(db.Model):
 
 
 
-    def __init__(self, project_id, product_id, name, description, creator_id, funding_goal, deadline, creation_time, status, goal_reached):
+    def __init__(self, project_id, product_id, name, description, user_id, funding_goal, deadline, creation_time, status, goal_reached):
         self.project_id = project_id
         self.product_id = product_id
         self.name = name
         self.description = description
-        self.creator_id = creator_id
+        self.user_id = user_id
         self.funding_goal = funding_goal
         self.deadline = deadline
         self.creation_time = creation_time
@@ -81,7 +81,7 @@ class Project(db.Model):
                 "product_id": self.product_id,
                 "name": self.name,
                 "description": self.description,
-                "creator_id": self.creator_id,
+                "user_id": self.user_id,
                 "funding_goal": self.funding_goal,
                 "deadline": self.deadline,
                 "creation_time": self.creation_time,
@@ -91,7 +91,6 @@ class Project(db.Model):
 
 @app.route("/project")
 def get_all():
-    return os.getenv("STRIPE_PUB_KEY")
     projectlist = db.session.scalars(db.select(Project)).all()
 
     if len(projectlist):
@@ -137,13 +136,13 @@ def find_by_projectid(project_id):
         }
     ), 404
 
-# find projects by creator_id
-@app.route("/project/<creator_id>")
-def find_by_creatorid(creator_id):
+# find projects by creator's user_id
+@app.route("/project/user_id=<int:user_id>")
+def find_by_user_id(user_id):
     # projectlist = db.session.scalars(db.select(Project)).all()
 
     projectlist = db.session.scalars(
-        db.select(Project).filter_by(creator_id=creator_id)
+        db.select(Project).filter_by(user_id=user_id)
     )
 
     if projectlist:
@@ -201,7 +200,7 @@ def create_project():
                       product_id=product_id,
                       name = data.get('name'), 
                       description = data.get('description'), 
-                      creator_id = data.get('creator_id'), 
+                      user_id = data.get('user_id'), 
                       funding_goal = data.get('funding_goal'), 
                       deadline = data.get('deadline'), 
                       creation_time = data.get('creation_time'), 
