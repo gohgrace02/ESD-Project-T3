@@ -29,7 +29,7 @@ if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
     sys.exit(0)  # Exit with a success status
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/mod'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/mod'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/mod'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -81,69 +81,47 @@ def moderate(project_id):
   backer_id = request.json.get("backer_id")
 
   if not feedback_info:
-    return jsonify({"error": "Missing feedback_info in request body"}), 400
+    return jsonify(
+        {
+            "code": 400,
+            "error": "Missing feedback_info in request body"
+        }
+    ), 400
   if not rating:
-    return jsonify({"error": "Missing rating in request body"}), 400
+    return jsonify(
+        {
+            "code": 400,
+            "error": "Missing rating in request body"
+        }
+    ), 400
   if not backer_id:
-    return jsonify({"error": "Missing backer_id in request body"}), 400
+    return jsonify(
+        {
+            "code": 400,
+            "error": "Missing backer_id in request body"
+        }
+    ), 400
 
-  def is_vulgar(feedback_info):
+  def check_vulgar(feedback_info):
     # Probably need add more Vulgarities
     url = f"http://api1-ap.webpurify.com/services/rest//?method=webpurify.live.check&api_key=07e7c189b92ff357331ffe3183a48578&text={feedback_info}&format=json"
 
     response = requests.get(url)
     
-
     # Access the response content (replace with actual data parsing)
     data = response.json()
-    # print(data)
-    # if data["rsp"]["@attributes"]["stat"] == "fail":
-    #   print(data["rsp"]["err"]["@attributes"]["msg"])
     if data["rsp"]["found"] == "0":
       return False
     else:
       return True
 
   # Function returns true if vulgarity spotted and false if no vulgarities spotted
-  check_vulgar = is_vulgar(feedback_info)
-
-  # # Send the feedback to Feedback Microservice based on moderation result
-  # # (Replace this with your actual implementation for sending the feedback)
-  # if not is_vulgar:
-  #   # Send to Feedback Microservice (success scenario)
-  #   print(f"Feedback is not vulgar: {comment}")
-  # else:
-  #   # Send to Error Microservice (rejected scenario)
-  #   print(f"Feedback contains vulgarity: {comment}")
-
-  # Checking if ^ is proeprly constructed
-  # return jsonify({"moderationID": moderationID,
-  #                 "comment": comment,
-  #                 "actionTaken":  actionTaken,
-  #                 "reason": reason, 
-  #                 "moderatedAt": moderatedAt
-  #               })
-
-
-  my_url = f"http://feedback:5007/project/{project_id}/feedback"
-  # my_url = f"http://127.0.0.1:5000/project/{project_id}/feedback"
-  # response = requests.post(my_url, json=moderation_status)
-
-  # try:
-  #   response = requests.post(my_url, json=moderation_status)
-  #   response.raise_for_status()  # Raise an exception for non-2xx status codes
-  #   print("Moderation result sent successfully.")
-
-  # except requests.exceptions.RequestException as e:
-  #   print(f"Error sending data to feedback microservice: {e}")
-
+  is_vulgar = check_vulgar(feedback_info)
 
   # Replace with the actual base URL of your application where the feedback microservice is running
   # base_url = "http://127.0.0.1:5007"
   base_url = "http://feedback:5007"
 
-  # Project ID (replace with the actual value)
-  # project_id = "1234"
 
   # Data to be sent (replace with actual content from your moderation process)
   moderation_data = {
@@ -157,13 +135,24 @@ def moderate(project_id):
   url = f"{base_url}/project/{project_id}/feedback"
 
   # Send the POST request with JSON data
-  if not check_vulgar:
+  if not is_vulgar:
     try:
       response = requests.post(url, json=moderation_data)
       print("Moderation result sent successfully.")
-
+      return jsonify(
+        {
+            "code": 200,
+            "moderation_status": "Approved, sent to feedback microservice"
+        }
+      ), 200 
     except requests.exceptions.RequestException as e:
       print(f"Error sending data to feedback microservice: {e}")
+      return jsonify(
+        {
+            "code": 500,
+            "moderation_status": "Approved, failed to send to feedback microservice"
+        }
+      ), 500 
 
   else:
     # Inform the error microservice
@@ -179,9 +168,13 @@ def moderate(project_id):
     # - reply from the invocation is not used;
     # continue even if this invocation fails        
     print("Please do not include profanities!")
+    return jsonify(
+        {
+            "code": 500,
+            "moderation_status": "Vulgarities found, do not include them"
+        }
+      ), 500 
 
-
-  return jsonify({"moderation_status": "Rejected, feedback not posted" if check_vulgar else "Approved"})
 
 if __name__ == "__main__":
   app.run(debug=True, port=5006, host="0.0.0.0")
