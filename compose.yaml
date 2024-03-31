@@ -41,6 +41,7 @@ services:
     depends_on:
       - rabbitmq
     environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/activity_log
       rabbit_host: rabbitmq
       rabbit_port: 5672
       a_queue_name: Activity_Log
@@ -60,6 +61,7 @@ services:
     depends_on:
       - rabbitmq
     environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/error
       rabbit_host: rabbitmq
       rabbit_port: 5672
       e_queue_name: Error
@@ -94,8 +96,8 @@ services:
       - "5004:5004"
     networks:
       - kong-net
-    env_file:
-    - .env
+    # env_file:
+    # - .env
 
 
   ##################################
@@ -110,8 +112,8 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/project
-      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/project
+      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/project
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/project
       rabbit_host: rabbitmq
       rabbit_port: 5672
       PYTHONUNBUFFERED: 1
@@ -120,8 +122,8 @@ services:
       - "5000:5000"
     networks:  # Add this section to connect to the kong-net network
       - kong-net
-    env_file:
-    - .env
+    # env_file:
+    # - .env
 
   
   # ##################################
@@ -148,8 +150,8 @@ services:
       - "5001:5001"
     networks:
       - kong-net
-    env_file:
-    - .env
+    # env_file:
+    # - .env
 
 
   ##################################
@@ -230,8 +232,8 @@ services:
       - "5009:5009"
     networks:
       - kong-net
-    env_file:
-    - .env
+    # env_file:
+    # - .env
 
 
   #######################################
