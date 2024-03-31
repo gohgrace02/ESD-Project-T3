@@ -91,6 +91,7 @@ class Project(db.Model):
 
 @app.route("/project")
 def get_all():
+    return os.getenv("STRIPE_PUB_KEY")
     projectlist = db.session.scalars(db.select(Project)).all()
 
     if len(projectlist):

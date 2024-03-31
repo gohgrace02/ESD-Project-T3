@@ -44,8 +44,8 @@ def create_checkout_session(backer_id):
     success_url = "http://localhost:5173/success/?checkout_session_id={CHECKOUT_SESSION_ID}&return_url=" + cancel_url + "&project_id=" + str(project_id) + "&pledge_amt=" + str(pledge_amt)
 
     # perform a check on project's goal_reached status (true or false)
-    # url = "http://localhost:5000/project/" + str(project_id)
-    url = "http://project:5000/project/" + str(project_id)
+    url = "http://localhost:5000/project/" + str(project_id)
+    # url = "http://project:5000/project/" + str(project_id)
     goal_reached = requests.get(url).json()['data']['goal_reached']
 
     # # creates delayed payment checkout session if goal not reached

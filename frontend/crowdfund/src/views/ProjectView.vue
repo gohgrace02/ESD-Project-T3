@@ -144,8 +144,8 @@ export default {
   },
   methods: {
     getDetails() {
-      // const url = "http://localhost:5000/project/" + this.project_id
-      const url = "http://project:5000/project/" + this.project_id
+      const url = "http://localhost:5000/project/" + this.project_id
+      // const url = "http://project:5000/project/" + this.project_id
       axios.get(url)
         .then(response => {
           this.project = response.data.data
@@ -159,8 +159,8 @@ export default {
 
 
     getOptions() {
-      // const url = "http://localhost:5009/options/" + this.project_id
-      const url = "http://pledge_options:5009/options/" + this.project_id
+      const url = "http://localhost:5009/options/" + this.project_id
+      // const url = "http://pledge_options:5009/options/" + this.project_id
       axios.get(url)
         .then(response => {
           this.options = response.data.data
@@ -184,8 +184,8 @@ export default {
         "product_id": this.product_id,
         "pledge_amt": this.pledge_amt
       }
-      // const url = "http://localhost:5009/options/" + this.$route.params.project_id + "/add"
-      const url = "http://pledge_options:5009/options/" + this.$route.params.project_id + "/add"
+      const url = "http://localhost:5009/options/" + this.$route.params.project_id + "/add"
+      // const url = "http://pledge_options:5009/options/" + this.$route.params.project_id + "/add"
       axios.post(url, json)
         .then(response => {
           // data = response.data.data
@@ -202,8 +202,8 @@ export default {
 
 
     removeOption(price_id) {
-      // const url = "http://localhost:5009/options/" + price_id
-      const url = "http://pledge_options:5009/options/" + price_id
+      const url = "http://localhost:5009/options/" + price_id
+      // const url = "http://pledge_options:5009/options/" + price_id
       axios.post(url)
         .then(response => {
           // const data = response.data.data
@@ -220,8 +220,8 @@ export default {
 
     checkoutPledge(price_id, pledge_amt) {
       // first post to back_project.py to create checkout session
-      // const url = "http://localhost:5004/create_checkout_session/" + this.backer_id
-      const url = "http://back_project:5004/create_checkout_session/" + this.backer_id
+      const url = "http://localhost:5004/create_checkout_session/" + this.backer_id
+      // const url = "http://back_project:5004/create_checkout_session/" + this.backer_id
       const json = {
         "project_id": this.project_id,
         "pledge_amt": pledge_amt,

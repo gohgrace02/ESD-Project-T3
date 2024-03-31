@@ -58,8 +58,8 @@ export default {
   },
   methods: {
     getDetails() {
-      // const url = "http://localhost:5000/project/" + this.project_id
-      const url = "http://project:5000/project/" + this.project_id
+      const url = "http://localhost:5000/project/" + this.project_id
+      // const url = "http://project:5000/project/" + this.project_id
       axios.get(url)
         .then(response => {
           this.project = response.data.data
@@ -69,8 +69,8 @@ export default {
         })
     },
     createProject() {
-      // const url = "http://localhost:5000/project"
-      const url = "http://project:5000/project"
+      const url = "http://localhost:5000/project"
+      // const url = "http://project:5000/project"
       const json = {
         "name": this.name,
         "description": this.description,

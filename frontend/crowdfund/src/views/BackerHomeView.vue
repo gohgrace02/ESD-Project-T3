@@ -4,6 +4,7 @@
 
 <template>
   <div class="container-fluid">
+    <h1>{{ message }}</h1>
     <!-- search -->
     <div class="row mb-4 p-3 bg-light rounded-5">
       <div class="mb-3">
@@ -49,15 +50,17 @@ export default {
     return {
       projects: [],
       search: '',
+      message: '',
     }
   },
   methods: {
     getProjects() {
-      // const url = "http://localhost:5000/project"
-      const url = "http://project:5000/project"
+      const url = "http://localhost:5000/project"
+      // const url = "http://project:5000/project"
       axios.get(url)
       .then(response => {
-        this.projects = response.data.data.projects
+        this.message = response.data
+        // this.projects = response.data.data.projects
       })
       .catch(error => {
         console.log(error.message)

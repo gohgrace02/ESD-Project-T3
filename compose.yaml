@@ -88,10 +88,15 @@ services:
       project_URL: "http://project:5000/project"
       tracker_URL: "http://tracker:5001/project/{project_id}/tracker" #not sure if this is correct
       PYTHONUNBUFFERED: 1
+      # STRIPE_API_URL: "https://api.stripe.com/v1"
+
     ports:
       - "5004:5004"
     networks:
       - kong-net
+    env_file:
+    - .env
+
 
   ##################################
   # Project: The project microservice
@@ -105,14 +110,19 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/project
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/project
+      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/project
       rabbit_host: rabbitmq
       rabbit_port: 5672
       PYTHONUNBUFFERED: 1
+      # STRIPE_API_URL: "https://api.stripe.com/v1"
     ports:
       - "5000:5000"
     networks:  # Add this section to connect to the kong-net network
       - kong-net
+    env_file:
+    - .env
+
   
   # ##################################
   # # Tracker: The tracker microservice
@@ -127,15 +137,20 @@ services:
       - rabbitmq
     environment:
       # dbURL: mysql+mysqlconnector://root@localhost:3306/tracker
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/tracker
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/tracker
+      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/tracker
       rabbit_host: rabbitmq
       rabbit_port: 5672
       a_queue_name: Back_Project
       PYTHONUNBUFFERED: 1
+      # STRIPE_API_URL: "https://api.stripe.com/v1"
     ports:
       - "5001:5001"
     networks:
       - kong-net
+    env_file:
+    - .env
+
 
   ##################################
   # Vetting: The vetting microservice
@@ -169,7 +184,8 @@ services:
     depends_on:
       - rabbitmq
     environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/mod
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/mod
+      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/mod
       rabbit_host: rabbitmq
       rabbit_port: 5672
       PYTHONUNBUFFERED: 1
@@ -188,7 +204,8 @@ services:
     image: gohgrace/feedback:esd
     restart: always
     environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/feedback
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/feedback
+      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/feedback
       PYTHONUNBUFFERED: 1
     ports:
       - "5007:5007"
@@ -205,12 +222,17 @@ services:
     image: gohgrace/pledge_options:esd
     restart: always
     environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/pledge_options
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/pledge_options
+      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/pledge_options
       PYTHONUNBUFFERED: 1
+      # STRIPE_API_URL: "https://api.stripe.com/v1"
     ports:
       - "5009:5009"
     networks:
       - kong-net
+    env_file:
+    - .env
+
 
   #######################################
   # Postgres: The database used by Kong
