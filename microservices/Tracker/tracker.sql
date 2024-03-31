@@ -33,25 +33,27 @@ USE `tracker`;
 DROP TABLE IF EXISTS `tracker`;
 CREATE TABLE IF NOT EXISTS `tracker` (
     `tracker_id` INT AUTO_INCREMENT NOT NULL,
-    `backer_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
     `project_id` INT NOT NULL,
     `pledge_amt` FLOAT NOT NULL,
+    `payment_intent_id` VARCHAR(255) NOT NULL,
+    `captured` BOOLEAN,
     PRIMARY KEY (`tracker_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- NEED TO ADD THIS IN THE FUTURE
--- FOREIGN KEY (`backer_id`) REFERENCES `Backer`(`backer_id`),
+-- FOREIGN KEY (`user_id`) REFERENCES `Backer`(`user_id`),
 -- FOREIGN KEY (`project_id`) REFERENCES `Project`(`project_id`)
 
 --
 -- Dumping data for table `tracker`
 --
 
-INSERT INTO `Tracker` (`backer_id`, `project_id`, `pledge_amt`) VALUES
-    (1, 1234, 100.00),
-    (2, 1231, 50.00),
-    (3, 1232, 75.00),
-    (4, 1234, 200.00);
+INSERT INTO `Tracker` (`user_id`, `project_id`, `pledge_amt`, `payment_intent_id`, `captured`) VALUES
+    (1, 1236, 20.00, 'pi_3OzlB6BWraf69XnW1CHBs7KW', 0),
+    (1, 1236, 20.00, 'pi_3OzlJGBWraf69XnW1pNmRiBH', 0),
+    (3, 1236, 20.00, 'pi_3OzlKRBWraf69XnW1TeuPryG', 0),
+    (3, 1236, 20.00, 'pi_3OzlKoBWraf69XnW1G8GM5bl', 0);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

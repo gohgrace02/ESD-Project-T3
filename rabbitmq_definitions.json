@@ -89,6 +89,15 @@
             "arguments": {}
         },
         {
+            "name": "back_project_topic",
+            "vhost": "/",
+            "type": "topic",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        },
+        {
             "name": "tracker",
             "vhost": "/",
             "type": "direct",
@@ -133,6 +142,14 @@
         },
         {
             "source": "mod_topic",
+            "vhost": "/",
+            "destination": "Error",
+            "destination_type": "queue",
+            "routing_key": "*.error",
+            "arguments": {}
+        },
+        {
+            "source": "back_project_topic",
             "vhost": "/",
             "destination": "Error",
             "destination_type": "queue",

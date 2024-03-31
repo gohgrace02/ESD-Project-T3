@@ -36,9 +36,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     `name` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
     `password` VARCHAR(255) NOT NULL,
-    `is_creator` BOOLEAN NOT NULL,
-    `customer_id` VARCHAR(255),
-
+    `role` VARCHAR(255) NOT NULL,
 
     PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -47,11 +45,10 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- Dumping data for table `user`
 --
 
-INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `is_creator`, `customer_id`) VALUES
-    (1, 'bob', 'bob@gmail.com', 'bob', FALSE, 'cus_PpvyvFcdL0LfzN'),
-    (2, 'jack', 'jack@gmail.com', 'jack', TRUE, 'cus_Ppw0p5wCWLOvkH'),
-    (3, 'amy', 'amy@gmail.com', 'amy', FALSE, 'cus_Ppw0EvndzzDLtQ'),
-    (4, 'peter', 'peter@gmail.com', 'peter', TRUE, 'cus_PpxYTc38HwBrRM');
+INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `role`) VALUES
+    (1, 'bob', 'bob@gmail.com', 'hello', 'backer'),
+    (2, 'jack', 'jack@gmail.com', 'hello1', 'creator'),
+    (3, 'amy', 'amy@gmail.com', 'hello2', 'backer');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

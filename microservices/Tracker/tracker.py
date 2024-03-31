@@ -5,6 +5,8 @@ from os import environ
 from flask_cors import CORS
 
 import os, sys
+from dotenv import load_dotenv
+load_dotenv()
 
 import requests
 
@@ -17,20 +19,22 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
+headers = { "Authorization": "Bearer " + os.getenv("STRIPE_PUB_KEY") }
 
-back_project_URL = "http://localhost:5004/back_project"
+
+# back_project_URL = "http://localhost:5004/back_project"
 # back_project_URL = "http://back_project:5004/back_project"
 exchangename = "tracker" # exchange name
 exchangetype = "direct" # use a 'direct' exchange to enable interaction
 
 #create a connection and a channel to the broker to publish messages to activity_log, error queues
-connection = amqp_connection.create_connection() 
-channel = connection.channel()
+# connection = amqp_connection.create_connection() 
+# channel = connection.channel()
 
-#if the exchange is not yet created, exit the program
-if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
-    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-    sys.exit(0)  # Exit with a success status
+# #if the exchange is not yet created, exit the program
+# if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
+#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+#     sys.exit(0)  # Exit with a success status
 
 db = SQLAlchemy(app)
 
@@ -41,17 +45,27 @@ class Tracker(db.Model):
     tracker_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     # backer_id = db.Column(db.Integer, db.ForeignKey('backer.backer_id'))
     # project_id = db.Column(db.Integer, db.ForeignKey('project.project_id'))
-    backer_id = db.Column(db.Integer)
+    user_id = db.Column(db.Integer)
     project_id = db.Column(db.Integer)
     pledge_amt = db.Column(db.Float)
+    payment_intent_id = db.Column(db.String(255))
+    captured = db.Column(db.Boolean, nullable=False, default=False)
 
-    def __init__(self, backer_id, project_id, pledge_amt):
-        self.backer_id = backer_id
+    def __init__(self, user_id, project_id, pledge_amt, payment_intent_id, captured):
+        self.user_id = user_id
         self.project_id = project_id
         self.pledge_amt = pledge_amt
+        self.payment_intent_id = payment_intent_id
+        self.captured = captured
 
     def json(self):
-        return {"tracker_id": self.tracker_id, "backer_id": self.backer_id, "project_id": self.project_id, "pledge_amt": self.pledge_amt}
+        return {"tracker_id": self.tracker_id, 
+                "user_id": self.user_id, 
+                "project_id": self.project_id, 
+                "pledge_amt": self.pledge_amt,
+                "payment_intent_id": self.payment_intent_id,
+                "captured": self.captured
+        }
 
 
 @app.route("/project/<int:project_id>/tracker")
@@ -115,17 +129,27 @@ def test_tracker(project_id):
 # 2. IF funding_goal is reached will sent an event to back_project microservice and update goal_reached from Project DB
 @app.route("/project/<int:project_id>/tracker", methods=['POST'])
 def create_tracker(project_id):
-    # TO DO: extract backer_id from the user session
-    # backer_id = session.get('backer_id')
+    # TO DO: extract backer's user_id from the user session
     
     # Extract pledge_amt from the request payload
     data = request.get_json()
     pledge_amt = data.get('pledge_amt')
-    backer_id = data.get('backer_id')
+    user_id = data.get('user_id')
+    payment_intent_id = data.get('payment_intent_id')
+    # check goal_reached status of project
+    url = "http://localhost:5000/project/" + str(project_id)
+    # url = "http://project:5000/project/" + str(project_id)
+    goal_reached = requests.get(url).json()['data']['goal_reached']
 
-    # Create a new Tracker object, for now the backer_id is hardcoded
-    tracker = Tracker(backer_id, project_id, pledge_amt)
+    # 'captured' value is set to False if goal not reached
+    if not goal_reached:
+        captured = False
+    else:
+        captured = True
 
+    # Create a new Tracker object
+    tracker = Tracker(user_id, project_id, pledge_amt, payment_intent_id, captured)
+    print(tracker)
     try:
         db.session.add(tracker)
         db.session.commit()
@@ -146,10 +170,10 @@ def create_tracker(project_id):
                 "message": "An error occurred creating the tracker."
             }
         ), 500
-
+    
     # Send a GET request to Project microservice to get the funding_goal
-    # project_URL = "http://localhost:5000/project"
-    project_URL = "http://project:5000/project"
+    # project_URL = "http://project:5000/project"
+    project_URL = "http://localhost:5000/project"
     response = requests.get(project_URL + '/' + str(project_id)).json()
     data = response['data']
     funding_goal = response['data']['funding_goal']
@@ -162,7 +186,8 @@ def create_tracker(project_id):
     if(check_funding_goal(project_id, funding_goal)):
         print("funding goal is met! Project fufilment message will be sent to back_project and goal_reached will be updated")
         # Send an event to backProject microservice
-        project_fufilment(project_id)
+        # payment_capture_status = project_fufilment(project_id, payment_intent_id)
+        payment_capture_status = project_fufilment(project_id)
 
         # Send a PUT request to Project microservice to update the goalReached status
         new_data = {
@@ -173,7 +198,8 @@ def create_tracker(project_id):
         if response.status_code == 200:
             return jsonify(
                 {
-                    "message": "Project data updated successfully"
+                    "payment_capture_status": payment_capture_status['status'],
+                    "tracker_status": "Tracker created and Project data updated successfully"
                 }
             ), 200
         else:
@@ -211,7 +237,6 @@ def project_fufilment(project_id):
         "project_id": project_id,
         "message": "Project has been fulfilled"
     }
-
     message_json = json.dumps(message)
 
     channel.basic_publish(exchange=exchangename, routing_key="fulfilment.info", 
@@ -220,6 +245,57 @@ def project_fufilment(project_id):
     print("\nFulfilment published to RabbitMQ Exchange.\n")
     # - reply from the invocation is not used;
     # continue even if this invocation fails
+
+    # url = "http://localhost:5004/capture_all/" + str(project_id)
+    url = "http://back_project:5004/capture_all/" + str(project_id)
+    try:
+        response = requests.post(url, json=message).json()
+        return jsonify({
+            "code": 201,
+            "status": response['status']
+        })
+    except:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {
+                    "project_id": project_id,
+                    "message": "An error occurred while capturing payments for this project on Stripe."
+                },
+            }
+        ), 500
+
+
+# update tracker "captured" value
+@app.route("/tracker/<int:tracker_id>", methods=['PUT'])
+def update_tracker(tracker_id):
+    tracker = db.session.scalars(db.select(Tracker).filter_by(tracker_id=tracker_id)).first()
+    if tracker:
+        if not tracker.captured:
+            tracker.captured = True
+            try:
+                db.session.commit()
+                return jsonify(
+                    {
+                        "code": 200,
+                        "data": tracker.json()
+                    }
+                )
+            except Exception as e:
+                return jsonify(
+                    {
+                        "code": 404,
+                        "data": {
+                            "tracker_id": tracker_id
+                        },
+                        "message": "Tracker not found."
+                    }
+                ), 404
+        else:
+            return jsonify({"message": "Tracker already captured.", "code": 200}), 200
+    else:
+        # Tracker not found
+        return jsonify({"message": "Tracker not found.", "code": 404}), 404
 
 
 if __name__ == '__main__':
