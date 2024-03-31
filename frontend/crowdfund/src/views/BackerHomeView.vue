@@ -27,10 +27,9 @@
         </thead>
         <tbody>
           <tr v-for="project in filteredList">
-            <!-- <tr v-for="project in projects"> -->
             <th scope="row">{{ project.project_id }}</th>
             <td>{{ project.name }}</td>
-            <td>{{ project.creator_id }}</td>
+            <td>{{ project.user_id }}</td>
             <td>{{ project.funding_goal }}</td>
             <td><button @click="goToProject(project.project_id)" class="btn btn-success" type="button">View
                 project</button></td>
@@ -67,6 +66,15 @@ export default {
     },
     goToProject(project_id) {
       this.$router.push({ name: 'project', params: { project_id: project_id } })
+    },
+    creatorName(user_id) {
+      axios.get("http://localhost:5010/user/" + user_id)
+        .then(response => {
+          return response.data.data.name
+        })
+        .catch(error => {
+          console.log(error.message)
+        })
     }
   },
   // created() {
@@ -81,7 +89,7 @@ export default {
         const searchTerm = this.search.toLowerCase()
         return project.name.toLowerCase().includes(searchTerm) || 
         project.project_id.toString().includes(searchTerm) ||
-        project.creator_id.toLowerCase().includes(searchTerm)
+        project.user_id.toString().includes(searchTerm)
       })
     }
   },

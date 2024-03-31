@@ -2,7 +2,8 @@
   <div class="d-flex justify-content-between align-items-center">
     <nav style="--bs-breadcrumb-divider: '>';">
       <ol class="breadcrumb m-0">
-        <li class="breadcrumb-item"><a href="/creator">Home</a></li>
+        <li v-if="is_creator" class="breadcrumb-item"><a href="/creator">Home</a></li>
+        <li v-else class="breadcrumb-item"><a href="/backer">Home</a></li>
         <li class="breadcrumb-item active">Create a project</li>
       </ol>
     </nav>
