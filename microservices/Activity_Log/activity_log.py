@@ -1,15 +1,47 @@
 #!/usr/bin/env python3
-# The above shebang (#!) operator tells Unix-like environments
-# to run this file as a python3 script
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from os import environ
+from flask_cors import CORS
 
-#!/usr/bin/env python3
 import amqp_connection
 import json
 import pika
-from os import environ
+import requests
 
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/activity_log'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 
 a_queue_name = environ.get('a_queue_name') or 'Activity_Log' # queue to be subscribed by Activity_Log microservice
+
+db = SQLAlchemy(app)
+
+CORS(app)
+
+class Activity_Log(db.Model):
+    __tablename__ = 'activity_log'
+    log_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    code = db.Column(db.Integer)
+    data = db.Column(db.String(255))
+    message = db.Column(db.String(255)) 
+    microservice = db.Column(db.String(255))
+
+    def __init__(self, code, data, message, microservice):
+        self.code = code
+        self.data = data
+        self.message = message
+        self.microservice = microservice
+    
+    def json(self):
+        return {"log_id": self.log_id, 
+                "code": self.code, 
+                "data": self.data, 
+                "message": self.message,
+                "microservice": self.microservice
+        }
 
 
 def receiveLog(channel):
@@ -32,9 +64,34 @@ def callback(channel, method, properties, body): # required signature for the ca
     processLog(json.loads(body))
     print()
 
-def processLog(order):
-    print("activity_log: Recording an order log:")
-    print(order)
+
+def processLog(log):
+    print("activity_log: Recording a log:")
+    print(log)
+    add_log(log)
+
+
+def add_log(log):
+    with app.app_context():
+
+        new_log = Activity_Log(
+            code=log['code'],
+            data=str(log['data']),
+            message=log['message'],
+            microservice=log['microservice']
+        )
+        
+        print("this is the activity log to be added: ")
+        print(new_log) # prints some weird thing
+        print(log) # prints some weird thing
+
+        try:
+            db.session.add(new_log)
+            db.session.commit()
+            print("created error log successfully.")
+        except Exception as e:
+            print("An error occurred while adding the error log. " + str(e))
+
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')
     print("activity_log: Getting Connection")
@@ -42,6 +99,7 @@ if __name__ == "__main__":  # execute this program only if it is run as a script
     print("activity_log: Connection established successfully")
     channel = connection.channel()
     receiveLog(channel)
+    app.run(host='0.0.0.0', port=5002, debug=True)
 
 # if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')
 #     print("This is flask for " + os.path.basename(__file__) + ": recording logs ...")
