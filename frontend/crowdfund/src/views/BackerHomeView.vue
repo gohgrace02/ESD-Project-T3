@@ -1,8 +1,9 @@
-<script setup>
-
-</script>
-
 <template>
+  <div class="row text-end mb-3">
+    <div class="col">
+      <Logout/>
+    </div>
+  </div>
   <div class="container-fluid">
     <!-- search -->
     <div class="row mb-4 p-3 bg-light rounded-5">
@@ -42,10 +43,13 @@
 
 <script>
 import axios from 'axios'
+import Logout from '@/components/Logout.vue'
 
 // import { RouterLink, userRouter } from 'vue-router';
 export default {
-
+  components: {
+    Logout
+  },
   data() {
     return {
       projects: [],

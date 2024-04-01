@@ -108,22 +108,15 @@
           <div class="card-body text-center">
             <h5 class="card-title">{{ option.title }}</h5>
             <p class="card-text">{{ option.description }}</p>
-            <a v-if="is_creator" @click="removeOption(option.price_id)" href="#" class="btn btn-danger">Remove
+            <a v-if="is_creator" @click="removeOption(option.price_id)" class="btn btn-danger">Remove
               option</a>
-            <a v-else href="#" @click="checkoutPledge(option.price_id, option.pledge_amt)"
+            <a v-else @click="checkoutPledge(option.price_id, option.pledge_amt)"
               class="btn btn-success">Pledge ${{
               option.pledge_amt}}</a>
           </div>
         </div>
       </div>
     </div>
-    <!-- <div class="col-4">
-      <form class="row" action="http://localhost:5004/create_checkout_session/cus_PooH6AYiaXWQLE" method="post">
-        <input type="number" class="form-control mb-3" name="pledge_amt" id="pledge_amt"
-          placeholder="Enter pledge amount">
-        <button class="btn btn-success" type="submit">Pledge</button>
-      </form>
-    </div> -->
   </div>
 </template>
 
@@ -144,6 +137,7 @@ export default {
       options: [],
       user_id: JSON.parse(sessionStorage.getItem('user')).user_id,
       is_creator: JSON.parse(sessionStorage.getItem('user')).is_creator,
+      customer_id: JSON.parse(sessionStorage.getItem('user')).customer_id,
 
       title: '',
       description: '',
@@ -191,7 +185,7 @@ export default {
         "product_id": this.product_id,
         "pledge_amt": this.pledge_amt
       }
-      const url = "http://localhost:5009/options/" + this.$route.params.project_id + "/add"
+      const url = "http://localhost:5009/options/" + this.project_id + "/add"
       // const url = "http://pledge_options:5009/options/" + this.$route.params.project_id + "/add"
       axios.post(url, json)
         .then(response => {
@@ -227,14 +221,15 @@ export default {
 
     checkoutPledge(price_id, pledge_amt) {
       // first post to back_project.py to create checkout session
-      const url = "http://localhost:5004/create_checkout_session/" + this.user_id
-      // const url = "http://back_project:5004/create_checkout_session/" + this.user_id
+      const url = "http://localhost:5004/create_checkout_session"
+      // const url = "http://back_project:5004/create_checkout_session"
       const json = {
         "project_id": this.project_id,
         "pledge_amt": pledge_amt,
         "price_id": price_id,
         "quantity": 1,
-        "cancel_url": "http://localhost:5173/project/" + this.project.project_id
+        "cancel_url": "http://localhost:5173/project/" + this.project.project_id,
+        "customer_id": this.customer_id
       }
       axios.post(url, json)
         .then(response => {
@@ -251,20 +246,20 @@ export default {
     },
 
 
-    isCreator() {
-      axios.get("http://localhost:5010/user/" + this.user_id)
-        .then(response => {
-          console.log(response.data)
-        })
-        .catch(error => {
-          console.log(error.message)
-        })
-    }
+    // isCreator() {
+    //   axios.get("http://localhost:5010/user/" + this.user_id)
+    //     .then(response => {
+    //       console.log(response.data)
+    //     })
+    //     .catch(error => {
+    //       console.log(error.message)
+    //     })
+    // }
   },
   mounted() {
     this.getDetails()
     this.getOptions()
-    this.isCreator()
+    // this.isCreator()
 
   },
 }

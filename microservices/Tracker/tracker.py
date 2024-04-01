@@ -5,8 +5,9 @@ from os import environ
 from flask_cors import CORS
 
 import os, sys
-from dotenv import load_dotenv
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
+from utils import STRIPE_PUB_KEY
 
 import requests
 
@@ -19,22 +20,21 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
-headers = { "Authorization": "Bearer " + os.getenv("STRIPE_PUB_KEY") }
+headers = { "Authorization": "Bearer " + STRIPE_PUB_KEY }
 
 
-# back_project_URL = "http://localhost:5004/back_project"
-# back_project_URL = "http://back_project:5004/back_project"
+
 exchangename = "tracker" # exchange name
 exchangetype = "direct" # use a 'direct' exchange to enable interaction
 
 #create a connection and a channel to the broker to publish messages to activity_log, error queues
-# connection = amqp_connection.create_connection() 
-# channel = connection.channel()
+connection = amqp_connection.create_connection() 
+channel = connection.channel()
 
-# #if the exchange is not yet created, exit the program
-# if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
-#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-#     sys.exit(0)  # Exit with a success status
+#if the exchange is not yet created, exit the program
+if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
+    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+    sys.exit(0)  # Exit with a success status
 
 db = SQLAlchemy(app)
 
@@ -246,8 +246,8 @@ def project_fufilment(project_id):
     # - reply from the invocation is not used;
     # continue even if this invocation fails
 
-    # url = "http://localhost:5004/capture_all/" + str(project_id)
-    url = "http://back_project:5004/capture_all/" + str(project_id)
+    url = "http://localhost:5004/capture_all/" + str(project_id)
+    # url = "http://back_project:5004/capture_all/" + str(project_id)
     try:
         response = requests.post(url, json=message).json()
         return jsonify({

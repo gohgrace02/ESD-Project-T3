@@ -5,8 +5,10 @@ from os import environ
 from flask_cors import CORS
 
 import os, sys
-from dotenv import load_dotenv
-load_dotenv()
+# from dotenv import load_dotenv
+# load_dotenv()
+from utils import STRIPE_PUB_KEY
+
 
 import requests
 
@@ -19,7 +21,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/user'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
-headers = { "Authorization": "Bearer " + os.getenv("STRIPE_PUB_KEY") }
+headers = { "Authorization": "Bearer " + STRIPE_PUB_KEY }
 
 
 # back_project_URL = "http://localhost:5004/back_project"

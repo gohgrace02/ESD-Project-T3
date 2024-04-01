@@ -4,8 +4,6 @@
 
 <script>
 export default {
-    data() {
-    },
     methods: {
         logout() {
             sessionStorage.clear()
