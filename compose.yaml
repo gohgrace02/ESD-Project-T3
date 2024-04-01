@@ -200,6 +200,7 @@ services:
   # Feedback: The Feedback microservice
   ##################################
   feedback:
+    platform: linux/amd64  
     build:
       context: ./microservices/Feedback
       dockerfile: Dockerfile
@@ -211,34 +212,24 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5007:5007"
-    networks:
-      - kong-net
 
-  ##################################
-  # Pledge Options: The Pledge Options microservice
-  ##################################
-  pledge_options:
-    build:
-      context: ./microservices/Pledge_Options
-      dockerfile: Dockerfile
-    image: gohgrace/pledge_options:esd
-    restart: always
-    environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/pledge_options
-      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/pledge_options
-      PYTHONUNBUFFERED: 1
-      # STRIPE_API_URL: "https://api.stripe.com/v1"
-    ports:
-      - "5009:5009"
-    networks:
-      - kong-net
-    # env_file:
-    # - .env
+  # ##################################
+  # # Stripe: The stripe microservice
+  # ##################################
+  # stripe:
+  #   build:
+  #     context: ./microservices/Stripe
+  #     dockerfile: Dockerfile
+  #   image: gohgrace/stripe:esd
+  #   # restart: always
+  #   environment:
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5008:5008"
 
-
-  #######################################
-  # Postgres: The database used by Kong
-  #######################################
+  # #######################################
+  # # Postgres: The database used by Kong
+  # #######################################
   kong-database:
     image: postgres:15 # tested 20231101; Ref: https://docs.konghq.com/gateway/latest/support/third-party/
     platform: linux/amd64  # <- required for Mac M1 chip. Otherwise, can remove
@@ -324,15 +315,15 @@ services:
     volumes:
       - prometheusdata:/etc/prometheus
 
-  #######################################
-  # Grafana Open Source
-  #######################################
-  grafana:
-    image: grafana/grafana-oss:10.2.3
-    restart: always
-    networks:
-      - kong-net
-    ports:
-      - "13000:3000"
-    volumes:
-      - grafanadata:/var/lib/grafana
+  # #######################################
+  # # Grafana Open Source
+  # #######################################
+  # grafana:
+  #   image: grafana/grafana-oss:10.2.3
+  #   restart: always
+  #   networks:
+  #     - kong-net
+  #   ports:
+  #     - "13000:3000"
+  #   volumes:
+  #     - grafanadata:/var/lib/grafana

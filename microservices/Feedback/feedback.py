@@ -4,8 +4,9 @@ from os import environ
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/feedback'
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/feedback'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/feedback'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -44,16 +45,18 @@ def create_feedback(project_id):
         db.session.add(feedback)
         db.session.commit()
         print("feedback added")
-    except:
+    except Exception as e:
+        print("An error occurred:", str(e))
         return jsonify(
             {
                 "code": 500,
                 "data": {
                     "project_id": project_id
                 },
-                "message": "An error occurred creating the feedback."
+                "message": "An error occurred creating the feedback: " + str(e)
             }
         ), 500
+
 
     return jsonify(
         {
