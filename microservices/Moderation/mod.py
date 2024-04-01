@@ -43,12 +43,27 @@ def moderate(project_id):
   backer_id = request.json.get("backer_id")
 
   if not feedback_info:
-    return jsonify({"error": "Missing feedback_info in request body"}), 400
+    return jsonify(
+        {
+          "code": 400,
+          "error": "Missing feedback_info in request body"
+        }
+      ), 400
   if not rating:
-    return jsonify({"error": "Missing rating in request body"}), 400
+    return jsonify(
+        {
+          "code": 400,
+          "error": "Missing rating in request body"
+        }
+      ), 400
   if not backer_id:
-    return jsonify({"error": "Missing backer_id in request body"}), 400
-
+    return jsonify(
+        {
+          "code": 400,
+          "error": "Missing backer_id in request body"
+        }
+      ), 400
+  
   def is_vulgar(feedback_info):
     # Probably need add more Vulgarities
     url = f"http://api1-ap.webpurify.com/services/rest//?method=webpurify.live.check&api_key=07e7c189b92ff357331ffe3183a48578&text={feedback_info}&format=json"
@@ -89,9 +104,21 @@ def moderate(project_id):
     try:
       response = requests.post(url, json=moderation_data)
       print("Moderation result sent successfully.")
+      return jsonify(
+        {
+          "code": 200,
+          "Moderation_status": "Approved, sent to feedback microservice"
+        }
+      ), 200
 
     except requests.exceptions.RequestException as e:
       print(f"Error sending data to feedback microservice: {e}")
+      return jsonify(
+        {
+          "code": 500,
+          "Moderation_status": "Approved, failed to send to feedback microservice"
+        }
+      ), 500
 
   else:
     # Inform the error microservice
@@ -114,9 +141,12 @@ def moderate(project_id):
     # - reply from the invocation is not used;
     # continue even if this invocation fails        
     print("Please do not include profanities!")
-
-
-  return jsonify({"moderation_status": "Rejected, feedback not posted" if check_vulgar else "Approved"})
+    return jsonify(
+        {
+          "code": 500,
+          "Moderation_status": "Rejected, feedback not posted, do not include vulgarities"
+        }
+      ), 500
 
 if __name__ == "__main__":
   app.run(debug=True, port=5006, host="0.0.0.0")
