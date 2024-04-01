@@ -8,7 +8,7 @@
       </ol>
     </nav> -->
     <div>
-      <Back />
+      <Back :is_creator="is_creator"/>
     </div>
     <div>
       <Logout />
@@ -75,17 +75,6 @@ export default {
     }
   },
   methods: {
-    getDetails() {
-      const url = "http://localhost:5000/project/" + this.project_id
-      // const url = "http://project:5000/project/" + this.project_id
-      axios.get(url)
-        .then(response => {
-          this.project = response.data.data
-        })
-        .catch(error => {
-          console.log(error.message)
-        })
-    },
     createProject() {
       const url = "http://localhost:5000/project"
       // const url = "http://project:5000/project"
@@ -109,8 +98,7 @@ export default {
         })
     },
   },
-  mounted() {
-    this.getDetails()
-  }
+  // mounted() {
+  // }
 }
 </script>

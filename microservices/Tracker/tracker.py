@@ -65,7 +65,7 @@ class Tracker(db.Model):
                 "captured": self.captured
         }
 
-
+# get tracker by project_id
 @app.route("/project/<int:project_id>/tracker")
 def get_all(project_id):
     # Filter tracker data based on the specified project_id
@@ -85,6 +85,40 @@ def get_all(project_id):
             "code": 404,
             "message": "There are no trackers for the specified project ID."
         }), 404
+    
+
+
+# get projects by backer's user_id
+@app.route("/get_project_by_user_id/<int:user_id>")
+def get_project_by_user_id(user_id):
+    # Filter tracker data based on the specified user_id
+    trackerList = Tracker.query.filter_by(user_id=user_id).all()
+    if trackerList:
+        tracker_json = [tracker.json() for tracker in trackerList]
+        
+        project_id_list = []
+        for tracker in tracker_json:
+            if tracker['project_id'] not in project_id_list:
+                project_id_list.append(tracker['project_id'])
+        
+        # get list of project obj
+        project_list = []
+        for project_id in project_id_list:
+            response = requests.get("http://localhost:5000/project/" + str(project_id)).json()
+            project_list.append(response['data'])
+
+        return jsonify({
+            "code": 200,
+            "project_list": project_list,
+            "tracker_list": tracker_json,
+            }
+        ), 200
+    else:
+        return jsonify({
+            "code": 404,
+            "message": "There are no trackers for the specified user ID."
+        }), 404
+
 
 
 # Previous function used to update tracker database
@@ -302,7 +336,6 @@ def update_tracker(tracker_id):
 def delete_tracker(tracker_id):
     tracker = db.session.scalars(db.select(Tracker).filter_by(tracker_id=tracker_id)).first()
     if tracker:
-        return tracker.payment_intent_id
         try:
             db.session.delete(tracker)
             db.session.commit()

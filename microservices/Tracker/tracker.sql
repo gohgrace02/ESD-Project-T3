@@ -50,10 +50,10 @@ CREATE TABLE IF NOT EXISTS `tracker` (
 --
 
 INSERT INTO `Tracker` (`user_id`, `project_id`, `pledge_amt`, `payment_intent_id`, `captured`) VALUES
-    (1, 1236, 20.00, 'pi_3OzlB6BWraf69XnW1CHBs7KW', 0),
-    (1, 1236, 20.00, 'pi_3OzlJGBWraf69XnW1pNmRiBH', 0),
-    (3, 1236, 20.00, 'pi_3OzlKRBWraf69XnW1TeuPryG', 0),
-    (3, 1236, 20.00, 'pi_3OzlKoBWraf69XnW1G8GM5bl', 0);
+    (1, 1231, 20.00, 'pi_3OzlB6BWraf69XnW1CHBs7KW', 0),
+    (1, 1231, 20.00, 'pi_3OzlJGBWraf69XnW1pNmRiBH', 0),
+    (3, 1231, 20.00, 'pi_3OzlKRBWraf69XnW1TeuPryG', 0),
+    (3, 1231, 20.00, 'pi_3OzlKoBWraf69XnW1G8GM5bl', 0);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

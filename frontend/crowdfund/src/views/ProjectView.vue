@@ -8,7 +8,7 @@
       </ol>
     </nav> -->
     <div>
-      <Back />
+      <Back :is_creator="is_creator" />
     </div>
     <div>
       <Logout />
@@ -113,8 +113,7 @@
             <p class="card-text">{{ option.description }}</p>
             <a v-if="is_creator" @click="removeOption(option.price_id)" class="btn btn-danger">Remove
               option</a>
-            <a v-else @click="checkoutPledge(option.price_id, option.pledge_amt)"
-              class="btn btn-success">Pledge ${{
+            <a v-else @click="checkoutPledge(option.price_id, option.pledge_amt)" class="btn btn-success">Pledge ${{
               option.pledge_amt}}</a>
           </div>
         </div>
@@ -238,6 +237,7 @@ export default {
       }
       axios.post(url, json)
         .then(response => {
+          console.log(response.data)
           const data = response.data
           const checkout_url = data.url
           // redirect to checkout_url for backer to key in card details
@@ -246,20 +246,35 @@ export default {
         .catch(error => {
           console.log(error.message)
         })
-      
-      
     },
 
-
-    // isCreator() {
-    //   axios.get("http://localhost:5010/user/" + this.user_id)
+    // cancelPledge(tracker_id) {
+    //   // first post to back_project.py to create checkout session
+    //   const url = "http://localhost:5004/create_checkout_session"
+    //   // const url = "http://back_project:5004/create_checkout_session"
+    //   const json = {
+    //     "project_id": this.project_id,
+    //     "pledge_amt": pledge_amt,
+    //     "price_id": price_id,
+    //     "quantity": 1,
+    //     "cancel_url": "http://localhost:5173/project/" + this.project.project_id,
+    //     "customer_id": this.customer_id
+    //   }
+    //   axios.post(url, json)
     //     .then(response => {
     //       console.log(response.data)
+    //       const data = response.data
+    //       const checkout_url = data.url
+    //       // redirect to checkout_url for backer to key in card details
+    //       window.location.href = checkout_url
     //     })
     //     .catch(error => {
     //       console.log(error.message)
     //     })
-    // }
+    // },
+
+
+  
   },
   mounted() {
     this.getDetails()

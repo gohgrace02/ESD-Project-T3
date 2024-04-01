@@ -34,7 +34,6 @@ def create_checkout_session():
     url = "http://localhost:5000/project/" + str(project_id)
     # url = "http://project:5000/project/" + str(project_id)
     goal_reached = requests.get(url).json()['data']['goal_reached']
-
     # # creates delayed payment checkout session if goal not reached
     if not goal_reached:
         params = {
@@ -186,8 +185,8 @@ def processTrackerLog(order):
 
 
 if __name__ == '__main__':
-    connection = amqp_connection.create_connection() #get the connection to the broker
-    print("back_project: Connection established successfully")
-    channel = connection.channel()
-    receiveFulfilmentLog(channel)  # Start consuming messages from the queue
+    # connection = amqp_connection.create_connection() #get the connection to the broker
+    # print("back_project: Connection established successfully")
+    # channel = connection.channel()
+    # receiveFulfilmentLog(channel)  # Start consuming messages from the queue
     app.run(host='0.0.0.0', port=5004, debug=True)

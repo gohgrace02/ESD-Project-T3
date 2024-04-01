@@ -59,10 +59,15 @@ CREATE TABLE IF NOT EXISTS `project` (
 
 
 INSERT INTO `project` (`project_id`,`product_id`, `name`, `description`, `user_id`, `funding_goal`, `deadline`, `creation_time`, `status`, `goal_reached`) VALUES
-    (1231, 'prod_PpCDC2PwIfSJEJ', 'Project A', 'Description for Project A', '2', 5000, '2024-03-31 12:00:00', '2024-01-31 11:00:00', 'Open', FALSE),
-    (1232, 'prod_PpIgZpNc1uWRbq', 'Project B', 'Description for Project B', '2', 10000, '2024-04-15 18:30:00', '2024-01-31 10:00:00', 'Open', FALSE),
-    (1233, 'prod_PpIgB4T9XwaMMY', 'Project C', 'Description for Project C', '2', 7500, '2024-05-20 09:45:00', '2024-01-31 9:00:00', 'Open', FALSE),
-    (1234, 'prod_PpIg4PmC0uun8j', 'Project D', 'Description for Project D', '4', 12000, '2024-06-10 15:15:00', '2024-01-31 3:00:00', 'Open', FALSE);
+    (1231, 'prod_PpCDC2PwIfSJEJ', 'Home Gardening System', "A smart gardening system that allows users to effortlessly grow herbs, vegetables, or flowers indoors. This system includes automated watering, LED grow lights with adjustable spectra, and sensors to monitor soil moisture, temperature, and sunlight exposure. Users could control the system remotely via a mobile app, receive notifications and tips for plant care, and track the growth progress of their plants.
+", '2', 5000, '2024-03-31 12:00:00', '2024-01-31 11:00:00', 'Open', FALSE),
+
+    (1232, 'prod_PpIgZpNc1uWRbq', 'Smart Home Security Hub', "An intelligent home security hub that goes beyond traditional security systems. This hub incorporates features such as facial recognition technology, smart doorbell integration, and AI-powered anomaly detection to identify potential security threats. It also offers emergency response coordination, integration with third-party security services, and real-time alerts to users' smartphones.
+", '2', 10000, '2024-04-15 18:30:00', '2024-01-31 10:00:00', 'Open', FALSE),
+
+    (1233, 'prod_PpIgB4T9XwaMMY', 'Smart Pet Care System', "A smart pet care system that helps pet owners monitor and care for their furry companions remotely. This system includes features such as automatic pet feeders, interactive toys, and video monitoring cameras with two-way audio communication. It could also offer activity tracking, health monitoring, and personalized recommendations for pet care based on breed, age, and activity level.", '2', 7500, '2024-05-20 09:45:00', '2024-01-31 9:00:00', 'Open', FALSE),
+
+    (1234, 'prod_PpIg4PmC0uun8j', 'Delicious Cat Food', "MEOWMEOEWMEOWMEOEWMOWEMOEWEWMEOW", '4', 12000, '2024-06-10 15:15:00', '2024-01-31 3:00:00', 'Open', FALSE);
 COMMIT;
 
 

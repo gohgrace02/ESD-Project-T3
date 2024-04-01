@@ -11,12 +11,14 @@
 <script>
 export default {
     methods: {
+        props: ['is_creator'],
         back() {
-            // const is_creator = JSON.parse(sessionStorage.get('user')).is_creator
-            // if (is_creator) {
-            //     this.$router.push({ path: `/login`, replace: true })
-            // }
-            this.$router.go(-1)
+            if (this.is_creator) {
+                this.$router.push({ path: `/creator`, replace: true })
+            } else {
+                this.$router.push({ path: `/backer`, replace: true })
+            }
+            // this.$router.go(-1)
         }
     }
 }

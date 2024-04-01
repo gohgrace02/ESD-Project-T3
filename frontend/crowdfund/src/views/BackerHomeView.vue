@@ -1,7 +1,23 @@
 <template>
-  <div class="row text-end mb-3">
+  <div class="row d-flex justify-content-between mb-4">
     <div class="col">
-      <Logout/>
+      <div class="dropdown">
+        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+          My pledges
+        </button>
+        <ul class="dropdown-menu p-2">
+          <li v-for="project in projects_by_user_id" class="dropdown-item indiv-pledge my-2">
+            {{ project.name }}
+            <div class="pledge-buttons">
+              <button @click="goToProject(project.project_id)" class="btn btn-primary">View</button>
+              <button @click="cancelPledge(project.project_id)" class="btn btn-danger">Cancel</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="col text-end">
+      <Logout />
     </div>
   </div>
   <div class="container-fluid">
@@ -55,7 +71,11 @@ export default {
   data() {
     return {
       projects: [],
+      projects_by_user_id: [],
+      trackers_by_user_id: [],
       search: '',
+      user_id: JSON.parse(sessionStorage.getItem('user')).user_id,
+
     }
   },
   methods: {
@@ -81,13 +101,40 @@ export default {
         .catch(error => {
           console.log(error.message)
         })
-    }
+    },
+    getMyPledges() {
+      const url = "http://localhost:5001/get_project_by_user_id/" + this.user_id
+      axios.get(url)
+        .then(response => {
+          this.projects_by_user_id = response.data.project_list
+          this.trackers_by_user_id = response.data.tracker_list
+        })
+        .catch(error => {
+          console.log(error.message)
+        })
+    },
+    cancelPledge(project_id) {
+      for (let i=0; i<this.trackers_by_user_id.length; i++) {
+        if (this.trackers_by_user_id[i]['project_id'] == project_id) {
+          const tracker_id = this.trackers_by_user_id[i]['tracker_id']
+          const url = "http://localhost:5001/tracker/" + tracker_id
+          axios.delete(url)
+            .then(response => {
+              this.getMyPledges()
+            })
+            .catch(error => {
+              console.log(error.message)
+            })
+        }
+      }
+    },
   },
   // created() {
   //   this.getProjects()
   // },
   mounted() {
     this.getProjects()
+    this.getMyPledges()
   },
   computed: {
     filteredList() {
@@ -97,7 +144,23 @@ export default {
         project.project_id.toString().includes(searchTerm) ||
         project.user_id.toString().includes(searchTerm)
       })
-    }
+    },
   },
 }
 </script>
+
+<style>
+.indiv-pledge {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2rem;
+}
+
+.pledge-buttons {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.5rem;
+  justify-content: end;
+}
+
+</style>
