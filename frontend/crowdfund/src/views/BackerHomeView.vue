@@ -44,11 +44,13 @@
 <script>
 import axios from 'axios'
 import Logout from '@/components/Logout.vue'
+import Back from '@/components/Back.vue'
 
 // import { RouterLink, userRouter } from 'vue-router';
 export default {
   components: {
-    Logout
+    Logout,
+    Back
   },
   data() {
     return {

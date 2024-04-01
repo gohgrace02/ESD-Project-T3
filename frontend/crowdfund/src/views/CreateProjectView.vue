@@ -1,12 +1,15 @@
 <template>
-  <div class="d-flex justify-content-between align-items-center">
-    <nav style="--bs-breadcrumb-divider: '>';">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <!-- <nav style="--bs-breadcrumb-divider: '>';">
       <ol class="breadcrumb m-0">
         <li v-if="is_creator" class="breadcrumb-item"><a href="/creator">Home</a></li>
         <li v-else class="breadcrumb-item"><a href="/backer">Home</a></li>
         <li class="breadcrumb-item active">Create a project</li>
       </ol>
-    </nav>
+    </nav> -->
+    <div>
+      <Back />
+    </div>
     <div>
       <Logout />
     </div>
@@ -54,10 +57,12 @@
 <script>
 import axios from 'axios'
 import Logout from '@/components/Logout.vue'
+import Back from '@/components/Back.vue'
 
 export default {
   components: {
-    Logout
+    Logout,
+    Back
   },
   data() {
     return {
@@ -66,6 +71,7 @@ export default {
       user_id: JSON.parse(sessionStorage.getItem('user')).user_id,
       funding_goal: 0,
       deadline: '',
+      is_creator: JSON.parse(sessionStorage.getItem('user')).is_creator,
     }
   },
   methods: {
