@@ -137,8 +137,8 @@ def create_tracker(project_id):
     user_id = data.get('user_id')
     payment_intent_id = data.get('payment_intent_id')
     # check goal_reached status of project
-    url = "http://localhost:5000/project/" + str(project_id)
-    # url = "http://project:5000/project/" + str(project_id)
+    # url = "http://localhost:5000/project/" + str(project_id)
+    url = "http://project:5000/project/" + str(project_id)
     goal_reached = requests.get(url).json()['data']['goal_reached']
 
     # 'captured' value is set to False if goal not reached
@@ -172,8 +172,8 @@ def create_tracker(project_id):
         ), 500
     
     # Send a GET request to Project microservice to get the funding_goal
-    # project_URL = "http://project:5000/project"
-    project_URL = "http://localhost:5000/project"
+    project_URL = "http://project:5000/project"
+    # project_URL = "http://localhost:5000/project"
     response = requests.get(project_URL + '/' + str(project_id)).json()
     data = response['data']
     funding_goal = response['data']['funding_goal']
