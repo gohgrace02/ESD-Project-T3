@@ -54,11 +54,11 @@ def vetting_endpoint():
         if response.status_code == 201:
             message = {
                 "code": 201,
-                "data": data,
+                "data": str(data),
                 "message": "Vetting successful. Project is created successfully.",
                 "microservice": "vetting"
             }
-            print("Data received:", data)
+            print("Data received:", message)
             print('\n\n-----Publishing the (vetting info) message with routing_key=vetting.info-----')
             channel.basic_publish(exchange=exchangename, routing_key="vetting.info", 
                 body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
@@ -66,26 +66,31 @@ def vetting_endpoint():
 
             return jsonify({
                 "code": 201,
-                "data": data,
+                "data": str(data),
                 "message": "Vetting successful. Project is created successfully.",
                 "microservice": "vetting"
                 }), 201
         else:
             message = {
                 "code": response.status_code,
-                "data": data,
+                "data": str(data),
                 "message": "Vetting successful. Error creating project.",
                 "microservice": "vetting"
-            }
+            }            
             print('\n\n-----Publishing the (vetting error) message with routing_key=vetting.error-----')
             channel.basic_publish(exchange=exchangename, routing_key="vetting.error", 
                 body=json.dumps(message), properties=pika.BasicProperties(delivery_mode = 2)) 
             print("\nVetting error published to RabbitMQ Exchange.\n")
-            return jsonify(response.json()), response.status_code
+            return jsonify({
+                "code": response.status_code,
+                "data": str(data),
+                "message": "Vetting successful. Error creating project.",
+                "microservice": "vetting"
+                })
     else:
         message = {
             "code": 400,
-            "data": data,
+            "data": str(data),
             "message": "Vetting is unsuccessful. Project not created.",
             "microservice": "vetting"
         }
@@ -95,8 +100,8 @@ def vetting_endpoint():
         print("\nVetting error published to RabbitMQ Exchange.\n")
         return jsonify({
             "code": 400,
-            "data": data,
-            "message": "Project is not acceptable.",
+            "data": str(data),
+            "message": "Vetting is unsuccessful. Project not created.",
             "microservice": "vetting"
             }), 400
 

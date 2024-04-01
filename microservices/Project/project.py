@@ -20,15 +20,15 @@ exchangename = "project_topic" # exchange name
 exchangetype = "topic" # use a 'direct' exchange to enable interaction
 
 
-# # #create a connection and a channel to the broker to publish messages to activity_log, error queues
-# connection = amqp_connection.create_connection()
-# channel = connection.channel()
+# #create a connection and a channel to the broker to publish messages to activity_log, error queues
+connection = amqp_connection.create_connection()
+channel = connection.channel()
 
 
-# # #if the exchange is not yet created, exit the program
-# if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
-#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-#     sys.exit(0)  # Exit with a success status
+# #if the exchange is not yet created, exit the program
+if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
+    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+    sys.exit(0)  # Exit with a success status
 
 
 app = Flask(__name__)
