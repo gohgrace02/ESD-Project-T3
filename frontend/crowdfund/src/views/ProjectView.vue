@@ -248,30 +248,30 @@ export default {
         })
     },
 
-    // cancelPledge(tracker_id) {
-    //   // first post to back_project.py to create checkout session
-    //   const url = "http://localhost:5004/create_checkout_session"
-    //   // const url = "http://back_project:5004/create_checkout_session"
-    //   const json = {
-    //     "project_id": this.project_id,
-    //     "pledge_amt": pledge_amt,
-    //     "price_id": price_id,
-    //     "quantity": 1,
-    //     "cancel_url": "http://localhost:5173/project/" + this.project.project_id,
-    //     "customer_id": this.customer_id
-    //   }
-    //   axios.post(url, json)
-    //     .then(response => {
-    //       console.log(response.data)
-    //       const data = response.data
-    //       const checkout_url = data.url
-    //       // redirect to checkout_url for backer to key in card details
-    //       window.location.href = checkout_url
-    //     })
-    //     .catch(error => {
-    //       console.log(error.message)
-    //     })
-    // },
+    cancelPledge(tracker_id) {
+      // first post to back_project.py to create checkout session
+      const url = "http://localhost:5004/create_checkout_session"
+      // const url = "http://back_project:5004/create_checkout_session"
+      const json = {
+        "project_id": this.project_id,
+        "pledge_amt": pledge_amt,
+        "price_id": price_id,
+        "quantity": 1,
+        "cancel_url": "http://localhost:5173/project/" + this.project.project_id,
+        "customer_id": this.customer_id
+      }
+      axios.post(url, json)
+        .then(response => {
+          console.log(response.data)
+          const data = response.data
+          const checkout_url = data.url
+          // redirect to checkout_url for backer to key in card details
+          window.location.href = checkout_url
+        })
+        .catch(error => {
+          console.log(error.message)
+        })
+    },
 
 
   

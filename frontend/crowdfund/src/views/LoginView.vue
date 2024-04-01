@@ -49,7 +49,14 @@ export default {
         email: this.email,
         password: this.password
       }
-      axios.post("http://localhost:5010/user/auth", data)
+      const config = {
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        }
+      }
+      axios.post("http://localhost:8000/api/v1/user?apikey=admin", data, config)
+      // axios.post("http://localhost:5010/user/auth", data)
+      // axios.post("http://user:5010/user/auth?apikey=admin", data)
       .then(response => {
         if (response.data.code == 401) {
           this.errorMsg = response.data.message

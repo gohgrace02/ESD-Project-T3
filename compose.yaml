@@ -9,8 +9,27 @@ networks:
   kong-net:
     driver: bridge
     name: kong-net
+  # vue-network:
+  #   driver: bridge
 
 services:
+
+  #################################################
+  # vue-app: The vue-app frontend
+  #################################################
+  # vue-app:
+  #   build:
+  #     context: ./frontend/crowdfund
+  #     dockerfile: Dockerfile
+  #   image: gohgrace/vue-app:esd
+  #   restart: always
+  #   environment:
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - kong-net
+  #     - vue-network
 
   ####################################
   # RabbitMQ: The messaging broker   
@@ -91,7 +110,6 @@ services:
       tracker_URL: "http://tracker:5001/project/{project_id}/tracker" #not sure if this is correct
       PYTHONUNBUFFERED: 1
       # STRIPE_API_URL: "https://api.stripe.com/v1"
-
     ports:
       - "5004:5004"
     networks:
@@ -223,8 +241,8 @@ services:
     image: gohgrace/pledge_options:esd
     restart: always
     environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/pledge_options
-      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/pledge_options
+      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/pledge_options
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/pledge_options
       PYTHONUNBUFFERED: 1
       # STRIPE_API_URL: "https://api.stripe.com/v1"
     ports:
@@ -234,6 +252,27 @@ services:
     # env_file:
     # - .env
 
+
+  ##################################
+  # User: The User microservice
+  ##################################
+  user:
+    build:
+      context: ./microservices/user
+      dockerfile: Dockerfile
+    image: gohgrace/user:esd
+    restart: always
+    environment:
+      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/user
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/user
+      PYTHONUNBUFFERED: 1
+      # STRIPE_API_URL: "https://api.stripe.com/v1"
+    ports:
+      - "5010:5010"
+    networks:
+      - kong-net
+    # env_file:
+    # - .env
   # #######################################
   # # Postgres: The database used by Kong
   # #######################################

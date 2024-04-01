@@ -19,7 +19,7 @@ exchangetype= "topic" # use a 'topic' exchange to enable interaction
 
 # users will make a POST req to this when they click on the 'pledge' button
 # this creates a checkout session and redirects the user to the stripe checkout url
-@app.route("/create_checkout_session", methods=['POST', 'GET'])
+@app.route("/create_checkout_session", methods=['POST'])
 def create_checkout_session():
     data = request.get_json()
     customer_id = data.get('customer_id')
@@ -31,9 +31,10 @@ def create_checkout_session():
     success_url = "http://localhost:5173/success/?checkout_session_id={CHECKOUT_SESSION_ID}&return_url=" + cancel_url + "&project_id=" + str(project_id) + "&pledge_amt=" + str(pledge_amt)
     # return project_id
     # perform a check on project's goal_reached status (true or false)
-    url = "http://localhost:5000/project/" + str(project_id)
-    # url = "http://project:5000/project/" + str(project_id)
+    # url = "http://localhost:5000/project/" + str(project_id)
+    url = "http://project:5000/project/" + str(project_id)
     goal_reached = requests.get(url).json()['data']['goal_reached']
+
     # # creates delayed payment checkout session if goal not reached
     if not goal_reached:
         params = {
@@ -100,8 +101,8 @@ def get_payment_intent_id(checkout_session_id):
 # called by POST request
 def capture_all(project_id):
     # get trackers by project_id
-    url = "http://localhost:5001/project/" + str(project_id) + "/tracker"
-    # url = "http://tracker:5001/project/" + str(project_id) + "/tracker"
+    # url = "http://localhost:5001/project/" + str(project_id) + "/tracker"
+    url = "http://tracker:5001/project/" + str(project_id) + "/tracker"
     response = requests.get(url).json()
     tracker_list = response['data']['trackerList']
 
@@ -113,8 +114,8 @@ def capture_all(project_id):
                 capture_payment(payment_intent_id)
                 tracker_id = tracker['tracker_id']
 
-                response = requests.put("http://localhost:5001/tracker/" + str(tracker_id)).json()
-                # response = requests.put("http://tracker:5001/tracker/" + str(tracker_id)).json()
+                # response = requests.put("http://localhost:5001/tracker/" + str(tracker_id)).json()
+                response = requests.put("http://tracker:5001/tracker/" + str(tracker_id)).json()
 
                 if response['code'] != 200:
                     # Handle tracker update error

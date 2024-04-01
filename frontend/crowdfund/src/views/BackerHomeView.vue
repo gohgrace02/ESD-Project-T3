@@ -94,6 +94,7 @@ export default {
       this.$router.push({ name: 'project', params: { project_id: project_id } })
     },
     creatorName(user_id) {
+      // axios.get("http://user:5010/user/" + user_id)
       axios.get("http://localhost:5010/user/" + user_id)
         .then(response => {
           return response.data.data.name
@@ -103,6 +104,7 @@ export default {
         })
     },
     getMyPledges() {
+      // const url = "http://tracker:5001/get_project_by_user_id/" + this.user_id
       const url = "http://localhost:5001/get_project_by_user_id/" + this.user_id
       axios.get(url)
         .then(response => {
@@ -118,6 +120,7 @@ export default {
         if (this.trackers_by_user_id[i]['project_id'] == project_id) {
           const tracker_id = this.trackers_by_user_id[i]['tracker_id']
           const url = "http://localhost:5001/tracker/" + tracker_id
+          // const url = "http://tracker:5001/tracker/" + tracker_id
           axios.delete(url)
             .then(response => {
               this.getMyPledges()

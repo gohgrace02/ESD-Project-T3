@@ -15,6 +15,7 @@ import json
 import amqp_connection
 
 app = Flask(__name__)
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/tracker'
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -280,15 +281,15 @@ def project_fufilment(project_id):
     # - reply from the invocation is not used;
     # continue even if this invocation fails
 
-    url = "http://localhost:5004/capture_all/" + str(project_id)
-    # url = "http://back_project:5004/capture_all/" + str(project_id)
+    # url = "http://localhost:5004/capture_all/" + str(project_id)
+    url = "http://back_project:5004/capture_all/" + str(project_id)
     try:
         response = requests.post(url, json=message).json()
         return jsonify({
             "code": 201,
             "status": response['status']
         })
-    except:
+    except Exception as e:
         return jsonify(
             {
                 "code": 500,
