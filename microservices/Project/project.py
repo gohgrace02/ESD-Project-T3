@@ -223,18 +223,28 @@ def create_project():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred creating the project."
+                "data": str(data),
+                "message": "An error occurred creating the project.",
+                "microservice": "project"
             }
         ), 500
-   
+    
+    log_message = {
+            "code": 201,
+            "data": str(data),
+            "message": "Project creation successful. Project is created successfully.",
+            "microservice": "project"
+    }
     print('\n\n-----Publishing the (project info) message with routing_key=project.info-----')
     channel.basic_publish(exchange=exchangename, routing_key="project.info",
-        body=json.dumps(data), properties=pika.BasicProperties(delivery_mode = 2))
+        body=json.dumps(log_message), properties=pika.BasicProperties(delivery_mode = 2))
     print("\nProject info published to RabbitMQ Exchange.\n")
     return jsonify(
         {
             "code": 201,
-            "data": project.json()
+            "data": project.json(),
+            "message": "Project creation successful. Project is created successfully.",
+            "microservice": "project"
         }
     ), 201
 
