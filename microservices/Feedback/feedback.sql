@@ -33,7 +33,7 @@ USE `feedback`;
 DROP TABLE IF EXISTS `feedback`;
 CREATE TABLE IF NOT EXISTS `feedback` (
     `feedback_id` INT AUTO_INCREMENT NOT NULL,
-    `backer_id` INT NOT NULL,
+    `user_id` INT NOT NULL,
     `project_id` INT NOT NULL,
     `rating` INT NOT NULL,
     `feedback_info` TEXT NOT NULL,
@@ -45,11 +45,11 @@ CREATE TABLE IF NOT EXISTS `feedback` (
 -- Dumping data for table `feedback`
 --
 
-INSERT INTO `feedback` (`feedback_id`, `backer_id`, `project_id`, `rating`, `feedback_info`, `submitted_at`) VALUES
-    (001, 1, 1231, 9, 'excellent', '2024-03-12 11:00:00'),
-    (002, 2, 1232, 8, 'good', '2024-03-13 10:00:00'),
-    (003, 3, 1233, 7, 'happy', '2024-03-14 11:00:00'),
-    (004, 4, 1234, 1, 'shit', '2024-03-15 11:00:00');
+INSERT INTO `feedback` (`feedback_id`, `user_id`, `project_id`, `rating`, `feedback_info`, `submitted_at`) VALUES
+    (1, 1, 1231, 9, 'excellent', '2024-03-12 11:00:00'),
+    (2, 2, 1232, 8, 'good', '2024-03-13 10:00:00'),
+    (3, 3, 1233, 7, 'happy', '2024-03-14 11:00:00'),
+    (4, 4, 1234, 1, 'shit', '2024-03-15 11:00:00');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
