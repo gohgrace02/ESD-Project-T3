@@ -85,9 +85,9 @@ def get_payment_intent_id(checkout_session_id):
             "data": data
         }
         print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
-        # channel.basic_publish(exchange=exchangename, routing_key="project.error",
-        #     body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
-        # print("\nProject error published to RabbitMQ Exchange.\n")
+        channel.basic_publish(exchange=exchangename, routing_key="project.error",
+            body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
+        print("\nProject error published to RabbitMQ Exchange.\n")
         return jsonify(
             {
                 "code": 500,
@@ -95,9 +95,6 @@ def get_payment_intent_id(checkout_session_id):
             }
         ), 500
         
-
-
-# @app.route("/capture/<payment_intent_id>", methods=['POST'])
 
 
 
@@ -152,9 +149,9 @@ def capture_payment(payment_intent_id):
             "error_message": str(e),
             "data": data
         }
-        # print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
-        # channel.basic_publish(exchange=exchangename, routing_key="project.error",
-        #     body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
+        print('\n\n-----Publishing the (project error) message with routing_key=project.error-----')
+        channel.basic_publish(exchange=exchangename, routing_key="project.error",
+            body=json.dumps(error_message), properties=pika.BasicProperties(delivery_mode = 2))
         print("\nProject error published to RabbitMQ Exchange.\n")
         return jsonify(
             {
@@ -192,8 +189,8 @@ def processTrackerLog(order):
 
 
 if __name__ == '__main__':
-    # connection = amqp_connection.create_connection() #get the connection to the broker
-    # print("back_project: Connection established successfully")
-    # channel = connection.channel()
-    # receiveFulfilmentLog(channel)  # Start consuming messages from the queue
+    connection = amqp_connection.create_connection() #get the connection to the broker
+    print("back_project: Connection established successfully")
+    channel = connection.channel()
+    receiveFulfilmentLog(channel)  # Start consuming messages from the queue
     app.run(host='0.0.0.0', port=5004, debug=True)
