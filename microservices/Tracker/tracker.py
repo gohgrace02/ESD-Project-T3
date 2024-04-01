@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func
 from os import environ
 from flask_cors import CORS
+from prometheus_flask_exporter import PrometheusMetrics
 
 import os, sys
 
@@ -34,6 +35,7 @@ if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
     sys.exit(0)  # Exit with a success status
 
+metrics = PrometheusMetrics(app)
 db = SQLAlchemy(app)
 
 CORS(app)
@@ -329,4 +331,4 @@ def delete_tracker(tracker_id):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=False)

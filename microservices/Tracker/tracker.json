@@ -1,0 +1,12 @@
+[
+    {
+      "targets": [
+        "tracker:5001"
+      ],
+      "labels": {
+        "env": "dev",
+        "job": "docker"
+      }
+    }
+  ]
+  
