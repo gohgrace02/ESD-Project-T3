@@ -20,15 +20,15 @@ exchangename = "project_topic" # exchange name
 exchangetype = "topic" # use a 'direct' exchange to enable interaction
 
 
-# # #create a connection and a channel to the broker to publish messages to activity_log, error queues
-# connection = amqp_connection.create_connection()
-# channel = connection.channel()
+# #create a connection and a channel to the broker to publish messages to activity_log, error queues
+connection = amqp_connection.create_connection()
+channel = connection.channel()
 
 
-# # #if the exchange is not yet created, exit the program
-# if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
-#     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
-#     sys.exit(0)  # Exit with a success status
+# #if the exchange is not yet created, exit the program
+if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
+    print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
+    sys.exit(0)  # Exit with a success status
 
 
 app = Flask(__name__)
@@ -223,18 +223,28 @@ def create_project():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred creating the project."
+                "data": str(data),
+                "message": "An error occurred creating the project.",
+                "microservice": "project"
             }
         ), 500
-   
+    
+    log_message = {
+            "code": 201,
+            "data": str(data),
+            "message": "Project creation successful. Project is created successfully.",
+            "microservice": "project"
+    }
     print('\n\n-----Publishing the (project info) message with routing_key=project.info-----')
     channel.basic_publish(exchange=exchangename, routing_key="project.info",
-        body=json.dumps(data), properties=pika.BasicProperties(delivery_mode = 2))
+        body=json.dumps(log_message), properties=pika.BasicProperties(delivery_mode = 2))
     print("\nProject info published to RabbitMQ Exchange.\n")
     return jsonify(
         {
             "code": 201,
-            "data": project.json()
+            "data": project.json(),
+            "message": "Project creation successful. Project is created successfully.",
+            "microservice": "project"
         }
     ), 201
 
