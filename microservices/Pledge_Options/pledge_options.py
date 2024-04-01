@@ -6,9 +6,6 @@ import os
 
 
 from datetime import datetime
-# from dotenv import load_dotenv
-# load_dotenv()
-from utils import STRIPE_PUB_KEY
 
 import requests
 import sys
@@ -37,7 +34,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconn
 # idk why it doesnt work if I use the above --> need to use command prompt for the above to work 
 # use: set dbURL=mysql+mysqlconnector://root@localhost:3306/project
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-headers = { "Authorization": "Bearer " + STRIPE_PUB_KEY}
+headers = { "Authorization": "Bearer sk_test_51O4n0jBWraf69XnWY4aVlVKRqQUCAFfd39aPqRYrDH1tVCUDkUv73npLZXUJcMEopBma6kK2JdyZEdh8aRCij6Lk00clrvlXD8"}
 
 
 db = SQLAlchemy(app)

@@ -5,9 +5,7 @@ from os import environ
 from flask_cors import CORS
 
 import os, sys
-# from dotenv import load_dotenv
-# load_dotenv()
-from utils import STRIPE_PUB_KEY
+
 
 import requests
 
@@ -20,7 +18,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
-headers = { "Authorization": "Bearer " + STRIPE_PUB_KEY }
+headers = { "Authorization": "Bearer sk_test_51O4n0jBWraf69XnWY4aVlVKRqQUCAFfd39aPqRYrDH1tVCUDkUv73npLZXUJcMEopBma6kK2JdyZEdh8aRCij6Lk00clrvlXD8" }
 
 
 
@@ -293,6 +291,38 @@ def update_tracker(tracker_id):
                 ), 404
         else:
             return jsonify({"message": "Tracker already captured.", "code": 200}), 200
+    else:
+        # Tracker not found
+        return jsonify({"message": "Tracker not found.", "code": 404}), 404
+    
+
+
+# delete tracker AKA cancel pledge
+@app.route("/tracker/<int:tracker_id>", methods=['DELETE'])
+def delete_tracker(tracker_id):
+    tracker = db.session.scalars(db.select(Tracker).filter_by(tracker_id=tracker_id)).first()
+    if tracker:
+        return tracker.payment_intent_id
+        try:
+            db.session.delete(tracker)
+            db.session.commit()
+            return jsonify(
+                {
+                    "code": 200,
+                    "data": "Tracker deleted successfully."
+                }
+            )
+        except Exception as e:
+            return jsonify(
+                {
+                    "code": 404,
+                    "data": {
+                        "tracker_id": tracker_id
+                    },
+                    "message": "Error deleting tracker."
+                }
+            ), 404
+        
     else:
         # Tracker not found
         return jsonify({"message": "Tracker not found.", "code": 404}), 404

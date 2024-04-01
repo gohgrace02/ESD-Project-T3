@@ -5,9 +5,6 @@ import json
 import pika
 
 import os, sys
-from utils import STRIPE_PUB_KEY
-# from dotenv import load_dotenv
-# load_dotenv()
 
 import requests
 
@@ -15,7 +12,7 @@ app = Flask(__name__)
 CORS(app)
 
 a_queue_name = 'Back_Project' # queue to be subscribed by Activity_Log microservice
-headers = { "Authorization": "Bearer " + STRIPE_PUB_KEY }
+headers = { "Authorization": "Bearer sk_test_51O4n0jBWraf69XnWY4aVlVKRqQUCAFfd39aPqRYrDH1tVCUDkUv73npLZXUJcMEopBma6kK2JdyZEdh8aRCij6Lk00clrvlXD8" }
 exchangename = "back_project_topic" # exchange name
 exchangetype= "topic" # use a 'topic' exchange to enable interaction
 
