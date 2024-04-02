@@ -25,13 +25,13 @@ export default {
     methods: {
         handleSuccess() {
             // makes a post req to back_project.py to get payment_intent_id
-            const to_back_project_url = "http://localhost:5004/get_payment_intent_id/" + this.checkout_session_id
-            // const to_back_project_url = "http://back_project:5004/get_payment_intent_id/" + this.checkout_session_id
+            // const to_back_project_url = "http://localhost:5004/get_payment_intent_id/" + this.checkout_session_id
+            const to_back_project_url = "http://localhost:8000/get_payment_intent_id/" + this.checkout_session_id + "?apikey=admin"
             axios.get(to_back_project_url)
                 .then(response => {
                     this.payment_intent_id = response.data
-                    const to_tracker_url = "http://localhost:5001/project/" + this.project_id + "/tracker"
-                    // const to_tracker_url = "http://tracker:5001/project/" + this.project_id + "/tracker"
+                    // const to_tracker_url = "http://localhost:5001/project/" + this.project_id + "/tracker"
+                    const to_tracker_url = "http://localhost:8000/project/" + this.project_id + "/tracker?apikey=admin"
                     const json = {
                         "pledge_amt": this.pledge_amt,
                         "user_id": JSON.parse(sessionStorage.getItem('user')).user_id,

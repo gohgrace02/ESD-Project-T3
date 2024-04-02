@@ -113,6 +113,7 @@
             <p class="card-text">{{ option.description }}</p>
             <a v-if="is_creator" @click="removeOption(option.price_id)" class="btn btn-danger">Remove
               option</a>
+
             <a v-else @click="checkoutPledge(option.price_id, option.pledge_amt)" class="btn btn-success">Pledge ${{
               option.pledge_amt}}</a>
           </div>
@@ -150,7 +151,7 @@ export default {
   },
   methods: {
     getDetails() {
-      const url = "http://localhost:5000/project/" + this.project_id
+      const url = "http://localhost:8000/" + this.project_id + "?apikey=admin"
       // const url = "http://project:5000/project/" + this.project_id
       axios.get(url)
         .then(response => {
@@ -165,8 +166,8 @@ export default {
 
 
     getOptions() {
-      const url = "http://localhost:5009/options/" + this.project_id
-      // const url = "http://pledge_options:5009/options/" + this.project_id
+      // const url = "http://localhost:5009/options/" + this.project_id
+      const url = "http://localhost:8000/options/" + this.project_id + "?apikey=admin"
       axios.get(url)
         .then(response => {
           this.options = response.data.data
@@ -189,8 +190,8 @@ export default {
         "product_id": this.product_id,
         "pledge_amt": this.pledge_amt
       }
-      const url = "http://localhost:5009/options/" + this.project_id + "/add"
-      // const url = "http://pledge_options:5009/options/" + this.$route.params.project_id + "/add"
+      // const url = "http://localhost:5009/options/" + this.project_id + "/add"
+      const url = "http://localhost:8000/options/" + this.$route.params.project_id + "/add?apikey=admin"
       axios.post(url, json)
         .then(response => {
           // data = response.data.data
@@ -207,8 +208,8 @@ export default {
 
 
     removeOption(price_id) {
-      const url = "http://localhost:5009/options/" + price_id
-      // const url = "http://pledge_options:5009/options/" + price_id
+      // const url = "http://localhost:5009/options/" + price_id
+      const url = "http://localhost:8000/options/" + price_id + "?apikey=admin"
       axios.post(url)
         .then(response => {
           // const data = response.data.data
@@ -225,7 +226,8 @@ export default {
 
     checkoutPledge(price_id, pledge_amt) {
       // first post to back_project.py to create checkout session
-      const url = "http://localhost:5004/create_checkout_session"
+      const url = "http://localhost:8000/create_checkout_session?apikey=admin"
+      // const url = "http://localhost:5004/create_checkout_session"
       // const url = "http://back_project:5004/create_checkout_session"
       const json = {
         "project_id": this.project_id,
@@ -250,7 +252,8 @@ export default {
 
     cancelPledge(tracker_id) {
       // first post to back_project.py to create checkout session
-      const url = "http://localhost:5004/create_checkout_session"
+      const url = "http://localhost:8000/create_checkout_session?apikey=admin"
+      // const url = "http://localhost:5004/create_checkout_session"
       // const url = "http://back_project:5004/create_checkout_session"
       const json = {
         "project_id": this.project_id,

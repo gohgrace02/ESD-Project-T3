@@ -76,7 +76,8 @@ export default {
   },
   methods: {
     createProject() {
-      const url = "http://localhost:5000/project"
+      const url = "http://localhost:8000/api/v1/project?apikey=admin"
+      // const url = "http://localhost:5000/project"
       // const url = "http://project:5000/project"
       const json = {
         "name": this.name,
