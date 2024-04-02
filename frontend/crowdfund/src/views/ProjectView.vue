@@ -41,8 +41,8 @@
     <!-- project details -->
     <div class="row">
       <!-- project_id, name, description, user_id, funding_goal, deadline, creation_time, status, goal_reached -->
-      <label for="details" class="fw-bold">More details</label>
-      <table class="table table-hover" id="details">
+      <h5 class="fw-bold">More details</h5>
+      <table class="table table-hover">
         <thead>
           <tr>
             <th scope="col">Creator</th>
@@ -69,7 +69,7 @@
     <!-- pledge options -->
     <div class="row mb-3">
       <div class="col">
-        <label for="pledge_options" class="fw-bold" style="vertical-align: middle;">Pledge options</label>
+        <h5 class="fw-bold" style="vertical-align: middle;">Pledge options</h5>
       </div>
       <div v-if="is_creator" class="col text-end">
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPledgeOptionModal">+ Add pledge
@@ -85,12 +85,12 @@
             </div>
             <!-- pledge option form -->
             <!-- <form :action="`${add_pledge_option_url}`" method="post"> -->
-            <form>
+            <form @submit.prevent="addPledgeOption()">
               <div class="modal-body">
                 <div class="row justify-content-center my-3">
                   <div class="col mx-3">
                     <div class="mb-3">
-                      <label for="title" class="form-label">Title:</label>
+                      <h5>Title:</h5>
                       <input required v-model="title" type="text" class="form-control" id="title"
                         placeholder="e.g. Gold tier">
                     </div>
@@ -112,7 +112,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <!-- things submitted: `title`, `description`, `user_id`, `project_id`, `pledge_amt` -->
                 <!-- submitted to pledge_options.py, and refreshes the page -->
-                <a @click="addPledgeOption()" class="btn btn-primary">Submit</a>
+                <button type="submit" class="btn btn-primary">Submit</button>
               </div>
             </form>
           </div>
@@ -143,7 +143,7 @@
 
     <!-- feedback -->
     <div class="feedback-header">
-      <label for="details" class="fw-bold mb-3">Feedback from other backers</label>
+      <h5 class="fw-bold mb-3">Feedback from other backers</h5>
       <div v-if="(!is_creator)" class="col text-end">
         <button data-bs-toggle="modal" data-bs-target="#submitFeedbackModal" class="btn btn-secondary p-2">
           Submit feedback <span class="ms-1"><svg viewBox="0 0 24 24" width="20" fill="none"
@@ -185,7 +185,7 @@
               <div class="row justify-content-center my-3">
                 <div class="col mx-3">
                   <div class="mb-3">
-                    <label for="rating" class="form-label">Rating:</label>
+                    <h5>Rating:</h5>
                     <!-- <h5><span class="rate"><i @click="stars(1)">★</i><i @click="stars(2)">★</i><i @click="stars(3)">★</i><i
                           @click="stars(4)">★</i><i @click="stars(5)">★</i>
                     </span></h5> -->
@@ -195,7 +195,7 @@
                     </span>
                   </div>
                   <div class="mb-3">
-                    <label for="description" class="form-label">Description:</label>
+                    <h5>Description:</h5>
                     <textarea required v-model="feedback_text" class="form-control" id="feedback_text"
                       style="min-height: 120px;" placeholder="" />
                     <p class="text-danger my-3">{{ errorMsg }}</p>
@@ -308,8 +308,8 @@ export default {
       const url = "http://localhost:8000/options/" + this.$route.params.project_id + "/add?apikey=admin"
       axios.post(url, json)
         .then(response => {
-          // data = response.data.data
-          // console.log(data)
+          const data = response.data.data
+          console.log(data)
         })
         .catch(error => {
           console.log(error.message)
@@ -322,8 +322,8 @@ export default {
 
 
     removeOption(price_id) {
-      // const url = "http://localhost:5009/options/" + price_id
-      const url = "http://localhost:8000/options/" + price_id + "?apikey=admin"
+      const url = "http://localhost:5009/options/" + price_id + "/remove"
+      // const url = "http://localhost:8000/options/" + price_id + "/remove?apikey=admin"
       axios.post(url)
         .then(response => {
           // const data = response.data.data
@@ -333,7 +333,7 @@ export default {
           console.log(error.message)
         })
         .finally(() => {
-          this.$router.go(0)
+          // this.$router.go(0)
         })
     },
 
