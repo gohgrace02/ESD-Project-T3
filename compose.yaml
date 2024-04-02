@@ -223,8 +223,8 @@ services:
     image: gohgrace/pledge_options:esd
     restart: always
     environment:
-      dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/pledge_options
-      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/pledge_options
+      # dbURL: mysql+mysqlconnector://is213@host.docker.internal:8889/pledge_options
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/pledge_options
       PYTHONUNBUFFERED: 1
       # STRIPE_API_URL: "https://api.stripe.com/v1"
     ports:
