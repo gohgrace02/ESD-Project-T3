@@ -48,10 +48,10 @@ CREATE TABLE IF NOT EXISTS `user` (
 --
 
 INSERT INTO `user` (`user_id`, `name`, `email`, `password`, `is_creator`, `customer_id`) VALUES
-    (1, 'bob', 'bob@gmail.com', 'bob', FALSE, 'cus_PpvyvFcdL0LfzN'),
-    (2, 'jack', 'jack@gmail.com', 'jack', TRUE, 'cus_Ppw0p5wCWLOvkH'),
-    (3, 'amy', 'amy@gmail.com', 'amy', FALSE, 'cus_Ppw0EvndzzDLtQ'),
-    (4, 'peter', 'peter@gmail.com', 'peter', TRUE, 'cus_PpxYTc38HwBrRM');
+    (1, 'Bob', 'bob@gmail.com', 'bob', FALSE, 'cus_PpvyvFcdL0LfzN'),
+    (2, 'Jakc', 'jack@gmail.com', 'jack', TRUE, 'cus_Ppw0p5wCWLOvkH'),
+    (3, 'Amy', 'amy@gmail.com', 'amy', FALSE, 'cus_Ppw0EvndzzDLtQ'),
+    (4, 'Peter', 'peter@gmail.com', 'peter', TRUE, 'cus_PpxYTc38HwBrRM');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -15,8 +15,8 @@ import json
 import amqp_connection
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 headers = { "Authorization": "Bearer sk_test_51O4n0jBWraf69XnWY4aVlVKRqQUCAFfd39aPqRYrDH1tVCUDkUv73npLZXUJcMEopBma6kK2JdyZEdh8aRCij6Lk00clrvlXD8" }
@@ -273,8 +273,8 @@ def project_fufilment(project_id):
     }
     message_json = json.dumps(message)
 
-    channel.basic_publish(exchange=exchangename, routing_key="fulfilment.info", 
-        body=message_json, properties=pika.BasicProperties(delivery_mode = 2))
+    # channel.basic_publish(exchange=exchangename, routing_key="fulfilment.info", 
+    #     body=message_json, properties=pika.BasicProperties(delivery_mode = 2))
     
     print("\nFulfilment published to RabbitMQ Exchange.\n")
     # - reply from the invocation is not used;

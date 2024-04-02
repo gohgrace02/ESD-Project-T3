@@ -19,7 +19,7 @@ exchangetype= "topic" # use a 'topic' exchange to enable interaction
 
 # users will make a POST req to this when they click on the 'pledge' button
 # this creates a checkout session and redirects the user to the stripe checkout url
-@app.route("/create_checkout_session", methods=['POST', 'GET'])
+@app.route("/create_checkout_session", methods=['POST'])
 def create_checkout_session():
     data = request.get_json()
     customer_id = data.get('customer_id')
@@ -28,12 +28,9 @@ def create_checkout_session():
     price_id = data.get('price_id')
     quantity = data.get('quantity')
     cancel_url = data.get('cancel_url')
+    goal_reached = data.get('goal_reached')
     success_url = "http://localhost:5173/success/?checkout_session_id={CHECKOUT_SESSION_ID}&return_url=" + cancel_url + "&project_id=" + str(project_id) + "&pledge_amt=" + str(pledge_amt)
-    # return project_id
-    # perform a check on project's goal_reached status (true or false)
-    url = "http://localhost:5000/project/" + str(project_id)
-    # url = "http://project:5000/project/" + str(project_id)
-    goal_reached = requests.get(url).json()['data']['goal_reached']
+   
     # # creates delayed payment checkout session if goal not reached
     if not goal_reached:
         params = {

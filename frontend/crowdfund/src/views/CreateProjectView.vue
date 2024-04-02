@@ -8,7 +8,14 @@
       </ol>
     </nav> -->
     <div>
-      <Back :is_creator="is_creator"/>
+      <button class="btn btn-secondary d-flex justify-content-between pe-3 ps-1" @click="back()">
+        <svg width="25" height="25" viewBox="0 0 1024 1024" fill="#ffffff" class="icon" version="1.1"
+          xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M669.6 849.6c8.8 8 22.4 7.2 30.4-1.6s7.2-22.4-1.6-30.4l-309.6-280c-8-7.2-8-17.6 0-24.8l309.6-270.4c8.8-8 9.6-21.6 2.4-30.4-8-8.8-21.6-9.6-30.4-2.4L360.8 480.8c-27.2 24-28 64-0.8 88.8l309.6 280z"
+            fill="" stroke="white" stroke-width="15" />
+        </svg> Back
+      </button>
     </div>
     <div>
       <Logout />
@@ -16,7 +23,8 @@
   </div>
 
   <div class="container-fluid">
-    <form @submit.prevent="createProject()">
+    <form @submit.prevent="check()">
+      <!-- <form @submit.prevent="createProject()"> -->
       <!-- Project details form -->
       <div class="row justify-content-center my-3">
         <div class="col-md-6 col-sm-8 bg-light rounded-3 p-3">
@@ -40,6 +48,7 @@
             <textarea required v-model="description" class="form-control" id="description" placeholder=""
               style="min-height: 120px;" />
           </div>
+          <p class="text-danger my-3">{{ errorMsg }}</p>
           <!-- things submitted project_name, funding_goal, deadline, description
           creator_id -->
           <!-- submitted to project.py, should redirect to project page -->
@@ -57,12 +66,10 @@
 <script>
 import axios from 'axios'
 import Logout from '@/components/Logout.vue'
-import Back from '@/components/Back.vue'
 
 export default {
   components: {
     Logout,
-    Back
   },
   data() {
     return {
@@ -72,9 +79,20 @@ export default {
       funding_goal: 0,
       deadline: '',
       is_creator: JSON.parse(sessionStorage.getItem('user')).is_creator,
+      errorMsg: '',
     }
   },
   methods: {
+    back() {
+      if (this.is_creator) {
+        this.$router.push({ path: `/creator`, replace: true })
+      } else {
+        this.$router.push({ path: `/backer`, replace: true })
+      }
+    },
+
+
+
     createProject() {
       const url = "http://localhost:5000/project"
       // const url = "http://project:5000/project"
@@ -94,9 +112,27 @@ export default {
           console.log(error.message)
         })
         .finally(() => {
-          this.$router.go(-1)
+          this.$router.push({ path: `/creator`, replace: true })
         })
     },
+    check() {
+      this.errorMsg = ''
+      const json = {
+        "text": this.description
+      }
+      axios.post("http://localhost:5006/moderate", json)
+      .then(response => {
+        if (response.data == '0') {
+          // console.log("yes")
+          this.createProject()
+        } else {
+          this.errorMsg = 'NO F*CKING VULGARITIES ALLOWED'
+        }
+      })
+      .catch(error => {
+        console.log(error.message)
+      })
+    }
   },
   // mounted() {
   // }
