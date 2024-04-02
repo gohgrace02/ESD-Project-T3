@@ -94,8 +94,8 @@ export default {
 
 
     createProject() {
-      const url = "http://localhost:5000/project"
-      // const url = "http://project:5000/project"
+      // const url = "http://localhost:5000/project"
+      const url = "http://localhost:8000/api/v1/project?apikey=admin"
       const json = {
         "name": this.name,
         "description": this.description,
@@ -120,7 +120,8 @@ export default {
       const json = {
         "text": this.description
       }
-      axios.post("http://localhost:5006/moderate", json)
+      axios.post("http://localhost:8000/moderate?apikey=admin", json)
+      // axios.post("http://localhost:5006/moderate", json)
       .then(response => {
         if (response.data == '0') {
           // console.log("yes")

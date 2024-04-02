@@ -60,8 +60,8 @@ export default {
   },
   methods: {
     getProjects() {
-      const url = "http://localhost:5000/project/user_id=" + this.user_id
-      // const url = "http://project:5000/project/user_id=" + this.user_id
+      // const url = "http://localhost:5000/project/user_id=" + this.user_id
+      const url = "http://localhost:8000/user_id=" + this.user_id + "?apikey=admin"
       axios.get(url)
       .then(response => {
         this.projects = response.data.data

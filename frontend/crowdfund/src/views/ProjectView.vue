@@ -264,8 +264,8 @@ export default {
 
 
     getDetails() {
-      const url = "http://localhost:5000/project/" + this.project_id
-      // const url = "http://project:5000/project/" + this.project_id
+      // const url = "http://localhost:5000/project/" + this.project_id
+      const url = "http://localhost:8000/" + this.project_id + "?apikey=admin"
       axios.get(url)
         .then(response => {
           this.project = response.data.data
@@ -279,8 +279,8 @@ export default {
 
 
     getOptions() {
-      const url = "http://localhost:5009/options/" + this.project_id
-      // const url = "http://pledge_options:5009/options/" + this.project_id
+      // const url = "http://localhost:5009/options/" + this.project_id
+      const url = "http://localhost:8000/options/" + this.project_id + "?apikey=admin"
       axios.get(url)
         .then(response => {
           this.options = response.data.data
@@ -303,8 +303,8 @@ export default {
         "product_id": this.product_id,
         "pledge_amt": this.pledge_amt
       }
-      const url = "http://localhost:5009/options/" + this.project_id + "/add"
-      // const url = "http://pledge_options:5009/options/" + this.$route.params.project_id + "/add"
+      // const url = "http://localhost:5009/options/" + this.project_id + "/add"
+      const url = "http://localhost:8000/options/" + this.$route.params.project_id + "/add?apikey=admin"
       axios.post(url, json)
         .then(response => {
           // data = response.data.data
@@ -321,8 +321,8 @@ export default {
 
 
     removeOption(price_id) {
-      const url = "http://localhost:5009/options/" + price_id
-      // const url = "http://pledge_options:5009/options/" + price_id
+      // const url = "http://localhost:5009/options/" + price_id
+      const url = "http://localhost:8000/options/" + price_id + "?apikey=admin"
       axios.post(url)
         .then(response => {
           // const data = response.data.data
@@ -339,8 +339,8 @@ export default {
 
     checkoutPledge(price_id, pledge_amt) {
       // first post to back_project.py to create checkout session
-      const url = "http://localhost:5004/create_checkout_session"
-      // const url = "http://back_project:5004/create_checkout_session"
+      // const url = "http://localhost:5004/create_checkout_session"
+      const url = "http://localhost:8000/create_checkout_session?apikey=admin"
       const json = {
         "project_id": this.project_id,
         "pledge_amt": pledge_amt,
@@ -365,7 +365,8 @@ export default {
 
 
     getFeedback(){
-      const url = "http://localhost:5007/get_feedback/" + this.project_id
+      // const url = "http://localhost:5007/get_feedback/" + this.project_id
+      const url = "http://localhost:8000/get_feedback/" + this.project_id + "?apikey=admin"
       axios.get(url)
         .then(response => {
           this.feedback_list = response.data.feedback_list
@@ -382,7 +383,8 @@ export default {
 
 
     submitFeedback() {
-      const url = "http://localhost:5007/create_feedback/" + this.project_id
+      // const url = "http://localhost:5007/create_feedback/" + this.project_id
+      const url = "http://localhost:8000/create_feedback/" + this.project_id + "?apikey=admin"
       const json = {
         "user_id": this.user_id,
         "rating": this.rating,
@@ -406,7 +408,8 @@ export default {
       const json = {
         "text": this.feedback_text
       }
-      axios.post("http://localhost:5006/moderate", json)
+      axios.post("http://localhost:8000/moderate?apikey=admin", json)
+      // axios.post("http://localhost:5006/moderate", json)
         .then(response => {
           if (response.data == '0') {
             // console.log("yes")
@@ -418,31 +421,31 @@ export default {
         .catch(error => {
           console.log(error.message)
         })
-    }
-    // cancelPledge(tracker_id) {
-    //   // first post to back_project.py to create checkout session
-    //   const url = "http://localhost:5004/create_checkout_session"
-    //   // const url = "http://back_project:5004/create_checkout_session"
-    //   const json = {
-    //     "project_id": this.project_id,
-    //     "pledge_amt": pledge_amt,
-    //     "price_id": price_id,
-    //     "quantity": 1,
-    //     "cancel_url": "http://localhost:5173/project/" + this.project.project_id,
-    //     "customer_id": this.customer_id
-    //   }
-    //   axios.post(url, json)
-    //     .then(response => {
-    //       console.log(response.data)
-    //       const data = response.data
-    //       const checkout_url = data.url
-    //       // redirect to checkout_url for backer to key in card details
-    //       window.location.href = checkout_url
-    //     })
-    //     .catch(error => {
-    //       console.log(error.message)
-    //     })
-    // },
+    },
+    cancelPledge(tracker_id) {
+      // first post to back_project.py to create checkout session
+      // const url = "http://localhost:5004/create_checkout_session"
+      const url = "http://localhost:8000/create_checkout_session?apikey=admin"
+      const json = {
+        "project_id": this.project_id,
+        "pledge_amt": pledge_amt,
+        "price_id": price_id,
+        "quantity": 1,
+        "cancel_url": "http://localhost:5173/project/" + this.project.project_id,
+        "customer_id": this.customer_id
+      }
+      axios.post(url, json)
+        .then(response => {
+          console.log(response.data)
+          const data = response.data
+          const checkout_url = data.url
+          // redirect to checkout_url for backer to key in card details
+          window.location.href = checkout_url
+        })
+        .catch(error => {
+          console.log(error.message)
+        })
+    },
 
 
   

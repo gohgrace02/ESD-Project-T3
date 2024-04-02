@@ -78,8 +78,8 @@ export default {
   },
   methods: {
     getProjects() {
-      const url = "http://localhost:5000/project"
-      // const url = "http://project:5000/project"
+      // const url = "http://localhost:5000/project"
+      const url = "http://localhost:8000/api/v1/project?apikey=admin"
       axios.get(url)
       .then(response => {
         this.projects = response.data.data.projects
@@ -92,7 +92,8 @@ export default {
       this.$router.push({ name: 'project', params: { project_id: project_id } })
     },
     creatorName(user_id) {
-      axios.get("http://localhost:5010/user/" + user_id)
+      // axios.get("http://localhost:5010/user/" + user_id)
+      axios.get("http://localhost:8000/user/" + user_id + "?apikey=admin")
         .then(response => {
           return response.data.data.name
         })
@@ -101,7 +102,8 @@ export default {
         })
     },
     getMyPledges() {
-      const url = "http://localhost:5001/get_project_by_user_id/" + this.user_id
+      const url = "http://localhost:8000/get_project_by_user_id/" + this.user_id + "?apikey=admin"
+      // const url = "http://localhost:5001/get_project_by_user_id/" + this.user_id
       axios.get(url)
         .then(response => {
           this.projects_by_user_id = response.data.project_list
@@ -115,7 +117,8 @@ export default {
       for (let i=0; i<this.trackers_by_user_id.length; i++) {
         if (this.trackers_by_user_id[i]['project_id'] == project_id) {
           const tracker_id = this.trackers_by_user_id[i]['tracker_id']
-          const url = "http://localhost:5001/tracker/" + tracker_id
+          // const url = "http://localhost:5001/tracker/" + tracker_id
+          const url = "http://localhost:8000/tracker/" + tracker_id + "?apikey=admin"
           axios.delete(url)
             .then(response => {
               this.getMyPledges()

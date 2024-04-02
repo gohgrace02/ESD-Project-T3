@@ -49,7 +49,8 @@ export default {
         email: this.email,
         password: this.password
       }
-      axios.post("http://localhost:5010/user/auth", data)
+      axios.post("http://localhost:8000/user/auth?apikey=admin", data)
+      // axios.post("http://localhost:5010/user/auth", data)
       .then(response => {
         if (response.data.code == 401) {
           this.errorMsg = response.data.message
