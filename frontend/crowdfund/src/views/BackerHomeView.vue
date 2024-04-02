@@ -115,23 +115,32 @@ export default {
         .catch(error => {
           console.log(error.message)
         })
-    },
-    cancelPledge(project_id) {
-      for (let i=0; i<this.trackers_by_user_id.length; i++) {
-        if (this.trackers_by_user_id[i]['project_id'] == project_id) {
-          const tracker_id = this.trackers_by_user_id[i]['tracker_id']
-          // const url = "http://localhost:5001/tracker/" + tracker_id
-          const url = "http://localhost:8000/tracker/" + tracker_id + "?apikey=admin"
-          axios.delete(url)
-            .then(response => {
-              this.getMyPledges()
-            })
-            .catch(error => {
-              console.log(error.message)
-            })
-        }
-      }
-    },
+    }
+
+
+
+
+
+
+
+
+    
+    // cancelPledge(project_id) {
+    //   for (let i=0; i<this.trackers_by_user_id.length; i++) {
+    //     if (this.trackers_by_user_id[i]['project_id'] == project_id) {
+    //       const tracker_id = this.trackers_by_user_id[i]['tracker_id']
+    //       // const url = "http://localhost:5001/tracker/" + tracker_id
+    //       const url = "http://localhost:8000/tracker/" + tracker_id + "?apikey=admin"
+    //       axios.delete(url)
+    //         .then(response => {
+    //           this.getMyPledges()
+    //         })
+    //         .catch(error => {
+    //           console.log(error.message)
+    //         })
+    //     }
+    //   }
+    // },
   },
   // created() {
   //   this.getProjects()
