@@ -212,6 +212,8 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5007:5007"
+    networks:
+      - kong-net
 
   ##################################
   # Pledge Options: The Pledge Options microservice
