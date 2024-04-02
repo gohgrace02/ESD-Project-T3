@@ -199,7 +199,11 @@ services:
   ##################################
   # Feedback: The Feedback microservice
   ##################################
+<<<<<<< Updated upstream
   feedback:
+=======
+  feedback: 
+>>>>>>> Stashed changes
     build:
       context: ./microservices/Feedback
       dockerfile: Dockerfile
@@ -213,6 +217,10 @@ services:
       - "5007:5007"
     networks:
       - kong-net
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
   ##################################
   # Pledge Options: The Pledge Options microservice
