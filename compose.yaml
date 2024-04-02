@@ -200,7 +200,6 @@ services:
   # Feedback: The Feedback microservice
   ##################################
   feedback:
-    platform: linux/amd64  
     build:
       context: ./microservices/Feedback
       dockerfile: Dockerfile

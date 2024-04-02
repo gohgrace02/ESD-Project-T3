@@ -239,6 +239,7 @@ export default {
       product_id: '',
       options: [],
       user_id: JSON.parse(sessionStorage.getItem('user')).user_id,
+      name: JSON.parse(sessionStorage.getItem('user')).name,
       is_creator: JSON.parse(sessionStorage.getItem('user')).is_creator,
       customer_id: JSON.parse(sessionStorage.getItem('user')).customer_id,
 
@@ -366,7 +367,7 @@ export default {
 
     getFeedback(){
       // const url = "http://localhost:5007/get_feedback/" + this.project_id
-      const url = "http://localhost:8000/get_feedback/" + this.project_id + "?apikey=admin"
+      const url = "http://localhost:8000/get_feedback/" + this.project_id + "/?apikey=admin"
       axios.get(url)
         .then(response => {
           this.feedback_list = response.data.feedback_list
@@ -384,9 +385,10 @@ export default {
 
     submitFeedback() {
       // const url = "http://localhost:5007/create_feedback/" + this.project_id
-      const url = "http://localhost:8000/create_feedback/" + this.project_id + "?apikey=admin"
+      const url = "http://localhost:8000/create_feedback/" + this.project_id + "/?apikey=admin"
       const json = {
         "user_id": this.user_id,
+        "name": this.name,
         "rating": this.rating,
         "feedback_info": this.feedback_text
       }
@@ -398,7 +400,8 @@ export default {
           console.log(error.message)
         })
         .finally(() => {
-          this.$router.push({ path: `/creator`, replace: true })
+          // this.$router.push({ path: `/project/${this.project_id}`, replace: true })
+          window.location.reload()
         })
     },
 
