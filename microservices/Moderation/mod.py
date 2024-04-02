@@ -29,7 +29,7 @@ exchangetype="topic" # use a 'topic' exchange to enable interaction
 #     print("\nCreate the 'Exchange' before running this microservice. \nExiting the program.")
 #     sys.exit(0)  # Exit with a success status
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/mod'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/mod'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

@@ -15,8 +15,8 @@ import json
 import amqp_connection
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:8889/tracker'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 headers = { "Authorization": "Bearer sk_test_51O4n0jBWraf69XnWY4aVlVKRqQUCAFfd39aPqRYrDH1tVCUDkUv73npLZXUJcMEopBma6kK2JdyZEdh8aRCij6Lk00clrvlXD8" }
@@ -106,7 +106,8 @@ def get_project_by_user_id(user_id):
         # get list of project obj
         project_list = []
         for project_id in project_id_list:
-            response = requests.get("http://localhost:5000/project/" + str(project_id)).json()
+            response = requests.get("http://project:5000/project/" + str(project_id)).json()
+            # response = requests.get("http://localhost:5000/project/" + str(project_id)).json()
             project_list.append(response['data'])
 
         return jsonify({
@@ -280,8 +281,8 @@ def project_fufilment(project_id):
     # - reply from the invocation is not used;
     # continue even if this invocation fails
 
-    url = "http://localhost:5004/capture_all/" + str(project_id)
-    # url = "http://back_project:5004/capture_all/" + str(project_id)
+    # url = "http://localhost:5004/capture_all/" + str(project_id)
+    url = "http://back_project:5004/capture_all/" + str(project_id)
     try:
         response = requests.post(url, json=message).json()
         return jsonify({

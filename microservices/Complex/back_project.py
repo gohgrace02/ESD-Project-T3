@@ -97,8 +97,8 @@ def get_payment_intent_id(checkout_session_id):
 # called by POST request
 def capture_all(project_id):
     # get trackers by project_id
-    url = "http://localhost:5001/project/" + str(project_id) + "/tracker"
-    # url = "http://tracker:5001/project/" + str(project_id) + "/tracker"
+    # url = "http://localhost:5001/project/" + str(project_id) + "/tracker"
+    url = "http://tracker:5001/project/" + str(project_id) + "/tracker"
     response = requests.get(url).json()
     tracker_list = response['data']['trackerList']
 
@@ -110,8 +110,8 @@ def capture_all(project_id):
                 capture_payment(payment_intent_id)
                 tracker_id = tracker['tracker_id']
 
-                response = requests.put("http://localhost:5001/tracker/" + str(tracker_id)).json()
-                # response = requests.put("http://tracker:5001/tracker/" + str(tracker_id)).json()
+                # response = requests.put("http://localhost:5001/tracker/" + str(tracker_id)).json()
+                response = requests.put("http://tracker:5001/tracker/" + str(tracker_id)).json()
 
                 if response['code'] != 200:
                     # Handle tracker update error

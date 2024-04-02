@@ -30,7 +30,8 @@ exchangetype = "topic" # use a 'direct' exchange to enable interaction
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root:root@localhost:8889/pledge_options'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root:root@localhost:8889/pledge_options'
 # idk why it doesnt work if I use the above --> need to use command prompt for the above to work 
 # use: set dbURL=mysql+mysqlconnector://root@localhost:3306/project
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

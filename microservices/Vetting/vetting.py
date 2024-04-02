@@ -23,8 +23,8 @@ if not amqp_connection.check_exchange(channel, exchangename, exchangetype):
 app = Flask(__name__)
 CORS(app)  
 
-# PROJECT_MICROSERVICE_URL = "http://project:5000/project"
-PROJECT_MICROSERVICE_URL = "http://localhost:5000/project"
+PROJECT_MICROSERVICE_URL = "http://project:5000/project"
+# PROJECT_MICROSERVICE_URL = "http://localhost:5000/project"
 
 def vet_project(project_data):
     # Add your vetting criteria here
