@@ -30,6 +30,7 @@ export default {
             axios.get(to_back_project_url)
                 .then(response => {
                     this.payment_intent_id = response.data
+                    // console.log(response.data)
                     // const to_tracker_url = "http://localhost:5001/project/" + this.project_id + "/tracker"
                     const to_tracker_url = "http://localhost:8000/project/" + this.project_id + "/tracker?apikey=admin"
                     const json = {

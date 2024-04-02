@@ -207,7 +207,7 @@ def create_tracker(project_id):
         ), 500
     
     # # Send a GET request to Project microservice to get the funding_goal
-    # project_URL = "http://project:5000/project"
+    project_URL = "http://project:5000/project"
     # # project_URL = "http://localhost:5000/project"
     # response = requests.get(project_URL + '/' + str(project_id)).json()
     # data = response['data']

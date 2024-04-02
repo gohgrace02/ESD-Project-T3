@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `pledge_options` (
 
 
 INSERT INTO `pledge_options` (`option_id`, `title`, `description`, `user_id`, `project_id`, `pledge_amt`, `price_id`) VALUES
-    (1, 'Gold Tier', 'Lorem ipsum dolor sit amet consectetur adipisicing elit.', 2, 1231, '10', 'price_1OzXtuBWraf69XnWOJIEupXh');
+    (1, 'Gold Tier', 'Lorem ipsum dolor sit amet consectetur adipisicing elit.', 2, 1232, '10', 'price_1OzXtuBWraf69XnWOJIEupXh');
 COMMIT;
 
 
